@@ -73,28 +73,36 @@ class StartScreen extends Screen {
           <div class="credits-body">
             <div class="company-info">
               <h3>About the Studio</h3>
-              <p>Weird Demon Games was founded in the depths of creative madness, where nightmares meet nostalgia. We specialize in atmospheric horror-mysteries that blur the line between reality and the supernatural.</p>
+              <p>Weird Demon Games was founded in the depths of creative madness, where nightmares meet nostalgia. We specialize the weird and wacky that make you wonder - what did I play, and why did I have fun doing it!</p>
               
               <h3>Our Mission</h3>
-              <p>To create unforgettable gaming experiences that haunt your dreams and challenge your detective skills. Every pixel is crafted with obsessive attention to atmospheric detail.</p>
+              <p>To create unforgettable gaming experiences that bring a smile to your face and inspire you to make something wacky of your own!</p>
               
               <h3>Team</h3>
               <div class="team-credits">
                 <div class="credit-role">
-                  <span class="role">Game Design & Story</span>
-                  <span class="name">The Midnight Collective</span>
+                  <span class="role">Game Lead</span>
+                  <span class="name">Ken Whaeadon</span>
                 </div>
                 <div class="credit-role">
-                  <span class="role">Art & Animation</span>
-                  <span class="name">Shadow Canvas Studios</span>
+                  <span class="role">Logo</span>
+                  <span class="name">Wrymskin</span>
                 </div>
                 <div class="credit-role">
-                  <span class="role">Audio & Music</span>
-                  <span class="name">Echoing Void Productions</span>
+                  <span class="role">Audio Effect</span>
+                  <span class="name">https://freesound.org/: Name1, Name2, Name3, Name4</span>
+                </div>
+                <div class="credit-role">
+                  <span class="role">Game Art</span>
+                  <span class="name">ChatGPT</span>
+                </div>
+                <div class="credit-role">
+                  <span class="role">Music</span>
+                  <span class="name">Suno</span>
                 </div>
                 <div class="credit-role">
                   <span class="role">Code & Programming</span>
-                  <span class="name">Binary Séance LLC</span>
+                  <span class="name">Claude Sonnet 4</span>
                 </div>
               </div>
               
