@@ -1,355 +1,357 @@
 // Items Configuration for Rusty vs. The Evil Tree
 const ITEMS_CONFIG = {
-  // Available items with their properties
+  // Available items with their properties - 21 total items
   items: [
     {
       id: 1,
-      name: "Magnifying Glass",
+      name: "Part Sign",
       image: "images/item_1.png",
-      symbol: "🔍",
+      symbol: "🪧",
       damage: 3,
       restore: 0,
       type: "detection",
       text: [
-        "A detective's best friend.",
-        "Reveals hidden truths.",
-        "Sharp focus, sharp mind.",
+        "A weathered sign.",
+        "Points to something important.",
+        "Rusty metal edges.",
       ],
       cursed: false,
     },
     {
       id: 2,
-      name: "Detective Badge",
+      name: "Milkshake",
       image: "images/item_2.png",
-      symbol: "🔍",
+      symbol: "🥤",
       damage: 2,
       restore: 0,
       type: "detection",
       text: [
-        "Symbol of authority.",
-        "Earned through years.",
-        "Badge of honor.",
+        "Sweet and creamy.",
+        "Brain fuel for detectives.",
+        "Still cold somehow.",
       ],
       cursed: false,
     },
     {
       id: 3,
-      name: "Flashlight",
+      name: "Baseball Cap",
       image: "images/item_3.png",
-      symbol: "🔍",
+      symbol: "🧢",
       damage: 4,
       restore: 0,
       type: "detection",
-      text: [
-        "Cuts through darkness.",
-        "Illuminates the truth.",
-        "Battery nearly dead.",
-      ],
+      text: ["Well-worn and comfortable.", "Shades the eyes.", "Lucky charm."],
       cursed: false,
     },
     {
       id: 4,
-      name: "Compass",
+      name: "Map",
       image: "images/item_4.png",
-      symbol: "🔍",
+      symbol: "🗺️",
       damage: 1,
       restore: 0,
       type: "detection",
-      text: [
-        "Always points home.",
-        "Direction in chaos.",
-        "Needle trembles here.",
-      ],
+      text: ["Shows the way.", "X marks the spot.", "Folded many times."],
       cursed: false,
     },
     {
       id: 5,
-      name: "Rusty Axe",
+      name: "No Walking Sign",
       image: "images/item_5.png",
-      symbol: "🪓",
+      symbol: "🚷",
       damage: 5,
       restore: 0,
       type: "weakness",
       text: [
-        "Old but reliable.",
-        "Cuts through deception.",
-        "Weathered like its owner.",
+        "Authority incarnate.",
+        "Stops all movement.",
+        "Red means business.",
       ],
       cursed: false,
     },
     {
       id: 6,
-      name: "Silver Blade",
+      name: "Horseshoe",
       image: "images/item_6.png",
-      symbol: "🪓",
+      symbol: "🪖",
       damage: 6,
       restore: 0,
       type: "weakness",
-      text: ["Gleams with purity.", "Cuts through evil.", "Sharp as justice."],
+      text: ["Brings good luck.", "Iron protection.", "U-shaped power."],
       cursed: false,
     },
     {
       id: 7,
-      name: "Iron Chisel",
+      name: "Arrow",
       image: "images/item_7.png",
-      symbol: "🪓",
+      symbol: "🏹",
       damage: 3,
       restore: 0,
       type: "weakness",
-      text: [
-        "Carves through lies.",
-        "Shapes the truth.",
-        "Cold iron bites deep.",
-      ],
+      text: ["Points the direction.", "Sharp and true.", "Flies straight."],
       cursed: false,
     },
     {
       id: 8,
-      name: "Wooden Stake",
+      name: "Acorn",
       image: "images/item_8.png",
-      symbol: "🪓",
+      symbol: "🌰",
       damage: 2,
       restore: 0,
       type: "weakness",
-      text: [
-        "Simple but effective.",
-        "Drives the point home.",
-        "Splinters with age.",
-      ],
+      text: ["Small but mighty.", "Future oak tree.", "Nature's promise."],
       cursed: false,
     },
     {
       id: 9,
-      name: "Torn Photo",
+      name: "Water Bottle",
       image: "images/item_9.png",
-      symbol: "💔",
+      symbol: "💧",
       damage: 4,
       restore: 0,
       type: "emotional",
-      text: [
-        "A memory fragment.",
-        "Someone's lost love.",
-        "Pain made tangible.",
-      ],
+      text: ["Life-giving liquid.", "Hydration station.", "Crystal clear."],
       cursed: false,
     },
     {
       id: 10,
-      name: "Love Letter",
+      name: "Pink Flower",
       image: "images/item_10.png",
-      symbol: "💔",
+      symbol: "🌸",
       damage: 3,
       restore: 0,
       type: "emotional",
-      text: ["Words of passion.", "Promises broken.", "Heart's whisper."],
+      text: ["Delicate beauty.", "Sweet fragrance.", "Love's symbol."],
       cursed: false,
     },
     {
       id: 11,
-      name: "Wedding Ring",
+      name: "Fallen Leaf",
       image: "images/item_11.png",
-      symbol: "💔",
+      symbol: "🍂",
       damage: 5,
       restore: 0,
       type: "emotional",
-      text: [
-        "Circle of commitment.",
-        "Broken promises.",
-        "Gold tarnished black.",
-      ],
+      text: ["Autumn's gift.", "Golden memories.", "Time's passage."],
       cursed: false,
     },
     {
       id: 12,
-      name: "Child's Toy",
+      name: "Pad Lock",
       image: "images/item_12.png",
-      symbol: "💔",
+      symbol: "🔒",
       damage: 2,
       restore: 0,
       type: "emotional",
-      text: ["Innocence lost.", "Laughter silenced.", "Childhood's end."],
+      text: ["Keeps secrets safe.", "Click to unlock.", "Security symbol."],
       cursed: false,
     },
     {
       id: 13,
-      name: "Ancient Book",
+      name: "Pinecone",
       image: "images/item_13.png",
-      symbol: "💭",
+      symbol: "🌲",
       damage: 4,
       restore: 0,
       type: "mental",
-      text: [
-        "Knowledge is power.",
-        "Secrets between pages.",
-        "Wisdom of ages.",
-      ],
+      text: ["Forest's gift.", "Spiral patterns.", "Seeds of wisdom."],
       cursed: false,
     },
     {
       id: 14,
-      name: "Puzzle Box",
+      name: "Tennis Ball",
       image: "images/item_14.png",
-      symbol: "💭",
+      symbol: "🎾",
       damage: 3,
       restore: 0,
       type: "mental",
-      text: [
-        "Twist to unlock.",
-        "Patterns within patterns.",
-        "Logic made manifest.",
-      ],
+      text: ["Bounces back.", "Fuzzy exterior.", "Game time."],
       cursed: false,
     },
     {
       id: 15,
-      name: "Crystal Orb",
+      name: "Purse",
       image: "images/item_15.png",
-      symbol: "💭",
+      symbol: "👜",
       damage: 5,
       restore: 0,
       type: "mental",
-      text: [
-        "Clarity of mind.",
-        "Sees through illusions.",
-        "Focus the thoughts.",
-      ],
+      text: ["Holds everything.", "Mystery contents.", "Fashion statement."],
       cursed: false,
     },
     {
       id: 16,
-      name: "Chess Piece",
+      name: "Street Lamp",
       image: "images/item_16.png",
-      symbol: "💭",
+      symbol: "🌃",
       damage: 2,
       restore: 0,
       type: "mental",
-      text: [
-        "Strategic thinking.",
-        "Every move matters.",
-        "The game continues.",
-      ],
+      text: ["Lights the way.", "Beacon of hope.", "Night's companion."],
+      cursed: false,
+    },
+    {
+      id: 17,
+      name: "Message Board",
+      image: "images/item_17.png",
+      symbol: "📋",
+      damage: 4,
+      restore: 0,
+      type: "detection",
+      text: ["Information hub.", "Community voice.", "Posted notices."],
+      cursed: false,
+    },
+    {
+      id: 18,
+      name: "Stereo",
+      image: "images/item_18.png",
+      symbol: "📻",
+      damage: 3,
+      restore: 0,
+      type: "detection",
+      text: ["Music maker.", "Sound waves.", "Vintage vibes."],
+      cursed: false,
+    },
+    {
+      id: 19,
+      name: "Rock",
+      image: "images/item_19.png",
+      symbol: "🪨",
+      damage: 5,
+      restore: 0,
+      type: "weakness",
+      text: ["Solid foundation.", "Ancient strength.", "Earthly power."],
+      cursed: false,
+    },
+    {
+      id: 20,
+      name: "Backpack",
+      image: "images/item_20.png",
+      symbol: "🎒",
+      damage: 2,
+      restore: 0,
+      type: "emotional",
+      text: ["Adventure ready.", "Carries memories.", "Journey's companion."],
+      cursed: false,
+    },
+    {
+      id: 21,
+      name: "Flying Kite",
+      image: "images/item_21.png",
+      symbol: "🪁",
+      damage: 4,
+      restore: 0,
+      type: "mental",
+      text: ["Soars high.", "Wind's friend.", "Childhood joy."],
       cursed: false,
     },
   ],
 
-  // Cursed items (separate from normal items)
-  cursedItems: [
-    {
-      id: 17,
-      name: "Cursed Doll",
-      image: "images/item_1.png", // Fallback to first image
-      symbol: "💀",
-      damage: -5,
-      restore: 0,
-      type: "cursed",
-      text: [
-        "Don't look into its eyes.",
-        "Malevolent presence.",
-        "Some toys aren't meant to play.",
-      ],
-      cursed: true,
-    },
-    {
-      id: 18,
-      name: "Poisoned Chalice",
-      image: "images/item_2.png", // Fallback to second image
-      symbol: "💀",
-      damage: -3,
-      restore: 0,
-      type: "cursed",
-      text: [
-        "Beauty hides poison.",
-        "Last drink of many.",
-        "Gold rim, dark heart.",
-      ],
-      cursed: true,
-    },
-    {
-      id: 19,
-      name: "Broken Mirror",
-      image: "images/item_3.png", // Fallback to third image
-      symbol: "💀",
-      damage: -4,
-      restore: 0,
-      type: "cursed",
-      text: [
-        "Seven years' bad luck.",
-        "Reflects only darkness.",
-        "Shattered dreams.",
-      ],
-      cursed: true,
-    },
-    {
-      id: 20,
-      name: "Withered Root",
-      image: "images/item_4.png", // Fallback to fourth image
-      symbol: "💀",
-      damage: -2,
-      restore: 0,
-      type: "cursed",
-      text: [
-        "Death's own growth.",
-        "Saps life's essence.",
-        "Twisted and black.",
-      ],
-      cursed: true,
-    },
-  ],
+  // No cursed items - all 21 items are regular items
+  cursedItems: [],
 
-  // Location configurations with item positions
+  // Location configurations with all 21 items
   locations: {
     detectiveOffice: {
       name: "Detective's Office",
-      backgroundImage: "images/detective-office.jpg",
-      timeLimit: 60,
+      backgroundImage: "images/park_bg.png",
       startingStamina: 100,
       maxStamina: 100,
       staminaDrainRate: 0.5,
+      revealDuration: 60, // 60 seconds for items to fade in
       itemPositions: [
-        { itemId: 1, x: 25, y: 30 }, // Magnifying Glass
-        { itemId: 5, x: 70, y: 45 }, // Rusty Axe
-        { itemId: 9, x: 15, y: 60 }, // Torn Photo
-        { itemId: 13, x: 80, y: 25 }, // Ancient Book
-        { itemId: 2, x: 35, y: 80 }, // Detective Badge
-        { itemId: 10, x: 60, y: 15 }, // Love Letter
-        { itemId: 17, x: 50, y: 70 }, // Cursed Doll
-        { itemId: 15, x: 20, y: 20 }, // Crystal Orb
+        // First 10 items - visible immediately
+        { itemId: 1, x: 15, y: 25, scale: 0.8, initiallyVisible: true },
+        { itemId: 2, x: 85, y: 15, scale: 0.9, initiallyVisible: true },
+        { itemId: 3, x: 25, y: 70, scale: 1.0, initiallyVisible: true },
+        { itemId: 4, x: 75, y: 80, scale: 0.7, initiallyVisible: true },
+        { itemId: 5, x: 45, y: 30, scale: 1.1, initiallyVisible: true },
+        { itemId: 6, x: 65, y: 45, scale: 0.8, initiallyVisible: true },
+        { itemId: 7, x: 10, y: 60, scale: 0.9, initiallyVisible: true },
+        { itemId: 8, x: 90, y: 35, scale: 0.6, initiallyVisible: true },
+        { itemId: 9, x: 35, y: 85, scale: 1.0, initiallyVisible: true },
+        { itemId: 10, x: 55, y: 10, scale: 0.8, initiallyVisible: true },
+
+        // Next 11 items - fade in over 60 seconds
+        { itemId: 11, x: 20, y: 40, scale: 0.9, initiallyVisible: false },
+        { itemId: 12, x: 80, y: 60, scale: 0.7, initiallyVisible: false },
+        { itemId: 13, x: 30, y: 50, scale: 1.2, initiallyVisible: false },
+        { itemId: 14, x: 70, y: 25, scale: 0.8, initiallyVisible: false },
+        { itemId: 15, x: 40, y: 65, scale: 1.0, initiallyVisible: false },
+        { itemId: 16, x: 60, y: 75, scale: 0.9, initiallyVisible: false },
+        { itemId: 17, x: 15, y: 80, scale: 0.8, initiallyVisible: false },
+        { itemId: 18, x: 85, y: 50, scale: 1.1, initiallyVisible: false },
+        { itemId: 19, x: 25, y: 20, scale: 0.7, initiallyVisible: false },
+        { itemId: 20, x: 75, y: 65, scale: 1.0, initiallyVisible: false },
+        { itemId: 21, x: 50, y: 40, scale: 0.8, initiallyVisible: false },
       ],
     },
     forestClearing: {
       name: "Forest Clearing",
-      backgroundImage: "images/forest-clearing.jpg",
-      timeLimit: 60,
+      backgroundImage: "images/forest_bg.png",
       startingStamina: 80,
       maxStamina: 100,
       staminaDrainRate: 0.7,
+      revealDuration: 60,
       itemPositions: [
-        { itemId: 3, x: 30, y: 25 }, // Flashlight
-        { itemId: 6, x: 75, y: 40 }, // Silver Blade
-        { itemId: 11, x: 20, y: 65 }, // Wedding Ring
-        { itemId: 14, x: 85, y: 30 }, // Puzzle Box
-        { itemId: 4, x: 40, y: 75 }, // Compass
-        { itemId: 12, x: 65, y: 20 }, // Child's Toy
-        { itemId: 18, x: 55, y: 80 }, // Poisoned Chalice
-        { itemId: 16, x: 15, y: 35 }, // Chess Piece
+        // First 10 items - visible immediately
+        { itemId: 1, x: 20, y: 30, scale: 0.9, initiallyVisible: true },
+        { itemId: 2, x: 80, y: 20, scale: 0.8, initiallyVisible: true },
+        { itemId: 3, x: 30, y: 75, scale: 1.1, initiallyVisible: true },
+        { itemId: 4, x: 70, y: 85, scale: 0.7, initiallyVisible: true },
+        { itemId: 5, x: 50, y: 35, scale: 1.0, initiallyVisible: true },
+        { itemId: 6, x: 60, y: 50, scale: 0.9, initiallyVisible: true },
+        { itemId: 7, x: 15, y: 65, scale: 0.8, initiallyVisible: true },
+        { itemId: 8, x: 85, y: 40, scale: 0.6, initiallyVisible: true },
+        { itemId: 9, x: 40, y: 80, scale: 1.0, initiallyVisible: true },
+        { itemId: 10, x: 55, y: 15, scale: 0.8, initiallyVisible: true },
+
+        // Next 11 items - fade in over 60 seconds
+        { itemId: 11, x: 25, y: 45, scale: 0.9, initiallyVisible: false },
+        { itemId: 12, x: 75, y: 65, scale: 0.7, initiallyVisible: false },
+        { itemId: 13, x: 35, y: 55, scale: 1.2, initiallyVisible: false },
+        { itemId: 14, x: 65, y: 30, scale: 0.8, initiallyVisible: false },
+        { itemId: 15, x: 45, y: 70, scale: 1.0, initiallyVisible: false },
+        { itemId: 16, x: 55, y: 80, scale: 0.9, initiallyVisible: false },
+        { itemId: 17, x: 10, y: 85, scale: 0.8, initiallyVisible: false },
+        { itemId: 18, x: 90, y: 55, scale: 1.1, initiallyVisible: false },
+        { itemId: 19, x: 30, y: 25, scale: 0.7, initiallyVisible: false },
+        { itemId: 20, x: 70, y: 70, scale: 1.0, initiallyVisible: false },
+        { itemId: 21, x: 45, y: 45, scale: 0.8, initiallyVisible: false },
       ],
     },
     darkCatacombs: {
       name: "Dark Catacombs",
-      backgroundImage: "images/dark-catacombs.jpg",
-      timeLimit: 45,
+      backgroundImage: "images/catacomb_bg.png",
       startingStamina: 60,
       maxStamina: 100,
       staminaDrainRate: 1.0,
+      revealDuration: 60,
       itemPositions: [
-        { itemId: 7, x: 45, y: 35 }, // Iron Chisel
-        { itemId: 8, x: 25, y: 70 }, // Wooden Stake
-        { itemId: 1, x: 80, y: 50 }, // Magnifying Glass (different position)
-        { itemId: 9, x: 15, y: 25 }, // Torn Photo (different position)
-        { itemId: 13, x: 70, y: 75 }, // Ancient Book (different position)
-        { itemId: 6, x: 35, y: 15 }, // Silver Blade (different position)
-        { itemId: 19, x: 60, y: 60 }, // Broken Mirror
-        { itemId: 20, x: 50, y: 85 }, // Withered Root
+        // First 10 items - visible immediately
+        { itemId: 1, x: 25, y: 35, scale: 0.8, initiallyVisible: true },
+        { itemId: 2, x: 75, y: 25, scale: 0.9, initiallyVisible: true },
+        { itemId: 3, x: 35, y: 70, scale: 1.0, initiallyVisible: true },
+        { itemId: 4, x: 65, y: 80, scale: 0.7, initiallyVisible: true },
+        { itemId: 5, x: 45, y: 40, scale: 1.1, initiallyVisible: true },
+        { itemId: 6, x: 55, y: 55, scale: 0.8, initiallyVisible: true },
+        { itemId: 7, x: 20, y: 60, scale: 0.9, initiallyVisible: true },
+        { itemId: 8, x: 80, y: 45, scale: 0.6, initiallyVisible: true },
+        { itemId: 9, x: 30, y: 85, scale: 1.0, initiallyVisible: true },
+        { itemId: 10, x: 60, y: 20, scale: 0.8, initiallyVisible: true },
+
+        // Next 11 items - fade in over 60 seconds
+        { itemId: 11, x: 15, y: 50, scale: 0.9, initiallyVisible: false },
+        { itemId: 12, x: 85, y: 65, scale: 0.7, initiallyVisible: false },
+        { itemId: 13, x: 40, y: 60, scale: 1.2, initiallyVisible: false },
+        { itemId: 14, x: 70, y: 35, scale: 0.8, initiallyVisible: false },
+        { itemId: 15, x: 50, y: 75, scale: 1.0, initiallyVisible: false },
+        { itemId: 16, x: 60, y: 85, scale: 0.9, initiallyVisible: false },
+        { itemId: 17, x: 10, y: 80, scale: 0.8, initiallyVisible: false },
+        { itemId: 18, x: 90, y: 60, scale: 1.1, initiallyVisible: false },
+        { itemId: 19, x: 35, y: 30, scale: 0.7, initiallyVisible: false },
+        { itemId: 20, x: 75, y: 70, scale: 1.0, initiallyVisible: false },
+        { itemId: 21, x: 55, y: 50, scale: 0.8, initiallyVisible: false },
       ],
     },
   },
@@ -359,8 +361,7 @@ const ITEMS_CONFIG = {
 const ITEMS_UTILS = {
   // Get item by ID
   getItemById(id) {
-    const allItems = [...ITEMS_CONFIG.items, ...ITEMS_CONFIG.cursedItems];
-    return allItems.find((item) => item.id === id);
+    return ITEMS_CONFIG.items.find((item) => item.id === id);
   },
 
   // Get location configuration
@@ -389,6 +390,8 @@ const ITEMS_UTILS = {
           ...item,
           x: pos.x,
           y: pos.y,
+          scale: pos.scale || 1.0,
+          initiallyVisible: pos.initiallyVisible || false,
           hasUsed: false,
         };
       })
@@ -397,10 +400,10 @@ const ITEMS_UTILS = {
     return {
       name: location.name,
       backgroundImage: location.backgroundImage,
-      timeLimit: location.timeLimit,
       startingStamina: location.startingStamina,
       maxStamina: location.maxStamina,
       staminaDrainRate: location.staminaDrainRate,
+      revealDuration: location.revealDuration,
       items: items,
     };
   },
@@ -411,29 +414,31 @@ const ITEMS_UTILS = {
   },
 
   // Get random items for testing
-  getRandomItems(count = 8) {
+  getRandomItems(count = 10) {
     const allItems = [...ITEMS_CONFIG.items];
     const shuffled = allItems.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   },
 
   // Create a test location with random items
-  createTestLocation(itemCount = 8) {
+  createTestLocation(itemCount = 10) {
     const items = this.getRandomItems(itemCount);
     const itemsWithPositions = items.map((item, index) => ({
       ...item,
-      x: 20 + (index % 3) * 30, // Simple grid positioning
-      y: 20 + Math.floor(index / 3) * 30,
+      x: 20 + (index % 4) * 20, // Simple grid positioning
+      y: 20 + Math.floor(index / 4) * 20,
+      scale: 0.8 + Math.random() * 0.4, // Random scale between 0.8 and 1.2
+      initiallyVisible: index < 5, // First 5 visible immediately
       hasUsed: false,
     }));
 
     return {
       name: "Test Location",
       backgroundImage: "images/test-background.jpg",
-      timeLimit: 60,
       startingStamina: 100,
       maxStamina: 100,
       staminaDrainRate: 0.5,
+      revealDuration: 60,
       items: itemsWithPositions,
     };
   },
@@ -453,17 +458,12 @@ const ITEMS_UTILS = {
     return ITEMS_CONFIG.items.filter((item) => item.type === type);
   },
 
-  // Get all cursed items
-  getCursedItems() {
-    return ITEMS_CONFIG.cursedItems;
-  },
-
   // Validate item configuration
   validateItemConfig() {
     const errors = [];
 
     // Check for duplicate IDs
-    const allItems = [...ITEMS_CONFIG.items, ...ITEMS_CONFIG.cursedItems];
+    const allItems = [...ITEMS_CONFIG.items];
     const ids = allItems.map((item) => item.id);
     const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
 
@@ -494,6 +494,23 @@ const ITEMS_UTILS = {
           `Location ${locationName} missing or invalid item positions`
         );
       } else {
+        // Check that we have exactly 21 items
+        if (location.itemPositions.length !== 21) {
+          errors.push(
+            `Location ${locationName} should have exactly 21 items, has ${location.itemPositions.length}`
+          );
+        }
+
+        // Check that exactly 10 are initially visible
+        const initiallyVisible = location.itemPositions.filter(
+          (pos) => pos.initiallyVisible
+        ).length;
+        if (initiallyVisible !== 10) {
+          errors.push(
+            `Location ${locationName} should have exactly 10 initially visible items, has ${initiallyVisible}`
+          );
+        }
+
         location.itemPositions.forEach((pos, index) => {
           if (!pos.itemId)
             errors.push(
@@ -502,6 +519,16 @@ const ITEMS_UTILS = {
           if (pos.x === undefined || pos.y === undefined) {
             errors.push(
               `Location ${locationName} position ${index} missing x or y coordinates`
+            );
+          }
+          if (pos.scale === undefined) {
+            errors.push(
+              `Location ${locationName} position ${index} missing scale property`
+            );
+          }
+          if (pos.initiallyVisible === undefined) {
+            errors.push(
+              `Location ${locationName} position ${index} missing initiallyVisible property`
             );
           }
           if (!this.getItemById(pos.itemId)) {
@@ -531,4 +558,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-console.log("📦 Items configuration loaded");
+console.log("📦 Items configuration loaded with 21 items");

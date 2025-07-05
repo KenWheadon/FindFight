@@ -37,7 +37,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.1);
   z-index: 2;
 }
 
@@ -56,7 +56,7 @@
   pointer-events: auto;
 }
 
-/* Timer and Stats Bar */
+/* Stats Bar (removed timer) */
 .search-stats {
   position: absolute;
   top: 20px;
@@ -74,33 +74,6 @@
   z-index: 11;
 }
 
-.search-timer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.search-timer-bar {
-  width: 200px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.search-timer-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #d4af37, #f4d03f);
-  transition: width 0.1s linear;
-  border-radius: 4px;
-}
-
-.search-timer-text {
-  font-weight: bold;
-  color: #d4af37;
-  min-width: 60px;
-}
-
 .search-stamina {
   display: flex;
   align-items: center;
@@ -108,7 +81,7 @@
 }
 
 .search-stamina-bar {
-  width: 150px;
+  width: 200px;
   height: 8px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -125,7 +98,7 @@
 .search-stamina-text {
   font-weight: bold;
   color: #28a745;
-  min-width: 80px;
+  min-width: 120px;
 }
 
 /* Items Found Counter */
@@ -166,33 +139,68 @@
   color: #d4af37;
 }
 
-/* Search Items */
+/* Search Items - Hidden naturally in scene */
 .search-item {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  background: rgba(212, 175, 55, 0.3);
-  border: 2px solid rgba(212, 175, 55, 0.6);
-  border-radius: 50%;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
   z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  backdrop-filter: blur(5px);
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
+  /* Responsive sizing while maintaining aspect ratio */
+  width: 4vw;
+  height: 4vw;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 80px;
+  max-height: 80px;
 }
 
-.search-item:hover {
-  background: rgba(212, 175, 55, 0.5);
-  border-color: #d4af37;
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+/* Items that are not initially visible start transparent */
+.search-item.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
+/* Items that are initially visible */
+.search-item.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Items blend into scene naturally - no special effects until found */
+.search-item:not(.found) {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+/* Only show effects when item is found */
+.search-item.found {
+  background-color: rgba(40, 167, 69, 0.4);
+  border: 2px solid #28a745;
+  border-radius: 50%;
+  animation: itemFound 0.5s ease-out;
+}
+
+.search-item.found:hover {
+  background-color: rgba(40, 167, 69, 0.6);
+  border-color: #34ce57;
+}
+
+.search-item.cursed.found {
+  background-color: rgba(220, 53, 69, 0.4);
+  border: 2px solid #dc3545;
+  border-radius: 50%;
+}
+
+.search-item.cursed.found:hover {
+  background-color: rgba(220, 53, 69, 0.6);
+  border-color: #e74c3c;
+}
+
+/* Wiggle animation for when item is clicked */
 .search-item.wiggle {
   animation: wiggle 0.5s ease-in-out;
 }
@@ -210,43 +218,6 @@
   }
 }
 
-.search-item.found {
-  background: rgba(40, 167, 69, 0.4);
-  border-color: #28a745;
-  animation: itemFound 0.5s ease-out;
-}
-
-.search-item.found:hover {
-  background: rgba(40, 167, 69, 0.6);
-  border-color: #34ce57;
-}
-
-.search-item.cursed {
-  background: rgba(220, 53, 69, 0.4);
-  border-color: #dc3545;
-  animation: cursedPulse 2s ease-in-out infinite;
-}
-
-.search-item.cursed:hover {
-  background: rgba(220, 53, 69, 0.6);
-  border-color: #e74c3c;
-}
-
-/* Item pulse animation for unused items */
-.search-item:not(.found):not(.cursed) {
-  animation: itemPulse 3s ease-in-out infinite;
-}
-
-@keyframes itemPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
-  }
-}
-
 @keyframes itemFound {
   0% {
     transform: scale(1);
@@ -256,16 +227,6 @@
   }
   100% {
     transform: scale(1);
-  }
-}
-
-@keyframes cursedPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 5px rgba(220, 53, 69, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
   }
 }
 
@@ -537,7 +498,6 @@
     padding: 10px 15px;
   }
 
-  .search-timer-bar,
   .search-stamina-bar {
     width: 150px;
   }
@@ -552,9 +512,10 @@
   }
 
   .search-item {
-    width: 35px;
-    height: 35px;
-    font-size: 16px;
+    width: 5vw;
+    height: 5vw;
+    min-width: 35px;
+    min-height: 35px;
   }
 
   .item-tooltip {
@@ -585,16 +546,24 @@
   }
 
   .search-item {
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
+    width: 6vw;
+    height: 6vw;
+    min-width: 30px;
+    min-height: 30px;
+  }
+}
+
+/* Large screens - prevent items from getting too big */
+@media (min-width: 1200px) {
+  .search-item {
+    width: 3vw;
+    height: 3vw;
   }
 }
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .search-item,
-  .search-timer-fill,
   .search-stamina-fill,
   .item-tooltip {
     animation: none !important;
@@ -604,7 +573,7 @@
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
-  .search-item {
+  .search-item.found {
     border-width: 3px;
   }
 

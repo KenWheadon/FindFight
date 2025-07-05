@@ -8,18 +8,19 @@ class SearchScreen extends Screen {
       currentLocation: null,
       items: [],
       foundItems: [],
-      timeRemaining: 60,
       stamina: 100,
       maxStamina: 100,
       staminaDrainRate: 0.5,
       isSearching: false,
       isPaused: false,
       searchStartTime: null,
+      revealDuration: 60, // seconds to reveal all items
+      revealedItems: new Set(), // track which items have been revealed
     };
 
     // Timer intervals
-    this.searchTimer = null;
     this.staminaTimer = null;
+    this.revealTimer = null;
   }
 
   // Initialize the search screen with location data
@@ -27,13 +28,22 @@ class SearchScreen extends Screen {
     this.searchState.currentLocation = locationData;
     this.searchState.items = [...locationData.items]; // Copy items array
     this.searchState.foundItems = [];
-    this.searchState.timeRemaining = locationData.timeLimit || 60;
     this.searchState.stamina = locationData.startingStamina || 100;
     this.searchState.maxStamina = locationData.maxStamina || 100;
     this.searchState.staminaDrainRate = locationData.staminaDrainRate || 0.5;
+    this.searchState.revealDuration = locationData.revealDuration || 60;
+    this.searchState.revealedItems = new Set();
+
+    // Mark initially visible items as revealed
+    this.searchState.items.forEach((item, index) => {
+      if (item.initiallyVisible) {
+        this.searchState.revealedItems.add(index);
+      }
+    });
 
     console.log(`🔍 Search initialized for location: ${locationData.name}`);
-    console.log(`📦 Items to find: ${this.searchState.items.length}`);
+    console.log(`📦 Total items: ${this.searchState.items.length}`);
+    console.log(`👁️ Initially visible: ${this.searchState.revealedItems.size}`);
   }
 
   render() {
@@ -46,25 +56,13 @@ class SearchScreen extends Screen {
 
     this.container.innerHTML = `
       <div class="search-screen">
-        <!-- Background Layers -->
-        <div class="stars-layer"></div>
-        <div class="asteroids-layer"></div>
-        <div class="particles-layer"></div>
-        
         <!-- Location Background -->
         <div class="search-location" style="background-image: url('${location.backgroundImage}')"></div>
         
         <!-- Search UI Overlay -->
         <div class="search-ui">
-          <!-- Stats Bar -->
+          <!-- Stats Bar (no timer) -->
           <div class="search-stats">
-            <div class="search-timer">
-              <span class="search-timer-text">Time: <span id="search-time-remaining">60</span>s</span>
-              <div class="search-timer-bar">
-                <div class="search-timer-fill" id="search-timer-fill"></div>
-              </div>
-            </div>
-            
             <div class="search-collections" id="search-collections">
               <div class="collections-icon">🎒</div>
               <span class="collections-count" id="collections-count">0</span>
@@ -98,11 +96,12 @@ class SearchScreen extends Screen {
             <div class="pause-tips">
               <h3>How to Search</h3>
               <ul>
-                <li>Click on suspicious objects to collect them</li>
+                <li>Click on objects to collect them</li>
                 <li>Watch your stamina - searching drains energy</li>
                 <li>Some items may be cursed - be careful!</li>
                 <li>Use your detective instincts to find hidden clues</li>
-                <li>Time is limited - search efficiently</li>
+                <li>Items are hidden naturally in the scene</li>
+                <li>More items will appear over time</li>
               </ul>
             </div>
             <button class="game-button primary" id="resume-btn">Resume Search</button>
@@ -130,8 +129,15 @@ class SearchScreen extends Screen {
     this.searchState.items.forEach((item, index) => {
       const itemElement = document.createElement("div");
       itemElement.className = "search-item";
-      itemElement.style.left = `${item.x}%`;
-      itemElement.style.top = `${item.y}%`;
+
+      // Use responsive positioning with viewport units
+      itemElement.style.left = `${item.x}vw`;
+      itemElement.style.top = `${item.y}vh`;
+
+      // Apply scale from item data
+      const scale = item.scale || 1.0;
+      itemElement.style.transform = `scale(${scale})`;
+
       itemElement.dataset.itemIndex = index;
 
       // Use image if available, otherwise use symbol
@@ -144,10 +150,18 @@ class SearchScreen extends Screen {
         itemElement.innerHTML = "?";
       }
 
+      // Set initial visibility
+      if (this.searchState.revealedItems.has(index)) {
+        itemElement.classList.add("visible");
+      } else {
+        itemElement.classList.add("hidden");
+      }
+
       // Add classes based on item state
       if (item.hasUsed) {
         itemElement.classList.add("found");
-      } else if (item.cursed) {
+      }
+      if (item.cursed) {
         itemElement.classList.add("cursed");
       }
 
@@ -195,6 +209,9 @@ class SearchScreen extends Screen {
     const item = this.searchState.items[itemIndex];
 
     if (!item) return;
+
+    // Only allow clicking on revealed items
+    if (!this.searchState.revealedItems.has(itemIndex)) return;
 
     // Create ripple effect
     this.createRippleEffect(event.target, event);
@@ -250,18 +267,6 @@ class SearchScreen extends Screen {
     this.searchState.isSearching = true;
     this.searchState.searchStartTime = Date.now();
 
-    // Start timer
-    this.searchTimer = this.setManagedInterval(() => {
-      if (!this.searchState.isPaused) {
-        this.searchState.timeRemaining--;
-        this.updateUI();
-
-        if (this.searchState.timeRemaining <= 0) {
-          this.timeUp();
-        }
-      }
-    }, 1000);
-
     // Start stamina drain
     this.staminaTimer = this.setManagedInterval(() => {
       if (!this.searchState.isPaused && this.searchState.isSearching) {
@@ -275,20 +280,66 @@ class SearchScreen extends Screen {
       }
     }, 1000);
 
+    // Start item reveal system
+    this.startItemReveal();
+
     console.log("🔍 Search started");
+  }
+
+  startItemReveal() {
+    // Get all items that are not initially visible
+    const hiddenItems = this.searchState.items
+      .map((item, index) => ({ item, index }))
+      .filter(({ item, index }) => !this.searchState.revealedItems.has(index));
+
+    if (hiddenItems.length === 0) return;
+
+    // Calculate reveal interval - spread 11 items over 60 seconds
+    const revealInterval =
+      (this.searchState.revealDuration * 1000) / hiddenItems.length;
+
+    let revealIndex = 0;
+    this.revealTimer = this.setManagedInterval(() => {
+      if (
+        !this.searchState.isPaused &&
+        this.searchState.isSearching &&
+        revealIndex < hiddenItems.length
+      ) {
+        const { index } = hiddenItems[revealIndex];
+        this.revealItem(index);
+        revealIndex++;
+      }
+    }, revealInterval);
+  }
+
+  revealItem(itemIndex) {
+    if (this.searchState.revealedItems.has(itemIndex)) return;
+
+    this.searchState.revealedItems.add(itemIndex);
+
+    // Find the item element and reveal it
+    const itemElement = this.container.querySelector(
+      `[data-item-index="${itemIndex}"]`
+    );
+    if (itemElement) {
+      itemElement.classList.remove("hidden");
+      itemElement.classList.add("visible");
+    }
+
+    console.log(`👁️ Item revealed: ${this.searchState.items[itemIndex].name}`);
   }
 
   stopSearch() {
     this.searchState.isSearching = false;
 
-    if (this.searchTimer) {
-      clearInterval(this.searchTimer);
-      this.searchTimer = null;
-    }
-
     if (this.staminaTimer) {
       clearInterval(this.staminaTimer);
       this.staminaTimer = null;
+    }
+
+    if (this.revealTimer) {
+      clearInterval(this.revealTimer);
+      this.revealTimer = null;
     }
 
     console.log("🛑 Search stopped");
@@ -322,18 +373,6 @@ class SearchScreen extends Screen {
     this.onSearchExit();
   }
 
-  timeUp() {
-    this.stopSearch();
-    this.showTemporaryMessage(
-      "Time's up! Moving to combat with found items.",
-      "warning"
-    );
-
-    setTimeout(() => {
-      this.onSearchComplete();
-    }, 2000);
-  }
-
   staminaDepleted() {
     this.stopSearch();
     this.showTemporaryMessage(
@@ -359,19 +398,6 @@ class SearchScreen extends Screen {
   }
 
   updateUI() {
-    // Update timer
-    this.updateElementSafe(
-      "search-time-remaining",
-      this.searchState.timeRemaining
-    );
-
-    const timerFill = this.container.querySelector("#search-timer-fill");
-    if (timerFill) {
-      const maxTime = this.searchState.currentLocation?.timeLimit || 60;
-      const percentage = (this.searchState.timeRemaining / maxTime) * 100;
-      timerFill.style.width = percentage + "%";
-    }
-
     // Update stamina
     this.updateElementSafe(
       "search-stamina-value",
@@ -504,9 +530,14 @@ class SearchScreen extends Screen {
     this.timeouts.push(timeout);
   }
 
-  // Override init to start search automatically
+  // Override init to start search automatically and skip animations
   init() {
-    super.init();
+    this.render();
+    this.setupEventListeners();
+    this.initializeAudio();
+    this.isActive = true;
+
+    console.log(`✅ ${this.screenName} Screen initialized`);
 
     // Start search after a brief delay
     setTimeout(() => {
