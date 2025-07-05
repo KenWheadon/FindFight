@@ -15,24 +15,24 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-/* Header Section */
+/* Header Section - More Compact */
 .victory-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   position: relative;
 }
 
 .victory-crown {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .crown-icon {
-  font-size: 5em;
+  font-size: 4em;
   animation: crownFloat 3s ease-in-out infinite;
   filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
 }
@@ -53,7 +53,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 200px;
-  height: 100px;
+  height: 80px;
   pointer-events: none;
 }
 
@@ -102,7 +102,7 @@
 
 .victory-title {
   font-family: "Creepster", cursive;
-  font-size: 3.5em;
+  font-size: 3em;
   color: #ffd700;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
   margin: 0;
@@ -121,29 +121,41 @@
 
 .victory-subtitle {
   font-family: "Butcherman", cursive;
-  font-size: 1.3em;
+  font-size: 1.2em;
   color: #90ee90;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-  margin: 10px 0 0 0;
+  margin: 5px 0 0 0;
   letter-spacing: 1px;
 }
 
-/* Story Section */
-.victory-story {
+/* Main Content Area - Horizontal Layout */
+.victory-main {
   display: flex;
-  align-items: center;
   gap: 40px;
-  margin-bottom: 40px;
-  max-width: 800px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 30px;
+}
+
+/* Story Section - Left Side */
+.victory-story {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
 }
 
 .rusty-celebration {
   position: relative;
-  flex-shrink: 0;
+  align-self: center;
+  margin-bottom: 15px;
 }
 
 .rusty-image {
-  font-size: 5em;
+  font-size: 4em;
   background: radial-gradient(
     circle,
     rgba(255, 215, 0, 0.3) 0%,
@@ -151,7 +163,7 @@
   );
   border: 3px solid rgba(255, 215, 0, 0.5);
   border-radius: 50%;
-  padding: 25px;
+  padding: 20px;
   animation: victoryDance 2s ease-in-out infinite;
   filter: brightness(1.2);
 }
@@ -174,9 +186,9 @@
 
 .detective-badge {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 1.5em;
+  top: -5px;
+  right: -5px;
+  font-size: 1.3em;
   background: rgba(255, 215, 0, 0.9);
   border: 2px solid #ffd700;
   border-radius: 50%;
@@ -196,53 +208,120 @@
   }
 }
 
-.victory-narrative {
-  flex: 1;
-}
-
-.victory-main-text {
-  font-family: "Courier New", monospace;
-  font-size: 1.2em;
-  line-height: 1.6;
-  color: #e0e0e0;
-  margin: 0 0 20px 0;
+/* Interactive Story Elements */
+.story-segment {
   background: rgba(0, 0, 0, 0.4);
   padding: 20px;
   border-radius: 10px;
   border-left: 4px solid #ffd700;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.victory-quote {
+.story-segment:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-left-color: #ffed4e;
+  transform: translateX(5px);
+}
+
+.story-segment.revealed {
+  border-left-color: #90ee90;
+  background: rgba(0, 0, 0, 0.6);
+  cursor: default;
+}
+
+.story-segment.revealed:hover {
+  transform: none;
+}
+
+.story-click-hint {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-size: 2em;
+  color: #ffd700;
+  animation: clickPulse 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.story-segment.revealed .story-click-hint {
+  display: none;
+}
+
+@keyframes clickPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.story-title {
   font-family: "Courier New", monospace;
   font-size: 1.1em;
   color: #ffd700;
-  margin: 0 0 20px 0;
-  text-align: center;
-  padding: 15px;
-  background: rgba(255, 215, 0, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  font-style: italic;
+  margin: 0 0 10px 0;
+  font-weight: bold;
+  transition: color 0.3s ease;
 }
 
-.victory-ending {
+.story-segment.revealed .story-title {
+  color: #90ee90;
+}
+
+.story-text {
   font-family: "Courier New", monospace;
   font-size: 1em;
-  color: #90ee90;
+  line-height: 1.5;
+  color: #e0e0e0;
   margin: 0;
-  text-align: center;
-  padding: 10px;
-  border-radius: 5px;
-  background: rgba(144, 238, 144, 0.1);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
 }
 
-/* Stats Section */
+.story-segment.revealed .story-text {
+  opacity: 1;
+  max-height: 200px;
+}
+
+.story-quote {
+  font-style: italic;
+  color: #ffd700;
+  text-align: center;
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 5px;
+}
+
+/* Stats Section - Right Side */
 .victory-stats {
+  flex: 1;
   display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
-  justify-content: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  min-width: 200px;
+}
+
+.stats-title {
+  font-family: "Courier New", monospace;
+  font-size: 1.2em;
+  color: #ffd700;
+  margin-bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .stat-card {
@@ -253,9 +332,10 @@
   );
   border: 2px solid rgba(255, 215, 0, 0.3);
   border-radius: 15px;
-  padding: 20px;
+  padding: 25px;
   text-align: center;
-  min-width: 120px;
+  width: 100%;
+  max-width: 180px;
   animation: statPulse 2s ease-in-out infinite;
   transition: all 0.3s ease;
 }
@@ -285,7 +365,7 @@
 }
 
 .stat-icon {
-  font-size: 2.5em;
+  font-size: 3em;
   margin-bottom: 10px;
   animation: statIconBounce 2s ease-in-out infinite;
 }
@@ -301,7 +381,7 @@
 }
 
 .stat-number {
-  font-size: 2em;
+  font-size: 2.5em;
   font-weight: bold;
   color: #ffd700;
   margin-bottom: 5px;
@@ -320,27 +400,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
   width: 100%;
 }
 
 .victory-message {
   text-align: center;
   background: rgba(255, 215, 0, 0.1);
-  padding: 20px;
+  padding: 15px 25px;
   border-radius: 10px;
   border: 2px solid rgba(255, 215, 0, 0.3);
-  max-width: 500px;
+  max-width: 600px;
 }
 
 .victory-message p {
   margin: 5px 0;
   color: #e0e0e0;
-  font-size: 1.1em;
+  font-size: 1em;
 }
 
 .victory-message p:first-child {
-  font-size: 1.3em;
+  font-size: 1.2em;
   font-weight: bold;
   color: #ffd700;
 }
@@ -357,8 +437,8 @@
   align-items: center;
   gap: 10px;
   min-width: 160px;
-  padding: 18px 30px;
-  font-size: 1.2em;
+  padding: 15px 25px;
+  font-size: 1.1em;
   transition: all 0.3s ease;
 }
 
@@ -389,7 +469,7 @@
 }
 
 .button-icon {
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 /* Pulse Animation for Primary Button */
@@ -410,6 +490,27 @@
 
 .victory-buttons .game-button.primary.pulse {
   animation: victoryPulse 2s infinite;
+}
+
+/* Progress Indicator */
+.story-progress {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.progress-dot.completed {
+  background: #ffd700;
+  transform: scale(1.2);
 }
 
 /* Victory Particles */
@@ -442,6 +543,24 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .victory-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .victory-story {
+    max-width: 100%;
+  }
+
+  .victory-stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .victory-title {
     font-size: 2.5em;
@@ -451,29 +570,26 @@
     font-size: 1.1em;
   }
 
-  .victory-story {
-    flex-direction: column;
+  .victory-main {
     gap: 20px;
-    text-align: center;
   }
 
   .rusty-image {
-    font-size: 4em;
-    padding: 20px;
+    font-size: 3.5em;
+    padding: 15px;
   }
 
-  .victory-main-text {
-    font-size: 1.1em;
+  .story-segment {
     padding: 15px;
   }
 
   .victory-stats {
-    gap: 20px;
+    gap: 15px;
   }
 
   .stat-card {
-    min-width: 100px;
-    padding: 15px;
+    min-width: 140px;
+    padding: 20px;
   }
 
   .victory-buttons {
@@ -492,17 +608,24 @@
   }
 
   .crown-icon {
-    font-size: 4em;
+    font-size: 3em;
   }
 
   .rusty-image {
     font-size: 3em;
-    padding: 15px;
+    padding: 12px;
   }
 
-  .victory-main-text {
+  .story-segment {
+    padding: 12px;
+  }
+
+  .story-title {
     font-size: 1em;
-    padding: 10px;
+  }
+
+  .story-text {
+    font-size: 0.9em;
   }
 
   .victory-content {
@@ -520,7 +643,7 @@
   }
 
   .victory-buttons .game-button {
-    padding: 15px 25px;
+    padding: 12px 20px;
     min-width: 180px;
   }
 }
@@ -534,7 +657,8 @@
   .stat-card,
   .stat-icon,
   .victory-buttons .game-button.primary.pulse,
-  .victory-particle {
+  .victory-particle,
+  .story-click-hint {
     animation: none !important;
   }
 
@@ -550,7 +674,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
   }
 
-  .victory-main-text {
+  .story-segment {
     background: rgba(0, 0, 0, 0.8);
     border-left-color: #ffff00;
     border-left-width: 6px;

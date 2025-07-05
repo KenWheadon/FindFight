@@ -97,7 +97,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "going away just as quickly... just like that. My guts are tell my not to, but I'm going to open it. Someone has to get to the bottom of this mystery, and it's not the first strange case I've dealth with.",
+          text: "going away just as quickly... just like that. My guts are telling me not to, but I'm going to open it anyway. Someone has to get to the bottom of this mystery, and it's not the first strange case I've dealth with.",
           style: "emphasis",
         },
       },

@@ -13,6 +13,30 @@ class VictoryScreen extends Screen {
       phasesCompleted: 3,
     };
 
+    // Interactive story state
+    this.storySegments = [
+      {
+        id: "revelation",
+        title: "Click to reveal the aftermath...",
+        text: "The tree's ancient whispers fade to silence. Its gnarled branches crumble to dust, and the cursed box begins to crack like an eggshell around me.",
+        revealed: false,
+      },
+      {
+        id: "escape",
+        title: "Click to discover your escape...",
+        text: "Light pours through the fractures—real light, not the sickly glow of this prison. I can smell the outside world: rain, exhaust, the city I know.",
+        revealed: false,
+      },
+      {
+        id: "reflection",
+        title: "Click to hear Rusty's final words...",
+        text: '"Case closed," I mutter, straightening my trench coat. "Some mysteries are meant to be solved... and some boxes are meant to stay shut forever."',
+        revealed: false,
+      },
+    ];
+
+    this.currentRevealedCount = 0;
+
     console.log("🏆 VictoryScreen instance created");
   }
 
@@ -44,39 +68,52 @@ class VictoryScreen extends Screen {
           <p class="victory-subtitle">The Evil Tree has been defeated</p>
         </div>
 
-        <div class="victory-story">
-          <div class="rusty-celebration">
-            <div class="rusty-image">🦝</div>
-            <div class="detective-badge">🔍</div>
-          </div>
-          <div class="victory-narrative">
-            <p class="victory-main-text">
-              "It's over. The tree's gone silent, its roots withered to dust. The cursed box creaks one last time before the illusion shatters like glass."
-            </p>
-            <p class="victory-quote">
-              <em>"Another case closed. Some mysteries are meant to be solved... and some boxes are meant to stay shut."</em>
-            </p>
-            <p class="victory-ending">
-              Rusty tips his hat and walks toward the light. The detective's work is never truly done, but tonight, justice has roots deeper than evil.
-            </p>
-          </div>
-        </div>
+        <div class="victory-main">
+          <div class="victory-story">
+            <div class="rusty-celebration">
+              <div class="rusty-image">🦝</div>
+              <div class="detective-badge">🔍</div>
+            </div>
+            
+            <div class="story-progress">
+              <div class="progress-dot" data-segment="0"></div>
+              <div class="progress-dot" data-segment="1"></div>
+              <div class="progress-dot" data-segment="2"></div>
+            </div>
 
-        <div class="victory-stats">
-          <div class="stat-card">
-            <div class="stat-icon">🔍</div>
-            <div class="stat-number">${this.finalStats.itemsFound}</div>
-            <div class="stat-label">Objects Found</div>
+            <div class="story-segments">
+              ${this.storySegments
+                .map(
+                  (segment, index) => `
+                <div class="story-segment" data-segment="${index}">
+                  <div class="story-title">${segment.title}</div>
+                  <div class="story-text">${segment.text}</div>
+                  <div class="story-click-hint">👆</div>
+                </div>
+              `
+                )
+                .join("")}
+            </div>
+
+            <div class="victory-quote" style="opacity: 0; transition: opacity 0.5s ease;">
+              <em>"Another case closed. The detective's work is never truly done, but tonight, justice has roots deeper than evil."</em>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">⚔️</div>
-            <div class="stat-number">${this.finalStats.phasesCompleted}</div>
-            <div class="stat-label">Phases Completed</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🏆</div>
-            <div class="stat-number">100%</div>
-            <div class="stat-label">Victory Rate</div>
+
+          <div class="victory-stats">
+            <div class="stats-title">Investigation Results</div>
+            <div class="stat-card">
+              <div class="stat-icon">🔍</div>
+              <div class="stat-number">${this.finalStats.itemsFound}</div>
+              <div class="stat-label">Objects Found</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🕐</div>
+              <div class="stat-number">${this.formatTime(
+                this.finalStats.timeElapsed
+              )}</div>
+              <div class="stat-label">Time Elapsed</div>
+            </div>
           </div>
         </div>
 
@@ -84,6 +121,7 @@ class VictoryScreen extends Screen {
           <div class="victory-message">
             <p>🎉 Congratulations, Detective! 🎉</p>
             <p>You have successfully escaped the cursed box and defeated the Evil Tree!</p>
+            <p id="story-completion-message" style="opacity: 0;">Click on the story segments above to reveal the full tale of your victory!</p>
           </div>
           
           <div class="victory-buttons">
@@ -119,19 +157,14 @@ class VictoryScreen extends Screen {
     }
 
     // Set up individual sections for staggered animation
-    const sections = [
-      ".victory-header",
-      ".victory-story",
-      ".victory-stats",
-      ".victory-controls",
-    ];
+    const sections = [".victory-header", ".victory-main", ".victory-controls"];
 
     sections.forEach((selector, index) => {
       const element = this.container.querySelector(selector);
       if (element) {
         element.style.opacity = "0";
         element.style.transform = "translateY(20px)";
-        element.style.transition = `all 0.8s ease-out ${index * 0.4}s`;
+        element.style.transition = `all 0.8s ease-out ${index * 0.3}s`;
       }
     });
 
@@ -140,6 +173,19 @@ class VictoryScreen extends Screen {
     sparkles.forEach((sparkle, index) => {
       sparkle.style.animationDelay = `${index * 0.2}s`;
     });
+
+    // Show story completion message
+    const storyMessage = document.getElementById("story-completion-message");
+    if (storyMessage) {
+      storyMessage.style.opacity = "1";
+    }
+  }
+
+  formatTime(milliseconds) {
+    if (!milliseconds || milliseconds === 0) return "N/A";
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 
   setupEventListeners() {
@@ -165,10 +211,123 @@ class VictoryScreen extends Screen {
         this.returnToMenu();
       });
     }
+
+    // Story segment click handlers
+    const storySegments = this.container.querySelectorAll(".story-segment");
+    storySegments.forEach((segment, index) => {
+      segment.addEventListener("click", (e) => {
+        this.revealStorySegment(index, e);
+      });
+    });
+  }
+
+  revealStorySegment(index, event) {
+    const segment = this.storySegments[index];
+    if (segment.revealed) return;
+
+    const segmentElement = this.container.querySelector(
+      `[data-segment="${index}"]`
+    );
+    const progressDot = this.container.querySelector(
+      `.progress-dot[data-segment="${index}"]`
+    );
+
+    if (!segmentElement) return;
+
+    console.log(`📖 Revealing story segment: ${segment.id}`);
+
+    // Mark as revealed
+    segment.revealed = true;
+    segmentElement.classList.add("revealed");
+
+    // Update progress dot
+    if (progressDot) {
+      progressDot.classList.add("completed");
+    }
+
+    // Play reveal sound
+    if (this.audioManager) {
+      this.audioManager.playSound("story_reveal", false, 0.6);
+    }
+
+    // Create particle burst at click location
+    const rect = segmentElement.getBoundingClientRect();
+    const x = event.clientX;
+    const y = event.clientY;
+    this.createParticleBurst(x, y, 8, "rgba(255, 215, 0, 0.7)");
+
+    // Add screen shake for impact
+    this.triggerScreenShake(200);
+
+    // Increment revealed count
+    this.currentRevealedCount++;
+
+    // Check if all segments are revealed
+    if (this.currentRevealedCount >= this.storySegments.length) {
+      this.onAllSegmentsRevealed();
+    }
+
+    // Show success message
+    this.showTemporaryMessage(
+      `✨ ${segment.title
+        .replace("Click to ", "")
+        .replace("...", "")} revealed!`,
+      "success",
+      2000
+    );
+  }
+
+  onAllSegmentsRevealed() {
+    console.log("🎉 All story segments revealed!");
+
+    // Show the final quote
+    const quote = this.container.querySelector(".victory-quote");
+    if (quote) {
+      quote.style.opacity = "1";
+    }
+
+    // Hide the story completion message
+    const storyMessage = document.getElementById("story-completion-message");
+    if (storyMessage) {
+      storyMessage.style.opacity = "0";
+    }
+
+    // Create celebration effect
+    this.createFinalCelebration();
+
+    // Show completion message
+    this.showTemporaryMessage(
+      "🎊 The complete story has been revealed! 🎊",
+      "success",
+      3000
+    );
+  }
+
+  createFinalCelebration() {
+    // Create multiple particle bursts around the screen
+    const colors = [
+      "rgba(255, 215, 0, 0.8)",
+      "rgba(0, 255, 136, 0.8)",
+      "rgba(255, 20, 147, 0.8)",
+      "rgba(30, 144, 255, 0.8)",
+    ];
+
+    for (let i = 0; i < 6; i++) {
+      this.setManagedTimeout(() => {
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        this.createParticleBurst(x, y, 12, color);
+      }, i * 200);
+    }
   }
 
   init() {
     console.log("🚀 Initializing Victory Screen");
+
+    // Reset story state
+    this.storySegments.forEach((segment) => (segment.revealed = false));
+    this.currentRevealedCount = 0;
 
     // Call parent init
     super.init();
@@ -192,7 +351,7 @@ class VictoryScreen extends Screen {
 
     this.celebrationStarted = true;
 
-    // Create particle burst at random locations
+    // Create initial particle burst
     const createRandomBurst = () => {
       const x = Math.random() * window.innerWidth;
       const y = Math.random() * window.innerHeight;
@@ -205,23 +364,23 @@ class VictoryScreen extends Screen {
       ];
       const color = colors[Math.floor(Math.random() * colors.length)];
 
-      this.createParticleBurst(x, y, 15, color);
+      this.createParticleBurst(x, y, 10, color);
     };
 
     // Create multiple bursts
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       this.setManagedTimeout(() => {
         createRandomBurst();
-      }, i * 300);
+      }, i * 500);
     }
 
     // Continue creating bursts periodically
     const celebrationInterval = this.setManagedInterval(() => {
-      if (Math.random() < 0.3) {
-        // 30% chance each interval
+      if (Math.random() < 0.2) {
+        // 20% chance each interval
         createRandomBurst();
       }
-    }, 2000);
+    }, 3000);
   }
 
   startFadeInAnimation() {
@@ -234,12 +393,7 @@ class VictoryScreen extends Screen {
     }
 
     // Animate individual sections
-    const sections = [
-      ".victory-header",
-      ".victory-story",
-      ".victory-stats",
-      ".victory-controls",
-    ];
+    const sections = [".victory-header", ".victory-main", ".victory-controls"];
 
     sections.forEach((selector, index) => {
       const element = this.container.querySelector(selector);
@@ -247,7 +401,7 @@ class VictoryScreen extends Screen {
         this.setManagedTimeout(() => {
           element.style.opacity = "1";
           element.style.transform = "translateY(0)";
-        }, 400 + index * 400);
+        }, 300 + index * 300);
       }
     });
 
@@ -255,7 +409,7 @@ class VictoryScreen extends Screen {
     this.setManagedTimeout(() => {
       this.fadeInComplete = true;
       this.buttonsEnabled = true;
-    }, 2000);
+    }, 1500);
   }
 
   replayGame() {
@@ -341,6 +495,26 @@ class VictoryScreen extends Screen {
       }
     }
 
+    // Story reveal shortcuts
+    if (e.code === "Digit1" || e.code === "Numpad1") {
+      this.revealStorySegment(0, {
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2,
+      });
+    }
+    if (e.code === "Digit2" || e.code === "Numpad2") {
+      this.revealStorySegment(1, {
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2,
+      });
+    }
+    if (e.code === "Digit3" || e.code === "Numpad3") {
+      this.revealStorySegment(2, {
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2,
+      });
+    }
+
     // Debug shortcut
     if (e.code === "KeyD" && e.ctrlKey) {
       this.debug();
@@ -366,7 +540,7 @@ class VictoryScreen extends Screen {
     this.particleSystem = {
       container: particlesContainer,
       particles: [],
-      maxParticles: 30, // More particles for victory
+      maxParticles: 25, // Moderate amount for victory
 
       createParticle() {
         const particle = document.createElement("div");
@@ -404,7 +578,7 @@ class VictoryScreen extends Screen {
           if (this.particles.length < this.maxParticles) {
             this.createParticle();
           }
-        }, 600);
+        }, 800);
 
         // Track interval for cleanup on screen instance
         screenInstance.intervals.push(interval);
@@ -422,6 +596,8 @@ class VictoryScreen extends Screen {
       buttonsEnabled: this.buttonsEnabled,
       celebrationStarted: this.celebrationStarted,
       finalStats: this.finalStats,
+      currentRevealedCount: this.currentRevealedCount,
+      storySegments: this.storySegments,
     });
   }
 
@@ -441,6 +617,10 @@ class VictoryScreen extends Screen {
       timeElapsed: 0,
       phasesCompleted: 3,
     };
+
+    // Reset story state
+    this.storySegments.forEach((segment) => (segment.revealed = false));
+    this.currentRevealedCount = 0;
 
     // Call parent destroy
     super.destroy();
