@@ -101,7 +101,7 @@ class StartScreen extends Screen {
                   <span class="name">Suno</span>
                 </div>
                 <div class="credit-role">
-                  <span class="role">Code & Programming</span>
+                  <span class="role">Programming</span>
                   <span class="name">Claude Sonnet 4</span>
                 </div>
               </div>
