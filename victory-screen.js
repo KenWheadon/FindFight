@@ -30,7 +30,7 @@ class VictoryScreen extends Screen {
       {
         id: "reflection",
         title: "Click to hear Rusty's final words...",
-        text: '"Case closed," I mutter, straightening my trench coat. "Some mysteries are meant to be solved... and some boxes are meant to stay shut forever."',
+        text: '"Case closed," I mutter, straightening my trench coat. "Another case closed. The detective\'s work is never truly done, but tonight, justice has roots deeper than evil. Some mysteries are meant to be solved... and some boxes are meant to stay shut forever."',
         revealed: false,
       },
     ];
@@ -54,23 +54,8 @@ class VictoryScreen extends Screen {
     // Inject HTML content into the container
     this.container.innerHTML = `
       <div class="victory-content">
-        <div class="victory-header">
-          <div class="victory-crown">
-            <div class="crown-icon">👑</div>
-            <div class="victory-sparkles">
-              <span class="sparkle">✨</span>
-              <span class="sparkle">✨</span>
-              <span class="sparkle">✨</span>
-              <span class="sparkle">✨</span>
-            </div>
-          </div>
-          <h1 class="victory-title">Case Closed!</h1>
-          <p class="victory-subtitle">The Evil Tree has been defeated</p>
-        </div>
-
         <div class="victory-main">
-          <div class="victory-story">
-            <div class="rusty-celebration">
+                <div class="rusty-celebration">
               <div class="rusty-image">
                 <img src="images/rusty.png" alt="Rusty the Raccoon Detective" />
               </div>
@@ -78,13 +63,7 @@ class VictoryScreen extends Screen {
                 <img src="images/magnifying-glass.png" alt="Detective Badge" />
               </div>
             </div>
-            
-            <div class="story-progress">
-              <div class="progress-dot" data-segment="0"></div>
-              <div class="progress-dot" data-segment="1"></div>
-              <div class="progress-dot" data-segment="2"></div>
-            </div>
-
+          <div class="victory-story">
             <div class="story-segments">
               ${this.storySegments
                 .map(
@@ -98,13 +77,9 @@ class VictoryScreen extends Screen {
                 )
                 .join("")}
             </div>
-
-            <div class="victory-quote" style="opacity: 0; transition: opacity 0.5s ease;">
-              <em>"Another case closed. The detective's work is never truly done, but tonight, justice has roots deeper than evil."</em>
-            </div>
           </div>
 
-          <div class="victory-stats">
+          <div class="victory-stats" id="victory-stats" style="opacity: 0; visibility: hidden; transition: all 0.5s ease;">
             <div class="stats-title">Investigation Results</div>
             <div class="stat-card">
               <div class="stat-icon">
@@ -120,14 +95,11 @@ class VictoryScreen extends Screen {
               )}</div>
               <div class="stat-label">Time Elapsed</div>
             </div>
-          </div>
-        </div>
 
-        <div class="victory-controls">
+        <div class="victory-controls" id="victory-controls" style="opacity: 0; visibility: hidden; transition: all 0.5s ease;">
           <div class="victory-message">
             <p>🎉 Congratulations, Detective! 🎉</p>
             <p>You have successfully escaped the cursed box and defeated the Evil Tree!</p>
-            <p id="story-completion-message">Click on the story segments above to reveal the full tale of your victory!</p>
           </div>
           
           <div class="victory-buttons">
@@ -137,6 +109,12 @@ class VictoryScreen extends Screen {
             </button>
           </div>
         </div>
+
+
+          </div>
+        </div>
+
+
       </div>
 
       <!-- Background layers -->
@@ -162,7 +140,7 @@ class VictoryScreen extends Screen {
     }
 
     // Set up individual sections for staggered animation
-    const sections = [".victory-header", ".victory-main", ".victory-controls"];
+    const sections = [".victory-main"];
 
     sections.forEach((selector, index) => {
       const element = this.container.querySelector(selector);
@@ -172,18 +150,6 @@ class VictoryScreen extends Screen {
         element.style.transition = `all 0.8s ease-out ${index * 0.3}s`;
       }
     });
-
-    // Set up sparkle animations
-    const sparkles = this.container.querySelectorAll(".sparkle");
-    sparkles.forEach((sparkle, index) => {
-      sparkle.style.animationDelay = `${index * 0.2}s`;
-    });
-
-    // Show story completion message
-    const storyMessage = document.getElementById("story-completion-message");
-    if (storyMessage) {
-      storyMessage.style.opacity = "1";
-    }
   }
 
   formatTime(milliseconds) {
@@ -297,16 +263,18 @@ class VictoryScreen extends Screen {
   onAllSegmentsRevealed() {
     console.log("🎉 All story segments revealed!");
 
-    // Show the final quote
-    const quote = this.container.querySelector(".victory-quote");
-    if (quote) {
-      quote.style.opacity = "1";
+    // Show the stats and controls
+    const statsElement = document.getElementById("victory-stats");
+    const controlsElement = document.getElementById("victory-controls");
+
+    if (statsElement) {
+      statsElement.style.opacity = "1";
+      statsElement.style.visibility = "visible";
     }
 
-    // Hide the story completion message
-    const storyMessage = document.getElementById("story-completion-message");
-    if (storyMessage) {
-      storyMessage.style.opacity = "0";
+    if (controlsElement) {
+      controlsElement.style.opacity = "1";
+      controlsElement.style.visibility = "visible";
     }
 
     // Create celebration effect
@@ -409,24 +377,20 @@ class VictoryScreen extends Screen {
       victoryContent.style.transform = "translateY(0)";
     }
 
-    // Animate individual sections
-    const sections = [".victory-header", ".victory-main", ".victory-controls"];
-
-    sections.forEach((selector, index) => {
-      const element = this.container.querySelector(selector);
-      if (element) {
-        this.setManagedTimeout(() => {
-          element.style.opacity = "1";
-          element.style.transform = "translateY(0)";
-        }, 300 + index * 300);
-      }
-    });
+    // Animate main section
+    const mainSection = this.container.querySelector(".victory-main");
+    if (mainSection) {
+      this.setManagedTimeout(() => {
+        mainSection.style.opacity = "1";
+        mainSection.style.transform = "translateY(0)";
+      }, 300);
+    }
 
     // Enable buttons after animation
     this.setManagedTimeout(() => {
       this.fadeInComplete = true;
       this.buttonsEnabled = true;
-    }, 1500);
+    }, 1000);
   }
 
   replayGame() {
