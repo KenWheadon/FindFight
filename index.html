@@ -34,9 +34,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- Meta tags -->
     <meta
       name="description"
-      content="Find & Fight - A Hidden Object Adventure Game"
+      content="Rusty vs. The Evil Tree - A Hidden Object Adventure Game"
     />
     <meta name="author" content="Game Developer" />
     <meta name="theme-color" content="#1a1a2e" />
@@ -45,12 +46,14 @@
     <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
   </head>
   <body>
+    <!-- Game Container - All screens render into this single container -->
     <div class="game-container" id="game-container">
       <!-- Content will be injected by active screen classes -->
     </div>
 
     <!-- Scripts - Order matters! -->
     <script src="config.js"></script>
+    <script src="items-config.js"></script>
     <script src="screen.js"></script>
     <script src="loading-screen.js"></script>
     <script src="start-screen.js"></script>
@@ -61,7 +64,7 @@
     <script>
       // Console welcome message
       console.log(`
-        🎮 Find & Fight
+        🎮 Rusty vs. The Evil Tree
         🦝 Detective Game Loaded
         
         Debug Commands:
@@ -70,6 +73,13 @@
         - gameDebug.gameState - View game state
         
         Available screens: loading, start, search
+        Available locations: detectiveOffice, forestClearing, darkCatacombs
+        
+        Test commands:
+        - gameDebug.testOffice() - Test detective office
+        - gameDebug.testForest() - Test forest clearing  
+        - gameDebug.testCatacombs() - Test dark catacombs
+        - gameDebug.testRandom() - Test random items
         
         Press F11 for fullscreen
         `);

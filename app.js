@@ -171,145 +171,18 @@ class RustyGame {
   beginAdventure() {
     console.log("🦝 Beginning Rusty's adventure");
 
-    // Create sample location data for testing
-    const testLocationData = {
-      name: "Detective's Office",
-      backgroundImage: "images/detective-office.jpg",
-      timeLimit: 60,
-      startingStamina: 100,
-      maxStamina: 100,
-      staminaDrainRate: 0.5,
-      items: [
-        {
-          name: "Magnifying Glass",
-          x: 25,
-          y: 30,
-          damage: 3,
-          restore: 0,
-          type: "detection",
-          symbol: "🔍",
-          text: [
-            "A detective's best friend.",
-            "Reveals hidden truths.",
-            "Sharp focus, sharp mind.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Rusty Axe",
-          x: 70,
-          y: 45,
-          damage: 5,
-          restore: 0,
-          type: "weakness",
-          symbol: "🪓",
-          text: [
-            "Old but reliable.",
-            "Cuts through deception.",
-            "Weathered like its owner.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Torn Photo",
-          x: 15,
-          y: 60,
-          damage: 4,
-          restore: 0,
-          type: "emotional",
-          symbol: "💔",
-          text: [
-            "A memory fragment.",
-            "Someone's lost love.",
-            "Pain made tangible.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Ancient Book",
-          x: 80,
-          y: 25,
-          damage: 4,
-          restore: 0,
-          type: "mental",
-          symbol: "💭",
-          text: [
-            "Knowledge is power.",
-            "Secrets between pages.",
-            "Wisdom of ages.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Detective Badge",
-          x: 35,
-          y: 80,
-          damage: 2,
-          restore: 0,
-          type: "detection",
-          symbol: "🔍",
-          text: [
-            "Symbol of authority.",
-            "Earned through years.",
-            "Badge of honor.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Love Letter",
-          x: 60,
-          y: 15,
-          damage: 3,
-          restore: 0,
-          type: "emotional",
-          symbol: "💔",
-          text: ["Words of passion.", "Promises broken.", "Heart's whisper."],
-          hasUsed: false,
-          cursed: false,
-        },
-        {
-          name: "Cursed Doll",
-          x: 50,
-          y: 70,
-          damage: -5,
-          restore: 0,
-          type: "cursed",
-          symbol: "💀",
-          text: [
-            "Don't look into its eyes.",
-            "Malevolent presence.",
-            "Some toys aren't meant to play.",
-          ],
-          hasUsed: false,
-          cursed: true,
-        },
-        {
-          name: "Crystal Orb",
-          x: 20,
-          y: 20,
-          damage: 5,
-          restore: 0,
-          type: "mental",
-          symbol: "💭",
-          text: [
-            "Clarity of mind.",
-            "Sees through illusions.",
-            "Focus the thoughts.",
-          ],
-          hasUsed: false,
-          cursed: false,
-        },
-      ],
-    };
+    // Use the detective office location from items config
+    const locationData = ITEMS_UTILS.generateLocationData("detectiveOffice");
+
+    if (!locationData) {
+      console.error("Failed to generate location data");
+      this.showScreen("start");
+      return;
+    }
 
     // Initialize search screen with location data
     if (this.screens.search) {
-      this.screens.search.initializeSearch(testLocationData);
+      this.screens.search.initializeSearch(locationData);
     }
 
     this.showScreen("search");
@@ -325,6 +198,23 @@ class RustyGame {
     } else {
       console.error("Search screen not available!");
     }
+  }
+
+  // Handle search completion
+  onSearchComplete(foundItems) {
+    console.log("✅ Search completed with items:", foundItems);
+
+    // Update game state with found items
+    this.updateGameState({
+      foundItems: foundItems,
+      playerItems: [...this.gameState.playerItems, ...foundItems],
+    });
+
+    // For now, return to start screen
+    // In full game, this would transition to combat
+    setTimeout(() => {
+      this.showScreen("start");
+    }, 1000);
   }
 
   restartGame() {
@@ -401,35 +291,25 @@ class RustyGame {
         screens: this.screens,
         container: this.gameContainer,
         startSearch: (locationData) => this.startSearchScreen(locationData),
-        // Quick test search
-        testSearch: () => {
-          const testLocation = {
-            name: "Test Location",
-            backgroundImage: "images/test-bg.jpg",
-            timeLimit: 30,
-            startingStamina: 50,
-            maxStamina: 100,
-            staminaDrainRate: 1.0,
-            items: [
-              {
-                name: "Test Item",
-                x: 50,
-                y: 50,
-                damage: 3,
-                restore: 0,
-                type: "test",
-                symbol: "🧪",
-                text: [
-                  "This is a test item.",
-                  "For debugging purposes.",
-                  "Very useful.",
-                ],
-                hasUsed: false,
-                cursed: false,
-              },
-            ],
-          };
-          this.startSearchScreen(testLocation);
+        // Quick test searches using items config
+        testOffice: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("detectiveOffice");
+          this.startSearchScreen(locationData);
+        },
+        testForest: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("forestClearing");
+          this.startSearchScreen(locationData);
+        },
+        testCatacombs: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("darkCatacombs");
+          this.startSearchScreen(locationData);
+        },
+        testRandom: () => {
+          const locationData = ITEMS_UTILS.createTestLocation(6);
+          this.startSearchScreen(locationData);
         },
       };
     }

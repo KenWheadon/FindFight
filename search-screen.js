@@ -15,7 +15,6 @@ class SearchScreen extends Screen {
       isSearching: false,
       isPaused: false,
       searchStartTime: null,
-      tooltip: null,
     };
 
     // Timer intervals
@@ -66,8 +65,9 @@ class SearchScreen extends Screen {
               </div>
             </div>
             
-            <div class="search-items-found">
-              Items: <span id="search-items-count">0</span>/${this.searchState.items.length}
+            <div class="search-collections" id="search-collections">
+              <div class="collections-icon">🎒</div>
+              <span class="collections-count" id="collections-count">0</span>
             </div>
             
             <div class="search-stamina">
@@ -88,6 +88,24 @@ class SearchScreen extends Screen {
             <button class="search-control-btn" id="search-pause-btn">Pause</button>
             <button class="search-control-btn primary" id="search-finish-btn">Finish Search</button>
             <button class="search-control-btn danger" id="search-exit-btn">Exit</button>
+          </div>
+        </div>
+        
+        <!-- Pause Screen Overlay -->
+        <div class="pause-overlay" id="pause-overlay">
+          <div class="pause-content">
+            <img src="images/logo.png" alt="Rusty vs. The Evil Tree" class="pause-logo">
+            <div class="pause-tips">
+              <h3>How to Search</h3>
+              <ul>
+                <li>Click on suspicious objects to collect them</li>
+                <li>Watch your stamina - searching drains energy</li>
+                <li>Some items may be cursed - be careful!</li>
+                <li>Use your detective instincts to find hidden clues</li>
+                <li>Time is limited - search efficiently</li>
+              </ul>
+            </div>
+            <button class="game-button primary" id="resume-btn">Resume Search</button>
           </div>
         </div>
         
@@ -116,8 +134,11 @@ class SearchScreen extends Screen {
       itemElement.style.top = `${item.y}%`;
       itemElement.dataset.itemIndex = index;
 
-      // Add symbol or icon
-      if (item.symbol) {
+      // Use image if available, otherwise use symbol
+      if (item.image) {
+        itemElement.style.backgroundImage = `url('${item.image}')`;
+        itemElement.innerHTML = ""; // Clear any text content
+      } else if (item.symbol) {
         itemElement.innerHTML = item.symbol;
       } else {
         itemElement.innerHTML = "?";
@@ -144,23 +165,11 @@ class SearchScreen extends Screen {
       }
     });
 
-    // Item hover handlers for tooltips
-    this.container.addEventListener("mouseover", (e) => {
-      if (e.target.classList.contains("search-item")) {
-        this.showTooltip(e);
-      }
-    });
-
-    this.container.addEventListener("mouseout", (e) => {
-      if (e.target.classList.contains("search-item")) {
-        this.hideTooltip();
-      }
-    });
-
     // Control button handlers
     const pauseBtn = this.container.querySelector("#search-pause-btn");
     const finishBtn = this.container.querySelector("#search-finish-btn");
     const exitBtn = this.container.querySelector("#search-exit-btn");
+    const resumeBtn = this.container.querySelector("#resume-btn");
 
     if (pauseBtn) {
       pauseBtn.addEventListener("click", () => this.togglePause());
@@ -172,6 +181,10 @@ class SearchScreen extends Screen {
 
     if (exitBtn) {
       exitBtn.addEventListener("click", () => this.exitSearch());
+    }
+
+    if (resumeBtn) {
+      resumeBtn.addEventListener("click", () => this.togglePause());
     }
   }
 
@@ -196,9 +209,6 @@ class SearchScreen extends Screen {
       const soundName = item.cursed ? "cursed" : "item-found";
       this.audioManager.playSound(soundName);
     }
-
-    // Show item information
-    this.showItemInfo(item);
   }
 
   foundItem(itemIndex) {
@@ -209,25 +219,17 @@ class SearchScreen extends Screen {
     item.hasUsed = true;
     this.searchState.foundItems.push(item);
 
-    // Update visual state
+    // Get item element for animation
     const itemElement = this.container.querySelector(
       `[data-item-index="${itemIndex}"]`
     );
     if (itemElement) {
-      itemElement.classList.add("found");
-      if (item.cursed) {
-        itemElement.classList.add("cursed");
-      }
+      // Start wiggle animation
+      this.wiggleItem(itemElement, () => {
+        // After wiggle, fly to collection
+        this.flyToCollection(itemElement, item);
+      });
     }
-
-    // Create particle burst
-    const rect = itemElement.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const color = item.cursed
-      ? "rgba(220, 53, 69, 0.8)"
-      : "rgba(40, 167, 69, 0.8)";
-    this.createParticleBurst(centerX, centerY, 8, color);
 
     // Update UI
     this.updateUI();
@@ -240,90 +242,6 @@ class SearchScreen extends Screen {
     console.log(
       `✅ Item found: ${item.name} (${this.searchState.foundItems.length}/${this.searchState.items.length})`
     );
-  }
-
-  showItemInfo(item) {
-    let message = `Found: ${item.name}`;
-
-    if (item.hasUsed) {
-      // Show full stats for used items
-      const stats = [];
-      if (item.damage) stats.push(`Damage: ${item.damage}`);
-      if (item.restore) stats.push(`Restore: ${item.restore}`);
-      if (item.type) stats.push(`Type: ${item.type}`);
-
-      if (stats.length > 0) {
-        message += `\n${stats.join(" | ")}`;
-      }
-
-      if (item.text && item.text.length > 0) {
-        message += `\n"${item.text[0]}"`;
-      }
-    } else {
-      message += "\nStats will be revealed when used in combat.";
-    }
-
-    // Show temporary message
-    this.showTemporaryMessage(message, item.cursed ? "warning" : "success");
-  }
-
-  showTooltip(event) {
-    const itemIndex = parseInt(event.target.dataset.itemIndex);
-    const item = this.searchState.items[itemIndex];
-    const tooltip = this.container.querySelector("#item-tooltip");
-
-    if (!item || !tooltip) return;
-
-    // Build tooltip content
-    let content = `<div class="item-name">${item.name}</div>`;
-
-    if (item.hasUsed) {
-      // Show stats for used items
-      const stats = [];
-      if (item.damage)
-        stats.push(`<span class="item-stat damage">⚔️ ${item.damage}</span>`);
-      if (item.restore)
-        stats.push(`<span class="item-stat restore">💚 ${item.restore}</span>`);
-      if (item.type)
-        stats.push(`<span class="item-stat type">🏷️ ${item.type}</span>`);
-
-      if (stats.length > 0) {
-        content += `<div class="item-stats">${stats.join("")}</div>`;
-      }
-
-      if (item.text && item.text.length > 0) {
-        content += `<div class="item-description">"${item.text[0]}"</div>`;
-      }
-    } else {
-      content += `<div class="item-description">Click to discover this item's properties</div>`;
-    }
-
-    tooltip.innerHTML = content;
-
-    // Position tooltip
-    const rect = event.target.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
-
-    let left = rect.left - containerRect.left + rect.width / 2;
-    let top = rect.top - containerRect.top - 10;
-
-    // Keep tooltip on screen
-    if (left + 150 > containerRect.width) {
-      left = containerRect.width - 150;
-    }
-    if (left < 0) left = 0;
-    if (top < 0) top = rect.bottom - containerRect.top + 10;
-
-    tooltip.style.left = left + "px";
-    tooltip.style.top = top + "px";
-    tooltip.classList.add("visible");
-  }
-
-  hideTooltip() {
-    const tooltip = this.container.querySelector("#item-tooltip");
-    if (tooltip) {
-      tooltip.classList.remove("visible");
-    }
   }
 
   startSearch() {
@@ -377,15 +295,19 @@ class SearchScreen extends Screen {
   }
 
   togglePause() {
-    const pauseBtn = this.container.querySelector("#search-pause-btn");
+    const pauseOverlay = this.container.querySelector("#pause-overlay");
 
     if (this.searchState.isPaused) {
       this.searchState.isPaused = false;
-      if (pauseBtn) pauseBtn.textContent = "Pause";
+      if (pauseOverlay) {
+        pauseOverlay.classList.remove("active");
+      }
       console.log("▶️ Search resumed");
     } else {
       this.searchState.isPaused = true;
-      if (pauseBtn) pauseBtn.textContent = "Resume";
+      if (pauseOverlay) {
+        pauseOverlay.classList.add("active");
+      }
       console.log("⏸️ Search paused");
     }
   }
@@ -463,9 +385,9 @@ class SearchScreen extends Screen {
       staminaFill.style.width = percentage + "%";
     }
 
-    // Update items found counter
+    // Update collections counter
     this.updateElementSafe(
-      "search-items-count",
+      "collections-count",
       this.searchState.foundItems.length
     );
   }
@@ -509,19 +431,77 @@ class SearchScreen extends Screen {
 
   showSearchResults() {
     const foundCount = this.searchState.foundItems.length;
-    const totalCount = this.searchState.items.length;
     const cursedCount = this.searchState.foundItems.filter(
       (item) => item.cursed
     ).length;
 
     let message = `Search Complete!\n`;
-    message += `Found ${foundCount}/${totalCount} items\n`;
+    message += `Found ${foundCount} items\n`;
     if (cursedCount > 0) {
       message += `Warning: ${cursedCount} cursed items found!\n`;
     }
     message += `Remaining Stamina: ${Math.floor(this.searchState.stamina)}`;
 
     this.showTemporaryMessage(message, "success", 5000);
+  }
+
+  // Animation methods
+  wiggleItem(itemElement, callback) {
+    itemElement.classList.add("wiggle");
+
+    const timeout = setTimeout(() => {
+      itemElement.classList.remove("wiggle");
+      if (callback) callback();
+    }, 500);
+
+    this.timeouts.push(timeout);
+  }
+
+  flyToCollection(itemElement, item) {
+    const collectionsIcon = this.container.querySelector("#search-collections");
+    if (!collectionsIcon) return;
+
+    // Get positions
+    const itemRect = itemElement.getBoundingClientRect();
+    const collectionsRect = collectionsIcon.getBoundingClientRect();
+
+    // Calculate distance
+    const deltaX =
+      collectionsRect.left +
+      collectionsRect.width / 2 -
+      (itemRect.left + itemRect.width / 2);
+    const deltaY =
+      collectionsRect.top +
+      collectionsRect.height / 2 -
+      (itemRect.top + itemRect.height / 2);
+
+    // Start animation
+    itemElement.style.transition =
+      "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    itemElement.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.5)`;
+    itemElement.style.opacity = "0.7";
+
+    // After animation, hide item and show collection effect
+    const timeout = setTimeout(() => {
+      itemElement.style.display = "none";
+
+      // Add collection effect
+      collectionsIcon.classList.add("collection-bounce");
+
+      // Create particle burst at collection
+      const centerX = collectionsRect.left + collectionsRect.width / 2;
+      const centerY = collectionsRect.top + collectionsRect.height / 2;
+      const color = item.cursed
+        ? "rgba(220, 53, 69, 0.8)"
+        : "rgba(40, 167, 69, 0.8)";
+      this.createParticleBurst(centerX, centerY, 6, color);
+
+      setTimeout(() => {
+        collectionsIcon.classList.remove("collection-bounce");
+      }, 300);
+    }, 800);
+
+    this.timeouts.push(timeout);
   }
 
   // Override init to start search automatically
@@ -537,7 +517,6 @@ class SearchScreen extends Screen {
   // Override destroy to clean up search timers
   destroy() {
     this.stopSearch();
-    this.hideTooltip();
     super.destroy();
   }
 
