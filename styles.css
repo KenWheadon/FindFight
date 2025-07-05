@@ -1,0 +1,472 @@
+/* Base Styles for Rusty vs. The Evil Tree */
+
+/* CSS Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Courier New", monospace;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #e0e0e0;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Screen Management */
+.screen {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.screen.active {
+  display: block;
+}
+
+.screen-content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Background Layers */
+.stars-layer,
+.asteroids-layer,
+.particles-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stars-layer {
+  z-index: 2;
+}
+
+.asteroids-layer {
+  z-index: 3;
+}
+
+.particles-layer {
+  z-index: 4;
+}
+
+/* Star Animation */
+.star {
+  position: absolute;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Asteroid Animation */
+.asteroid {
+  position: absolute;
+  background: radial-gradient(
+    circle,
+    rgba(139, 69, 19, 0.6) 0%,
+    rgba(101, 67, 33, 0.3) 70%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* Particle Animation */
+.particle {
+  position: absolute;
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 136, 0.6) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: particleFloat 12s linear infinite;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) translateX(0px) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(90vh) translateX(10px) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(10vh) translateX(-10px) scale(1);
+  }
+  100% {
+    transform: translateY(0vh) translateX(0px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Common UI Elements */
+.game-button {
+  background: linear-gradient(145deg, #2c2c54, #40407a);
+  color: #e0e0e0;
+  border: 2px solid #666;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  font-family: "Courier New", monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 8px;
+  min-width: 120px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-button:hover {
+  background: linear-gradient(145deg, #40407a, #2c2c54);
+  border-color: #888;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.game-button.primary {
+  background: linear-gradient(145deg, #d4af37, #b8941f);
+  color: #1a1a2e;
+  border-color: #d4af37;
+}
+
+.game-button.primary:hover {
+  background: linear-gradient(145deg, #f4d03f, #d4af37);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+.game-button.secondary {
+  background: linear-gradient(145deg, #666, #888);
+  border-color: #777;
+}
+
+.game-button.secondary:hover {
+  background: linear-gradient(145deg, #888, #666);
+}
+
+/* Typography */
+.game-title {
+  font-family: "Creepster", cursive;
+  font-size: 4em;
+  color: #d4af37;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.game-subtitle {
+  font-family: "Butcherman", cursive;
+  font-size: 1.5em;
+  color: #888;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.narrative-text {
+  font-family: "Courier New", monospace;
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #e0e0e0;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.narrative-text em {
+  color: #ffd93d;
+  font-style: normal;
+  font-weight: bold;
+}
+
+/* Screen Effects */
+.screen-shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.shaking {
+  animation: globalShake 0.3s ease-in-out;
+}
+
+@keyframes globalShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+/* Ripple Effect */
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Message Styles */
+.temporary-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  text-align: center;
+  max-width: 90%;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.temporary-message.info {
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+}
+
+.temporary-message.warning {
+  background: rgba(255, 193, 7, 0.9);
+  color: #1a1a2e;
+}
+
+.temporary-message.error {
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+}
+
+.temporary-message.success {
+  background: rgba(40, 167, 69, 0.9);
+  color: white;
+}
+
+.success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(40, 167, 69, 0.95);
+  color: white;
+  padding: 30px 50px;
+  border-radius: 15px;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-align: center;
+  z-index: 1003;
+  animation: successPulse 4s ease-in-out;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 30px rgba(40, 167, 69, 0.5);
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutUp {
+  from {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes successPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 2.5em;
+  }
+
+  .game-subtitle {
+    font-size: 1.2em;
+  }
+
+  .narrative-text {
+    font-size: 1em;
+    padding: 15px;
+  }
+
+  .game-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 2em;
+  }
+
+  .game-subtitle {
+    font-size: 1em;
+  }
+
+  .narrative-text {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+
+  .screen-content {
+    padding: 10px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .star,
+  .asteroid,
+  .particle {
+    animation: none;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.game-button:focus,
+button:focus {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .game-button {
+    border-width: 3px;
+  }
+
+  .narrative-text {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Print styles */
+@media print {
+  .screen {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .stars-layer,
+  .asteroids-layer,
+  .particles-layer {
+    display: none !important;
+  }
+}

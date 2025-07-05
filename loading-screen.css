@@ -1,0 +1,338 @@
+/* Loading Screen Styles for Rusty vs. The Evil Tree */
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #008080, #20b2aa, #008080);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4000;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+  max-width: 600px;
+  padding: 40px;
+  position: relative;
+  z-index: 10;
+}
+
+.loading-logo {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  margin-bottom: 30px;
+  animation: logoFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+}
+
+.loading-text {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: "Butcherman", cursive;
+  animation: textPulse 2s ease-in-out infinite;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-bar-container {
+  width: 100%;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.loading-bar-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(45deg, #ffffff, #00ffff, #ffffff);
+  background-size: 200% 200%;
+  border-radius: 15px;
+  width: 0%;
+  transition: width 0.3s ease;
+  position: relative;
+  animation: barGlow 2s ease-in-out infinite;
+}
+
+.loading-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: barShimmer 1.5s infinite;
+}
+
+.loading-percentage {
+  font-size: 20px;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  font-family: "Butcherman", cursive;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Enhanced background effects for loading screen */
+.loading-screen .stars-layer .star {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    transparent 70%
+  );
+  animation: twinkle 2s ease-in-out infinite alternate;
+}
+
+.loading-screen .asteroids-layer .asteroid {
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.3) 0%,
+    rgba(0, 128, 128, 0.1) 70%,
+    transparent 100%
+  );
+  animation: float 12s ease-in-out infinite;
+}
+
+.loading-screen .particles-layer .particle {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.6) 0%,
+    transparent 70%
+  );
+  animation: particleFloat 8s linear infinite;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes textPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes barGlow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes barShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Loading screen specific tweaks */
+.loading-screen .stars-layer {
+  opacity: 0.7;
+}
+
+.loading-screen .asteroids-layer {
+  opacity: 0.5;
+}
+
+.loading-screen .particles-layer {
+  opacity: 0.6;
+}
+
+/* Responsive design for loading screen */
+@media (max-width: 768px) {
+  .loading-content {
+    padding: 30px;
+  }
+
+  .loading-logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+  }
+
+  .loading-text {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .loading-bar-container {
+    height: 20px;
+    margin-bottom: 15px;
+  }
+
+  .loading-percentage {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-content {
+    padding: 20px;
+  }
+
+  .loading-logo {
+    max-width: 120px;
+    margin-bottom: 15px;
+  }
+
+  .loading-text {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .loading-bar-container {
+    height: 18px;
+    margin-bottom: 12px;
+  }
+
+  .loading-percentage {
+    font-size: 16px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .loading-screen {
+    background: #000080;
+  }
+
+  .loading-bar-container {
+    border: 3px solid #ffffff;
+    background: #000000;
+  }
+
+  .loading-bar {
+    background: #ffffff;
+  }
+
+  .loading-text,
+  .loading-percentage {
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .loading-logo,
+  .loading-text,
+  .loading-bar,
+  .loading-bar::after,
+  .loading-bar-container::before {
+    animation: none !important;
+  }
+
+  .loading-screen .stars-layer .star,
+  .loading-screen .asteroids-layer .asteroid,
+  .loading-screen .particles-layer .particle {
+    animation: none !important;
+  }
+
+  .loading-bar {
+    background: linear-gradient(45deg, #ffffff, #00ffff);
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.loading-screen:focus {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* Print styles */
+@media print {
+  .loading-screen {
+    background: white !important;
+    color: black !important;
+  }
+
+  .loading-text,
+  .loading-percentage {
+    color: black !important;
+    text-shadow: none !important;
+  }
+
+  .loading-bar-container {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .loading-bar {
+    background: black !important;
+  }
+
+  .loading-logo {
+    filter: none !important;
+  }
+}
