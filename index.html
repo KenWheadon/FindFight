@@ -9,11 +9,13 @@
     <link rel="preload" href="styles.css" as="style" />
     <link rel="preload" href="loading-screen.css" as="style" />
     <link rel="preload" href="start-screen.css" as="style" />
+    <link rel="preload" href="search-screen.css" as="style" />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="loading-screen.css" />
     <link rel="stylesheet" href="start-screen.css" />
+    <link rel="stylesheet" href="search-screen.css" />
 
     <!-- Game Container Styles -->
     <style>
@@ -32,10 +34,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Meta tags -->
     <meta
       name="description"
-      content="Rusty vs. The Evil Tree - A Hidden Object Adventure Game"
+      content="Find & Fight - A Hidden Object Adventure Game"
     />
     <meta name="author" content="Game Developer" />
     <meta name="theme-color" content="#1a1a2e" />
@@ -44,7 +45,6 @@
     <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
   </head>
   <body>
-    <!-- Game Container - All screens render into this single container -->
     <div class="game-container" id="game-container">
       <!-- Content will be injected by active screen classes -->
     </div>
@@ -54,19 +54,22 @@
     <script src="screen.js"></script>
     <script src="loading-screen.js"></script>
     <script src="start-screen.js"></script>
+    <script src="search-screen.js"></script>
     <script src="app.js"></script>
 
     <!-- Development helpers -->
     <script>
       // Console welcome message
       console.log(`
-        🎮 Rusty vs. The Evil Tree
+        🎮 Find & Fight
         🦝 Detective Game Loaded
         
         Debug Commands:
         - gameDebug.debug() - Show debug info
         - gameDebug.showScreen('screenName') - Switch screens
         - gameDebug.gameState - View game state
+        
+        Available screens: loading, start, search
         
         Press F11 for fullscreen
         `);
