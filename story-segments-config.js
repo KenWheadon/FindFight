@@ -103,7 +103,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/void-bg.jpg",
+          image: "images/void-bg.png",
           position: "center",
           size: "cover",
         },
@@ -247,7 +247,7 @@ const STORY_SEGMENTS = {
     frames: [
       {
         background: {
-          image: "images/catacomb-bg.jpg",
+          image: "images/catacomb-bg.png",
           position: "center",
           size: "cover",
         },
@@ -285,7 +285,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/catacomb-bg.jpg",
+          image: "images/catacomb-bg.png",
           position: "center",
           size: "cover",
         },
@@ -322,7 +322,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/catacomb-bg.jpg",
+          image: "images/catacomb-bg.png",
           position: "center",
           size: "cover",
         },
@@ -351,7 +351,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/catacomb-bg.jpg",
+          image: "images/catacomb-bg.png",
           position: "center",
           size: "cover",
         },
@@ -389,7 +389,7 @@ const STORY_SEGMENTS = {
     frames: [
       {
         background: {
-          image: "images/catacomb-bg.jpg",
+          image: "images/catacomb-bg.png",
           position: "center",
           size: "cover",
         },
@@ -427,7 +427,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/void-bg.jpg",
+          image: "images/void-bg.png",
           position: "center",
           size: "cover",
         },
@@ -512,7 +512,7 @@ const STORY_SEGMENTS = {
     frames: [
       {
         background: {
-          image: "images/void-bg.jpg",
+          image: "images/void-bg.png",
           position: "center",
           size: "cover",
         },
@@ -542,7 +542,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/void-bg.jpg",
+          image: "images/void-bg.png",
           position: "center",
           size: "cover",
         },
@@ -580,7 +580,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/void-bg.jpg",
+          image: "images/void-bg.png",
           position: "center",
           size: "cover",
         },

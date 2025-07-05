@@ -28,7 +28,7 @@ class StartScreen extends Screen {
            
                     <div class="story-intro" id="storyIntro">
           <div class="story-text">
-            <p class="story-quote">"Name's Rusty. Been chasing cases longer than I've had this trench coat. But this cardboard box? It's tied to vanishing people... and now I'm trapped inside it."</p>
+            <p class="story-quote">Name's Rusty. Been chasing cases longer than I've had this trench coat. But this cardboard box? It's tied to vanishing people... and now I'm trapped inside it.</p>
             <p class="story-objective">Find hidden objects, fight the Evil Tree, and escape the cursed box.</p>
           </div>
         </div>
