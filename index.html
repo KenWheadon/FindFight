@@ -10,12 +10,18 @@
     <link rel="preload" href="loading-screen.css" as="style" />
     <link rel="preload" href="start-screen.css" as="style" />
     <link rel="preload" href="search-screen.css" as="style" />
+    <link rel="preload" href="game-over-screen.css" as="style" />
+    <link rel="preload" href="victory-screen.css" as="style" />
+    <link rel="preload" href="story-segment-screen.css" as="style" />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="loading-screen.css" />
     <link rel="stylesheet" href="start-screen.css" />
     <link rel="stylesheet" href="search-screen.css" />
+    <link rel="stylesheet" href="game-over-screen.css" />
+    <link rel="stylesheet" href="victory-screen.css" />
+    <link rel="stylesheet" href="story-segment-screen.css" />
 
     <!-- Game Container Styles -->
     <style>
@@ -54,10 +60,14 @@
     <!-- Scripts - Order matters! -->
     <script src="config.js"></script>
     <script src="items-config.js"></script>
+    <script src="story-segments-config.js"></script>
     <script src="screen.js"></script>
     <script src="loading-screen.js"></script>
     <script src="start-screen.js"></script>
     <script src="search-screen.js"></script>
+    <script src="game-over-screen.js"></script>
+    <script src="victory-screen.js"></script>
+    <script src="story-segment-screen.js"></script>
     <script src="app.js"></script>
 
     <!-- Development helpers -->
@@ -72,7 +82,7 @@
         - gameDebug.showScreen('screenName') - Switch screens
         - gameDebug.gameState - View game state
         
-        Available screens: loading, start, search
+        Available screens: loading, start, search, gameOver, victory, storySegment
         Available locations: detectiveOffice, forestClearing, darkCatacombs
         
         Test commands:
@@ -80,6 +90,21 @@
         - gameDebug.testForest() - Test forest clearing  
         - gameDebug.testCatacombs() - Test dark catacombs
         - gameDebug.testRandom() - Test random items
+        - gameDebug.testGameOverSearch() - Test search exhaustion game over
+        - gameDebug.testGameOverTree() - Test tree attack game over
+        - gameDebug.testVictory() - Test victory screen
+        
+        Story Segment Tests:
+        - gameDebug.testStoryIntro() - Test intro story
+        - gameDebug.testStoryInvestigation() - Test investigation story
+        - gameDebug.testStoryConfrontation() - Test confrontation story
+        - gameDebug.testStoryVictory() - Test victory setup story
+        - gameDebug.testStoryDefeat() - Test defeat setup story
+        - gameDebug.testStoryRandom() - Test custom story segment
+        
+        Game Flow Tests:
+        - gameDebug.completeFirstLevel() - Test first to second level transition
+        - gameDebug.completeSecondLevel() - Test second to third level transition
         
         Press F11 for fullscreen
         `);

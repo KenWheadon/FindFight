@@ -71,6 +71,24 @@ class RustyGame {
       this.screens.search = new SearchScreen(this.gameContainer, "search");
     }
 
+    if (window.GameOverScreen) {
+      this.screens.gameOver = new GameOverScreen(
+        this.gameContainer,
+        "gameOver"
+      );
+    }
+
+    if (window.VictoryScreen) {
+      this.screens.victory = new VictoryScreen(this.gameContainer, "victory");
+    }
+
+    if (window.StorySegmentScreen) {
+      this.screens.storySegment = new StorySegmentScreen(
+        this.gameContainer,
+        "storySegment"
+      );
+    }
+
     console.log("📱 Screen instances created:", Object.keys(this.screens));
   }
 
@@ -133,6 +151,119 @@ class RustyGame {
     this.gameState.currentScreen = screenName;
   }
 
+  // Story segment methods
+  showStorySegment(segmentName, nextScreenData = null) {
+    console.log(`📖 Showing story segment: ${segmentName}`);
+
+    const segmentData = STORY_UTILS.prepareSegment(segmentName, nextScreenData);
+    if (!segmentData) {
+      console.error(`Failed to prepare story segment: ${segmentName}`);
+      // Fallback to next screen directly
+      if (nextScreenData) {
+        this.startSearchScreen(nextScreenData);
+      } else {
+        this.showScreen("start");
+      }
+      return;
+    }
+
+    // Initialize the story segment screen
+    if (this.screens.storySegment) {
+      this.screens.storySegment.initializeStorySegment(segmentData);
+    }
+
+    // Show the story segment screen
+    this.showScreen("storySegment");
+  }
+
+  // Victory methods
+  triggerVictory(stats = {}) {
+    console.log("🏆 Victory triggered with stats:", stats);
+
+    // Show victory setup story first
+    this.showStorySegment("victorySetup");
+
+    // Store victory stats for when we actually show the victory screen
+    this.gameState.victoryStats = stats;
+  }
+
+  // Show victory screen directly (called from story segment)
+  showVictoryScreen(stats = null) {
+    const victoryStats = stats || this.gameState.victoryStats || {};
+
+    // Initialize the victory screen with the game stats
+    if (this.screens.victory) {
+      this.screens.victory.initializeVictory(victoryStats);
+    }
+
+    // Show the victory screen
+    this.showScreen("victory");
+  }
+
+  // Game over methods
+  triggerGameOver(type, message = "") {
+    console.log(`💀 Game Over triggered - Type: ${type}, Message: ${message}`);
+
+    // Show defeat setup story first
+    this.showStorySegment("defeatSetup");
+
+    // Store game over info for when we actually show the game over screen
+    this.gameState.gameOverType = type;
+    this.gameState.gameOverMessage = message;
+  }
+
+  // Show game over screen directly (called from story segment)
+  showGameOverScreen(type = null, message = "") {
+    const gameOverType = type || this.gameState.gameOverType || "search";
+    const gameOverMessage = message || this.gameState.gameOverMessage || "";
+
+    // Initialize the game over screen with the specific type
+    if (this.screens.gameOver) {
+      this.screens.gameOver.initializeGameOver(gameOverType, gameOverMessage);
+    }
+
+    // Show the game over screen
+    this.showScreen("gameOver");
+  }
+
+  // Specific game over scenarios
+  gameOverSearchExhaustion() {
+    this.triggerGameOver("search", "Stamina depleted during investigation");
+  }
+
+  gameOverTreeAttack() {
+    this.triggerGameOver("tree", "Defeated by the Evil Tree");
+  }
+
+  // Game progression methods
+  completeFirstLevel() {
+    console.log("🎯 First level completed, transitioning to second area");
+
+    const locationData = ITEMS_UTILS.generateLocationData("forestClearing");
+    if (!locationData) {
+      console.error("Failed to generate forest location data");
+      this.showScreen("start");
+      return;
+    }
+
+    // Show investigation story segment, then go to forest
+    this.showStorySegment("investigation", locationData);
+  }
+
+  completeSecondLevel() {
+    console.log("🎯 Second level completed, transitioning to final area");
+
+    const locationData = ITEMS_UTILS.generateLocationData("darkCatacombs");
+    if (!locationData) {
+      console.error("Failed to generate catacombs location data");
+      this.showScreen("start");
+      return;
+    }
+
+    // Show confrontation story segment, then go to catacombs
+    this.showStorySegment("confrontation", locationData);
+  }
+
   // Game state management
   updateGameState(updates) {
     Object.assign(this.gameState, updates);
@@ -180,12 +311,8 @@ class RustyGame {
       return;
     }
 
-    // Initialize search screen with location data
-    if (this.screens.search) {
-      this.screens.search.initializeSearch(locationData);
-    }
-
-    this.showScreen("search");
+    // Show intro story segment first, then go to search
+    this.showStorySegment("intro", locationData);
   }
 
   // Method to start search with custom location data
@@ -310,6 +437,48 @@ class RustyGame {
         testRandom: () => {
           const locationData = ITEMS_UTILS.createTestLocation(6);
           this.startSearchScreen(locationData);
+        },
+        // Test game over scenarios
+        testGameOverSearch: () => {
+          this.gameOverSearchExhaustion();
+        },
+        testGameOverTree: () => {
+          this.gameOverTreeAttack();
+        },
+        // Test victory scenario
+        testVictory: () => {
+          this.triggerVictory({
+            itemsFound: 21,
+            timeElapsed: 1200,
+            phasesCompleted: 3,
+          });
+        },
+        // Test story segments
+        testStoryIntro: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("detectiveOffice");
+          this.showStorySegment("intro", locationData);
+        },
+        testStoryInvestigation: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("forestClearing");
+          this.showStorySegment("investigation", locationData);
+        },
+        testStoryConfrontation: () => {
+          const locationData =
+            ITEMS_UTILS.generateLocationData("darkCatacombs");
+          this.showStorySegment("confrontation", locationData);
+        },
+        testStoryVictory: () => {
+          this.showStorySegment("victorySetup");
+        },
+        testStoryDefeat: () => {
+          this.showStorySegment("defeatSetup");
+        },
+        testStoryRandom: () => {
+          const testSegment = STORY_UTILS.createTestSegment(4);
+          this.screens.storySegment.initializeStorySegment(testSegment);
+          this.showScreen("storySegment");
         },
       };
     }

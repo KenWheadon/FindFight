@@ -1,0 +1,566 @@
+/* Victory Screen Styles */
+
+.victory-screen {
+  background: linear-gradient(135deg, #1a4f2e, #2d5a3d, #1a4f2e);
+  position: relative;
+  overflow: hidden;
+}
+
+.victory-content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.victory-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.victory-crown {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.crown-icon {
+  font-size: 5em;
+  animation: crownFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes crownFloat {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+.victory-sparkles {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 100px;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 1.5em;
+  animation: sparkleFloat 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+.sparkle:nth-child(1) {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle:nth-child(2) {
+  top: 30%;
+  right: 15%;
+  animation-delay: 0.5s;
+}
+
+.sparkle:nth-child(3) {
+  bottom: 20%;
+  left: 10%;
+  animation-delay: 1s;
+}
+
+.sparkle:nth-child(4) {
+  bottom: 10%;
+  right: 20%;
+  animation-delay: 1.5s;
+}
+
+@keyframes sparkleFloat {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(0px) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1);
+  }
+}
+
+.victory-title {
+  font-family: "Creepster", cursive;
+  font-size: 3.5em;
+  color: #ffd700;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
+  margin: 0;
+  letter-spacing: 3px;
+  animation: victoryGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes victoryGlow {
+  0% {
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.9);
+  }
+}
+
+.victory-subtitle {
+  font-family: "Butcherman", cursive;
+  font-size: 1.3em;
+  color: #90ee90;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 10px 0 0 0;
+  letter-spacing: 1px;
+}
+
+/* Story Section */
+.victory-story {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+  max-width: 800px;
+}
+
+.rusty-celebration {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.rusty-image {
+  font-size: 5em;
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.3) 0%,
+    transparent 70%
+  );
+  border: 3px solid rgba(255, 215, 0, 0.5);
+  border-radius: 50%;
+  padding: 25px;
+  animation: victoryDance 2s ease-in-out infinite;
+  filter: brightness(1.2);
+}
+
+@keyframes victoryDance {
+  0%,
+  100% {
+    transform: rotate(-5deg) scale(1);
+  }
+  25% {
+    transform: rotate(5deg) scale(1.05);
+  }
+  50% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.05);
+  }
+}
+
+.detective-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 1.5em;
+  background: rgba(255, 215, 0, 0.9);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  padding: 5px;
+  animation: badgeShine 1.5s ease-in-out infinite;
+}
+
+@keyframes badgeShine {
+  0%,
+  100% {
+    transform: scale(1);
+    background: rgba(255, 215, 0, 0.9);
+  }
+  50% {
+    transform: scale(1.1);
+    background: rgba(255, 215, 0, 1);
+  }
+}
+
+.victory-narrative {
+  flex: 1;
+}
+
+.victory-main-text {
+  font-family: "Courier New", monospace;
+  font-size: 1.2em;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin: 0 0 20px 0;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid #ffd700;
+}
+
+.victory-quote {
+  font-family: "Courier New", monospace;
+  font-size: 1.1em;
+  color: #ffd700;
+  margin: 0 0 20px 0;
+  text-align: center;
+  padding: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  font-style: italic;
+}
+
+.victory-ending {
+  font-family: "Courier New", monospace;
+  font-size: 1em;
+  color: #90ee90;
+  margin: 0;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  background: rgba(144, 238, 144, 0.1);
+}
+
+/* Stats Section */
+.victory-stats {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 215, 0, 0.1),
+    rgba(255, 215, 0, 0.05)
+  );
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  min-width: 120px;
+  animation: statPulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+@keyframes statPulse {
+  0%,
+  100% {
+    background: linear-gradient(
+      145deg,
+      rgba(255, 215, 0, 0.1),
+      rgba(255, 215, 0, 0.05)
+    );
+  }
+  50% {
+    background: linear-gradient(
+      145deg,
+      rgba(255, 215, 0, 0.15),
+      rgba(255, 215, 0, 0.1)
+    );
+  }
+}
+
+.stat-icon {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  animation: statIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes statIconBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.stat-number {
+  font-size: 2em;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Controls Section */
+.victory-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.victory-message {
+  text-align: center;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  max-width: 500px;
+}
+
+.victory-message p {
+  margin: 5px 0;
+  color: #e0e0e0;
+  font-size: 1.1em;
+}
+
+.victory-message p:first-child {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.victory-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.victory-buttons .game-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+  padding: 18px 30px;
+  font-size: 1.2em;
+  transition: all 0.3s ease;
+}
+
+.victory-buttons .game-button.primary {
+  background: linear-gradient(145deg, #ffd700, #ffcc00);
+  border-color: #ffd700;
+  color: #1a4f2e;
+  font-weight: bold;
+}
+
+.victory-buttons .game-button.primary:hover {
+  background: linear-gradient(145deg, #ffed4e, #ffd700);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+  transform: translateY(-3px);
+}
+
+.victory-buttons .game-button.secondary {
+  background: linear-gradient(145deg, #90ee90, #7cfc00);
+  border-color: #90ee90;
+  color: #1a4f2e;
+  font-weight: bold;
+}
+
+.victory-buttons .game-button.secondary:hover {
+  background: linear-gradient(145deg, #98fb98, #90ee90);
+  box-shadow: 0 5px 15px rgba(144, 238, 144, 0.4);
+  transform: translateY(-3px);
+}
+
+.button-icon {
+  font-size: 1.3em;
+}
+
+/* Pulse Animation for Primary Button */
+@keyframes victoryPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+.victory-buttons .game-button.primary.pulse {
+  animation: victoryPulse 2s infinite;
+}
+
+/* Victory Particles */
+.victory-particle {
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.8) 0%,
+    transparent 70%
+  ) !important;
+  animation: victoryParticleFloat 8s linear infinite !important;
+}
+
+@keyframes victoryParticleFloat {
+  0% {
+    transform: translateY(100vh) translateX(0px) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(90vh) translateX(10px) scale(1) rotate(45deg);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(10vh) translateX(-10px) scale(1) rotate(315deg);
+  }
+  100% {
+    transform: translateY(0vh) translateX(0px) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .victory-title {
+    font-size: 2.5em;
+  }
+
+  .victory-subtitle {
+    font-size: 1.1em;
+  }
+
+  .victory-story {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .rusty-image {
+    font-size: 4em;
+    padding: 20px;
+  }
+
+  .victory-main-text {
+    font-size: 1.1em;
+    padding: 15px;
+  }
+
+  .victory-stats {
+    gap: 20px;
+  }
+
+  .stat-card {
+    min-width: 100px;
+    padding: 15px;
+  }
+
+  .victory-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .victory-buttons .game-button {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .victory-title {
+    font-size: 2em;
+  }
+
+  .crown-icon {
+    font-size: 4em;
+  }
+
+  .rusty-image {
+    font-size: 3em;
+    padding: 15px;
+  }
+
+  .victory-main-text {
+    font-size: 1em;
+    padding: 10px;
+  }
+
+  .victory-content {
+    padding: 15px;
+  }
+
+  .victory-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-card {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .victory-buttons .game-button {
+    padding: 15px 25px;
+    min-width: 180px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .crown-icon,
+  .sparkle,
+  .rusty-image,
+  .detective-badge,
+  .stat-card,
+  .stat-icon,
+  .victory-buttons .game-button.primary.pulse,
+  .victory-particle {
+    animation: none !important;
+  }
+
+  .victory-title {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .victory-title {
+    color: #ffff00;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+  }
+
+  .victory-main-text {
+    background: rgba(0, 0, 0, 0.8);
+    border-left-color: #ffff00;
+    border-left-width: 6px;
+  }
+
+  .victory-buttons .game-button {
+    border-width: 3px;
+  }
+
+  .stat-card {
+    border-width: 3px;
+  }
+}
