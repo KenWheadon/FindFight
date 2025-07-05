@@ -1,6 +1,6 @@
 /* Loading Screen Styles for Rusty vs. The Evil Tree */
 
-.loading-screen {
+.game-container.loading-screen {
   position: fixed;
   top: 0;
   left: 0;
@@ -109,7 +109,7 @@
 }
 
 /* Enhanced background effects for loading screen */
-.loading-screen .stars-layer .star {
+.game-container.loading-screen .stars-layer .star {
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0.9) 0%,
@@ -118,7 +118,7 @@
   animation: twinkle 2s ease-in-out infinite alternate;
 }
 
-.loading-screen .asteroids-layer .asteroid {
+.game-container.loading-screen .asteroids-layer .asteroid {
   background: radial-gradient(
     circle,
     rgba(0, 255, 255, 0.3) 0%,
@@ -128,7 +128,7 @@
   animation: float 12s ease-in-out infinite;
 }
 
-.loading-screen .particles-layer .particle {
+.game-container.loading-screen .particles-layer .particle {
   background: radial-gradient(
     circle,
     rgba(255, 255, 255, 0.6) 0%,
@@ -198,15 +198,15 @@
 }
 
 /* Loading screen specific tweaks */
-.loading-screen .stars-layer {
+.game-container.loading-screen .stars-layer {
   opacity: 0.7;
 }
 
-.loading-screen .asteroids-layer {
+.game-container.loading-screen .asteroids-layer {
   opacity: 0.5;
 }
 
-.loading-screen .particles-layer {
+.game-container.loading-screen .particles-layer {
   opacity: 0.6;
 }
 
@@ -263,7 +263,7 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .loading-screen {
+  .game-container.loading-screen {
     background: #000080;
   }
 
@@ -293,9 +293,9 @@
     animation: none !important;
   }
 
-  .loading-screen .stars-layer .star,
-  .loading-screen .asteroids-layer .asteroid,
-  .loading-screen .particles-layer .particle {
+  .game-container.loading-screen .stars-layer .star,
+  .game-container.loading-screen .asteroids-layer .asteroid,
+  .game-container.loading-screen .particles-layer .particle {
     animation: none !important;
   }
 
@@ -305,14 +305,14 @@
 }
 
 /* Focus styles for keyboard navigation */
-.loading-screen:focus {
+.game-container.loading-screen:focus {
   outline: 3px solid #ffffff;
   outline-offset: 3px;
 }
 
 /* Print styles */
 @media print {
-  .loading-screen {
+  .game-container.loading-screen {
     background: white !important;
     color: black !important;
   }

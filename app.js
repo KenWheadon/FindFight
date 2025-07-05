@@ -22,6 +22,7 @@ class RustyGame {
     // Screen instances
     this.screens = {};
     this.currentScreenInstance = null;
+    this.gameContainer = null;
 
     // Initialize game
     this.init();
@@ -39,6 +40,13 @@ class RustyGame {
   }
 
   setupGame() {
+    // Get the game container
+    this.gameContainer = document.getElementById("game-container");
+    if (!this.gameContainer) {
+      console.error("Game container not found!");
+      return;
+    }
+
     // Initialize screens
     this.initializeScreens();
 
@@ -50,17 +58,13 @@ class RustyGame {
   }
 
   initializeScreens() {
-    // Get screen containers
-    const loadingContainer = document.getElementById("loading-screen");
-    const startContainer = document.getElementById("start-screen");
-
-    // Create screen instances
-    if (loadingContainer && window.LoadingScreen) {
-      this.screens.loading = new LoadingScreen(loadingContainer, "loading");
+    // Create screen instances with the shared container
+    if (window.LoadingScreen) {
+      this.screens.loading = new LoadingScreen(this.gameContainer, "loading");
     }
 
-    if (startContainer && window.StartScreen) {
-      this.screens.start = new StartScreen(startContainer, "start");
+    if (window.StartScreen) {
+      this.screens.start = new StartScreen(this.gameContainer, "start");
     }
 
     console.log("📱 Screen instances created:", Object.keys(this.screens));
@@ -94,21 +98,31 @@ class RustyGame {
       this.currentScreenInstance.destroy();
     }
 
-    // Hide all screens
-    document.querySelectorAll(".screen").forEach((screen) => {
-      screen.classList.remove("active");
-    });
+    // Clear the container
+    this.gameContainer.innerHTML = "";
 
-    // Show target screen
-    const targetScreen = document.getElementById(`${screenName}-screen`);
-    if (targetScreen) {
-      targetScreen.classList.add("active");
-    }
+    // Remove all screen classes from container
+    this.gameContainer.className = "game-container";
+
+    // Add the new screen class
+    this.gameContainer.classList.add(`${screenName}-screen`);
 
     // Initialize new screen
     if (this.screens[screenName]) {
       this.currentScreenInstance = this.screens[screenName];
       this.currentScreenInstance.init();
+    } else {
+      console.error(`Screen "${screenName}" not found!`);
+      // Fallback content
+      this.gameContainer.innerHTML = `
+        <div class="screen-content">
+          <h2>${
+            screenName.charAt(0).toUpperCase() + screenName.slice(1)
+          } Screen</h2>
+          <p>This screen is not yet implemented.</p>
+          <button class="game-button" onclick="game.showScreen('start')">Back to Start</button>
+        </div>
+      `;
     }
 
     // Update game state
@@ -213,6 +227,7 @@ class RustyGame {
     console.log("Game State:", this.gameState);
     console.log("Current Screen:", this.currentScreenInstance?.screenName);
     console.log("Available Screens:", Object.keys(this.screens));
+    console.log("Game Container:", this.gameContainer);
 
     if (this.currentScreenInstance && this.currentScreenInstance.debug) {
       this.currentScreenInstance.debug();
@@ -227,6 +242,7 @@ class RustyGame {
         showScreen: (screenName) => this.showScreen(screenName),
         gameState: this.gameState,
         screens: this.screens,
+        container: this.gameContainer,
       };
     }
   }

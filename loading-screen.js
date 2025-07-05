@@ -17,8 +17,29 @@ class LoadingScreen extends Screen {
   }
 
   render() {
-    // The HTML structure is already in index.html
-    // We just need to initialize the content
+    // Inject HTML content into the container
+    this.container.innerHTML = `
+      <div class="loading-content">
+        <img
+          src="images/company-logo.png"
+          alt="Company Logo"
+          class="loading-logo"
+          id="loadingLogo"
+        />
+        <h1 class="loading-text" id="loadingText">Loading...</h1>
+        <div class="loading-bar-container">
+          <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div class="loading-percentage" id="loadingPercentage">0%</div>
+      </div>
+
+      <!-- Background layers -->
+      <div class="stars-layer"></div>
+      <div class="asteroids-layer"></div>
+      <div class="particles-layer"></div>
+    `;
+
+    // Initialize the content
     this.updateLoadingMessage();
   }
 
@@ -120,6 +141,7 @@ class LoadingScreen extends Screen {
     // Define assets to load
     const imagesToLoad = [
       "images/logo.png",
+      "images/company-logo.png",
       "images/raccoon.png",
       "images/box.png",
       "images/tree.png",

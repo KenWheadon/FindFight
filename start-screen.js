@@ -4,17 +4,62 @@ class StartScreen extends Screen {
     super(container, screenName);
 
     // Start screen specific properties
-    this.magicalBox = null;
-    this.isBoxOpen = false;
-    this.introShown = false;
     this.buttonsEnabled = true;
+    this.introShown = false;
 
     console.log("🦝 StartScreen instance created");
   }
 
   render() {
-    // The HTML structure is already in index.html
-    // We just need to initialize interactive elements
+    // Inject HTML content into the container
+    this.container.innerHTML = `
+      <div class="start-content">
+        <img 
+          src="images/logo.png" 
+          alt="Game Logo" 
+          class="game-logo"
+          id="gameLogo"
+        />
+        
+        <h1 class="game-title">Rusty vs. The Evil Tree</h1>
+        <p class="game-subtitle">A Hidden Object Adventure</p>
+
+        <div class="story-intro" id="storyIntro">
+          <div class="narrative-text">
+            <p><strong>The Story:</strong></p>
+            <p>"Name's Rusty. Rusty the Raccoon. Been chasing cases longer than I've had this trench coat. But this one? This one smelled... ancient. A wooden box, sealed tight and tied to vanishing people. They hired me to investigate. I opened it. Now I'm <em>in</em> it. And there's something down here with roots deeper than reason."</p>
+          </div>
+        </div>
+
+        <div class="instructions" id="instructions">
+          <div class="instruction-text">
+            <p><strong>How to Play:</strong></p>
+            <ul>
+              <li>🔍 <strong>Search:</strong> Find hidden objects in surreal scenes</li>
+              <li>🃏 <strong>Combat:</strong> Use found items as cards to fight the Evil Tree</li>
+              <li>💚 <strong>Survive:</strong> Manage your stamina and exploit the tree's weaknesses</li>
+              <li>🏆 <strong>Win:</strong> Reduce the Evil Tree's HP to 0 across 3 phases</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="start-buttons" id="startButtons">
+          <button class="game-button primary" id="startGameBtn">
+            🎮 Start Game
+          </button>
+          <button class="game-button secondary" id="settingsBtn">
+            ⚙️ Settings
+          </button>
+        </div>
+      </div>
+
+      <!-- Background layers -->
+      <div class="stars-layer"></div>
+      <div class="asteroids-layer"></div>
+      <div class="particles-layer"></div>
+    `;
+
+    // Initialize elements
     this.initializeElements();
   }
 
@@ -23,25 +68,8 @@ class StartScreen extends Screen {
     super.setupEventListeners();
 
     // Get DOM elements
-    this.magicalBox = document.getElementById("magicalBox");
     const startGameBtn = document.getElementById("startGameBtn");
     const settingsBtn = document.getElementById("settingsBtn");
-
-    // Magical box click handler
-    if (this.magicalBox) {
-      this.magicalBox.addEventListener("click", (e) => {
-        this.handleBoxClick(e);
-      });
-
-      // Add hover effects
-      this.magicalBox.addEventListener("mouseenter", () => {
-        this.onBoxHover();
-      });
-
-      this.magicalBox.addEventListener("mouseleave", () => {
-        this.onBoxLeave();
-      });
-    }
 
     // Button event listeners
     if (startGameBtn) {
@@ -69,17 +97,29 @@ class StartScreen extends Screen {
       storyIntro.style.transition = "all 0.8s ease-out";
     }
 
+    // Set up the instructions
+    const instructions = document.getElementById("instructions");
+    if (instructions) {
+      // Initially hide the instructions
+      instructions.style.opacity = "0";
+      instructions.style.transform = "translateY(20px)";
+      instructions.style.transition = "all 0.8s ease-out";
+    }
+
     // Set up buttons
-    const buttons = document.querySelector(".start-buttons");
+    const buttons = document.getElementById("startButtons");
     if (buttons) {
       buttons.style.opacity = "0";
       buttons.style.transform = "translateY(20px)";
       buttons.style.transition = "all 0.8s ease-out";
     }
 
-    // Add magical box glow effect
-    if (this.magicalBox) {
-      this.magicalBox.style.transition = "all 0.3s ease";
+    // Set up logo
+    const logo = document.getElementById("gameLogo");
+    if (logo) {
+      logo.style.opacity = "0";
+      logo.style.transform = "scale(0.8)";
+      logo.style.transition = "all 0.8s ease-out";
     }
   }
 
@@ -97,117 +137,48 @@ class StartScreen extends Screen {
     // Show introduction after a brief delay
     this.setManagedTimeout(() => {
       this.showIntroduction();
-    }, 1000);
+    }, 500);
   }
 
   showIntroduction() {
     console.log("📖 Showing introduction");
 
+    const logo = document.getElementById("gameLogo");
     const storyIntro = document.getElementById("storyIntro");
-    const buttons = document.querySelector(".start-buttons");
+    const instructions = document.getElementById("instructions");
+    const buttons = document.getElementById("startButtons");
 
-    if (storyIntro) {
-      storyIntro.style.opacity = "1";
-      storyIntro.style.transform = "translateY(0)";
+    // Show logo first
+    if (logo) {
+      logo.style.opacity = "1";
+      logo.style.transform = "scale(1)";
     }
 
+    // Show story intro
+    if (storyIntro) {
+      this.setManagedTimeout(() => {
+        storyIntro.style.opacity = "1";
+        storyIntro.style.transform = "translateY(0)";
+      }, 300);
+    }
+
+    // Show instructions
+    if (instructions) {
+      this.setManagedTimeout(() => {
+        instructions.style.opacity = "1";
+        instructions.style.transform = "translateY(0)";
+      }, 600);
+    }
+
+    // Show buttons
     if (buttons) {
       this.setManagedTimeout(() => {
         buttons.style.opacity = "1";
         buttons.style.transform = "translateY(0)";
-      }, 500);
+      }, 900);
     }
 
     this.introShown = true;
-  }
-
-  handleBoxClick(event) {
-    if (!this.introShown || this.isBoxOpen) return;
-
-    console.log("📦 Magical box clicked");
-
-    // Play click sound
-    if (this.audioManager) {
-      this.audioManager.playSound("click", false, 0.8);
-    }
-
-    // Create ripple effect
-    this.createRippleEffect(this.magicalBox, event);
-
-    // Trigger box opening animation
-    this.openMagicalBox();
-  }
-
-  openMagicalBox() {
-    if (this.isBoxOpen) return;
-
-    this.isBoxOpen = true;
-
-    // Add opening animation class
-    this.magicalBox.classList.add("opening");
-
-    // Create particle burst at box location
-    const rect = this.magicalBox.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    this.createParticleBurst(centerX, centerY, 15, "rgba(212, 175, 55, 0.8)");
-
-    // Screen shake effect
-    this.triggerScreenShake(400);
-
-    // Play mystical sound
-    if (this.audioManager) {
-      this.audioManager.playSound("mystical_open", false, 0.6);
-    }
-
-    // Update box content
-    this.setManagedTimeout(() => {
-      const boxContent = this.magicalBox.querySelector(".box-content");
-      if (boxContent) {
-        boxContent.innerHTML = `
-          <div class="box-icon">✨</div>
-          <div class="box-text">The Box Opens...</div>
-        `;
-      }
-    }, 300);
-
-    // Enable start button and highlight it
-    this.setManagedTimeout(() => {
-      this.highlightStartButton();
-    }, 800);
-  }
-
-  highlightStartButton() {
-    const startBtn = document.getElementById("startGameBtn");
-    if (startBtn) {
-      startBtn.classList.add("highlighted");
-      startBtn.style.animation = "pulse 2s ease-in-out infinite";
-
-      // Show success message
-      this.showSuccessMessage(
-        "The detective's journey begins...\nClick 'Begin Adventure' to start!"
-      );
-    }
-  }
-
-  onBoxHover() {
-    if (!this.introShown || this.isBoxOpen) return;
-
-    this.magicalBox.style.transform = "scale(1.05)";
-    this.magicalBox.style.boxShadow = "0 0 30px rgba(212, 175, 55, 0.6)";
-
-    // Play hover sound
-    if (this.audioManager) {
-      this.audioManager.playSound("hover", false, 0.3);
-    }
-  }
-
-  onBoxLeave() {
-    if (!this.introShown || this.isBoxOpen) return;
-
-    this.magicalBox.style.transform = "scale(1)";
-    this.magicalBox.style.boxShadow = "0 0 20px rgba(139, 69, 19, 0.5)";
   }
 
   startGame() {
@@ -273,10 +244,7 @@ class StartScreen extends Screen {
 
     // Start screen specific keyboard shortcuts
     if (e.code === "Enter" || e.code === "Space") {
-      if (this.introShown && !this.isBoxOpen) {
-        // Simulate box click
-        this.openMagicalBox();
-      } else if (this.isBoxOpen && this.buttonsEnabled) {
+      if (this.introShown && this.buttonsEnabled) {
         // Start game
         this.startGame();
       }
@@ -304,25 +272,128 @@ class StartScreen extends Screen {
     this.injectCSS(
       "start-screen-animations",
       `
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+      .game-logo {
+        max-width: 300px;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
       }
       
-      .magical-box.opening {
-        animation: boxOpen 0.8s ease-out;
+      .instruction-text {
+        background: rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(212, 175, 55, 0.3);
+        border-radius: 15px;
+        padding: 20px;
+        font-size: 1em;
+        line-height: 1.6;
+        position: relative;
+        backdrop-filter: blur(5px);
+        max-width: 600px;
+        margin: 0 auto;
       }
       
-      @keyframes boxOpen {
-        0% { transform: scale(1) rotate(0deg); }
-        50% { transform: scale(1.2) rotate(5deg); }
-        100% { transform: scale(1) rotate(0deg); }
+      .instruction-text::before {
+        content: "🎮";
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        background: linear-gradient(45deg, #1a1a2e, #2a2a3e);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 1.2em;
       }
       
-      .game-button.highlighted {
-        border-color: #d4af37 !important;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.5) !important;
+      .instruction-text ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0 0;
+      }
+      
+      .instruction-text li {
+        margin: 10px 0;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .instruction-text li:last-child {
+        border-bottom: none;
+      }
+      
+      .instructions {
+        max-width: 700px;
+        margin: 20px 0;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease-out;
+      }
+      
+      .start-buttons .game-button {
+        min-width: 180px;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .start-buttons .game-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+      
+      .start-buttons .game-button:hover::before {
+        left: 100%;
+      }
+      
+      @media (max-width: 768px) {
+        .game-logo {
+          max-width: 250px;
+        }
+        
+        .instruction-text {
+          padding: 15px;
+          font-size: 0.9em;
+        }
+        
+        .start-buttons {
+          flex-direction: column;
+          align-items: center;
+          gap: 15px;
+        }
+        
+        .start-buttons .game-button {
+          min-width: 160px;
+          padding: 12px 25px;
+          font-size: 1.1em;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .game-logo {
+          max-width: 200px;
+        }
+        
+        .instruction-text {
+          padding: 12px;
+          font-size: 0.85em;
+        }
+        
+        .start-buttons .game-button {
+          min-width: 140px;
+          padding: 10px 20px;
+          font-size: 1em;
+        }
       }
     `
     );
@@ -332,7 +403,6 @@ class StartScreen extends Screen {
   debug() {
     super.debug();
     console.log("Start Screen Specific Debug Info:", {
-      isBoxOpen: this.isBoxOpen,
       introShown: this.introShown,
       buttonsEnabled: this.buttonsEnabled,
     });
@@ -346,7 +416,6 @@ class StartScreen extends Screen {
     }
 
     // Reset state
-    this.isBoxOpen = false;
     this.introShown = false;
     this.buttonsEnabled = true;
 
