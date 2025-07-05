@@ -14,15 +14,15 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
-            x: 20,
+            image: "images/rusty.png",
+            x: 30,
             y: 60,
             scale: 3,
             animation: "float",
-            animateFrom: { x: 10, y: 60, scale: 2, opacity: 0 },
+            animateFrom: { x: 25, y: 60, scale: 2, opacity: 0 },
           },
           {
-            symbol: "📦",
+            image: "images/box.png",
             x: 70,
             y: 40,
             scale: 2.5,
@@ -44,21 +44,21 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 20,
             y: 60,
             scale: 3,
             animation: "float",
           },
           {
-            symbol: "📦",
+            image: "images/box.png",
             x: 70,
             y: 40,
             scale: 2.5,
             animation: "pulse",
           },
           {
-            symbol: "👻",
+            image: "images/ghost.png",
             x: 80,
             y: 30,
             scale: 1.5,
@@ -81,14 +81,14 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 60,
             scale: 3,
             animation: "float",
           },
           {
-            symbol: "📦",
+            image: "images/box.png",
             x: 50,
             y: 40,
             scale: 3,
@@ -109,19 +109,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 70,
             scale: 2,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 30,
             scale: 4,
             animation: "glow",
-            color: "#ff4444",
+            tint: "#ff4444",
             animateFrom: { x: 50, y: 10, scale: 1, opacity: 0 },
           },
         ],
@@ -148,19 +148,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30,
             y: 70,
             scale: 2.5,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 60,
             y: 40,
             scale: 3,
             animation: "pulse",
-            color: "#ff4444",
+            tint: "#ff4444",
             opacity: 0.8,
           },
         ],
@@ -178,22 +178,22 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30,
             y: 70,
             scale: 2.5,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 60,
             y: 40,
             scale: 3,
             animation: "glow",
-            color: "#ff4444",
+            tint: "#ff4444",
           },
           {
-            symbol: "🔍",
+            image: "images/magnifying-glass.png",
             x: 20,
             y: 30,
             scale: 2,
@@ -215,19 +215,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 60,
             scale: 3,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 30,
             scale: 3.5,
             animation: "glow",
-            color: "#ff4444",
+            tint: "#ff4444",
           },
         ],
         text: {
@@ -253,22 +253,22 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 25,
             y: 65,
             scale: 2.5,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 65,
             y: 35,
             scale: 4,
             animation: "glow",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
           {
-            symbol: "💀",
+            image: "images/skull.png",
             x: 80,
             y: 20,
             scale: 1.5,
@@ -291,22 +291,22 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 25,
             y: 65,
             scale: 2.5,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 65,
             y: 35,
             scale: 4,
             animation: "pulse",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
           {
-            symbol: "⚔️",
+            image: "images/sword.png",
             x: 45,
             y: 50,
             scale: 2,
@@ -328,19 +328,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30,
             y: 60,
             scale: 3,
             animation: "pulse",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 60,
             y: 30,
             scale: 5,
             animation: "glow",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
         ],
         text: {
@@ -357,19 +357,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 60,
             scale: 3,
             animation: "glow",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 30,
             scale: 5,
             animation: "pulse",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
         ],
         text: {
@@ -395,23 +395,23 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30,
             y: 60,
             scale: 3,
             animation: "float",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 60,
             y: 40,
             scale: 4,
             animation: "pulse",
-            color: "#ff4444",
+            tint: "#ff4444",
             opacity: 0.5,
           },
           {
-            symbol: "💥",
+            image: "images/explosion.png",
             x: 60,
             y: 40,
             scale: 2,
@@ -433,23 +433,23 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 60,
             scale: 3,
             animation: "glow",
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 30,
             scale: 2,
             animation: "pulse",
-            color: "#666",
+            tint: "#666",
             opacity: 0.3,
           },
           {
-            symbol: "✨",
+            image: "images/sparkles.png",
             x: 40,
             y: 20,
             scale: 1.5,
@@ -457,7 +457,7 @@ const STORY_SEGMENTS = {
             animateFrom: { x: 50, y: 30, scale: 0.5, opacity: 0 },
           },
           {
-            symbol: "✨",
+            image: "images/sparkles.png",
             x: 60,
             y: 25,
             scale: 1.5,
@@ -479,19 +479,19 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 60,
             scale: 3,
             animation: "glow",
           },
           {
-            symbol: "🏆",
+            image: "images/trophy.png",
             x: 50,
             y: 30,
             scale: 2.5,
             animation: "pulse",
-            color: "#ffd700",
+            tint: "#ffd700",
             animateFrom: { x: 50, y: 10, scale: 1, opacity: 0 },
           },
         ],
@@ -518,7 +518,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30,
             y: 70,
             scale: 2.5,
@@ -526,12 +526,12 @@ const STORY_SEGMENTS = {
             opacity: 0.7,
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 60,
             y: 30,
             scale: 5,
             animation: "glow",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
         ],
         text: {
@@ -548,7 +548,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 70,
             scale: 2,
@@ -556,15 +556,15 @@ const STORY_SEGMENTS = {
             opacity: 0.5,
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 30,
             scale: 6,
             animation: "glow",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
           {
-            symbol: "💀",
+            image: "images/skull.png",
             x: 70,
             y: 20,
             scale: 2,
@@ -586,7 +586,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 50,
             y: 80,
             scale: 1.5,
@@ -594,12 +594,12 @@ const STORY_SEGMENTS = {
             opacity: 0.3,
           },
           {
-            symbol: "🌲",
+            image: "images/evil-tree.png",
             x: 50,
             y: 40,
             scale: 7,
             animation: "glow",
-            color: "#ff0000",
+            tint: "#ff0000",
           },
         ],
         text: {
@@ -691,14 +691,14 @@ const STORY_UTILS = {
         },
         items: [
           {
-            symbol: "🦝",
+            image: "images/rusty.png",
             x: 30 + i * 10,
             y: 60,
             scale: 2,
             animation: "float",
           },
           {
-            symbol: "🔍",
+            image: "images/magnifying-glass.png",
             x: 70 - i * 10,
             y: 40,
             scale: 1.5,
@@ -715,6 +715,28 @@ const STORY_UTILS = {
       })),
     };
   },
+
+  // Get all image paths used in segments
+  getAllImagePaths() {
+    const imagePaths = new Set();
+
+    Object.values(STORY_SEGMENTS).forEach((segment) => {
+      segment.frames.forEach((frame) => {
+        if (frame.background && frame.background.image) {
+          imagePaths.add(frame.background.image);
+        }
+        if (frame.items) {
+          frame.items.forEach((item) => {
+            if (item.image) {
+              imagePaths.add(item.image);
+            }
+          });
+        }
+      });
+    });
+
+    return Array.from(imagePaths);
+  },
 };
 
 // Make available globally
@@ -729,6 +751,12 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.log("✅ Story segments configuration validated successfully");
   }
+
+  // Log all image paths for reference
+  console.log(
+    "📸 Image paths used in story segments:",
+    STORY_UTILS.getAllImagePaths()
+  );
 });
 
 console.log("📖 Story segments configuration loaded");

@@ -12,6 +12,8 @@ class StorySegmentScreen extends Screen {
     this.nextScreenData = null;
     this.segmentComplete = false;
     this.clickToAdvance = true;
+    this.particleSystem = null;
+    this.ambientSounds = [];
 
     console.log("📖 StorySegmentScreen instance created");
   }
@@ -31,50 +33,116 @@ class StorySegmentScreen extends Screen {
   }
 
   render() {
-    // Create the basic structure
+    // Create the enhanced structure
     this.container.innerHTML = `
       <div class="story-segment-content">
+        <!-- Enhanced Background Layer -->
         <div class="story-background" id="storyBackground">
-          <!-- Background will be set via CSS -->
+          <div class="background-overlay"></div>
+          <div class="background-particles" id="backgroundParticles"></div>
         </div>
         
+        <!-- Enhanced Items Layer -->
         <div class="story-items-layer" id="storyItems">
           <!-- Items will be positioned here -->
         </div>
         
+        <!-- Atmospheric Effects -->
+        <div class="story-atmosphere" id="storyAtmosphere">
+          <div class="fog-layer"></div>
+          <div class="light-rays"></div>
+        </div>
+        
+        <!-- Enhanced Text Layer -->
         <div class="story-text-layer" id="storyText">
           <div class="story-text-box" id="storyTextBox">
+            <div class="text-box-glow"></div>
             <div class="story-text-content" id="storyTextContent">
               <!-- Text content will be inserted here -->
+            </div>
+            <div class="text-progress-bar" id="textProgressBar">
+              <div class="progress-fill"></div>
             </div>
           </div>
         </div>
         
+        <!-- Enhanced Controls -->
         <div class="story-controls" id="storyControls">
-          <button class="game-button primary" id="continueBtn" style="display: none;">
+          <button class="game-button primary enhanced-button" id="continueBtn" style="display: none;">
             <span class="button-text">Continue</span>
+            <div class="button-glow"></div>
           </button>
         </div>
         
+        <!-- Enhanced Click Indicator -->
         <div class="story-click-indicator" id="clickIndicator">
-          <div class="click-prompt">Click to continue...</div>
+          <div class="click-prompt">
+            <div class="click-icon">👆</div>
+            <span>Click to continue...</span>
+          </div>
+        </div>
+        
+        <!-- Progress Indicator -->
+        <div class="story-progress" id="storyProgress">
+          <div class="progress-dots" id="progressDots"></div>
+        </div>
+        
+        <!-- Screen Effects -->
+        <div class="screen-effects" id="screenEffects">
+          <div class="vignette-overlay"></div>
+          <div class="screen-flash" id="screenFlash"></div>
         </div>
       </div>
 
-      <!-- Background layers for particles -->
-      <div class="stars-layer"></div>
-      <div class="particles-layer"></div>
+      <!-- Enhanced Background layers -->
+      <div class="stars-layer enhanced-stars"></div>
+      <div class="particles-layer enhanced-particles"></div>
     `;
+
+    // Initialize progress dots
+    this.initializeProgressDots();
+
+    // Start particle system
+    this.initializeParticleSystem();
 
     // Start with the first frame
     this.showFrame(0);
+  }
+
+  initializeProgressDots() {
+    const progressDots = document.getElementById("progressDots");
+    if (!progressDots) return;
+
+    progressDots.innerHTML = "";
+
+    for (let i = 0; i < this.frames.length; i++) {
+      const dot = document.createElement("div");
+      dot.className = `progress-dot ${i === 0 ? "active" : ""}`;
+      dot.style.animationDelay = `${i * 0.1}s`;
+      progressDots.appendChild(dot);
+    }
+  }
+
+  initializeParticleSystem() {
+    const particlesContainer = document.getElementById("backgroundParticles");
+    if (!particlesContainer) return;
+
+    // Create floating particles
+    for (let i = 0; i < 15; i++) {
+      const particle = document.createElement("div");
+      particle.className = "floating-particle";
+      particle.style.left = Math.random() * 100 + "%";
+      particle.style.animationDelay = Math.random() * 10 + "s";
+      particle.style.animationDuration = 8 + Math.random() * 4 + "s";
+      particlesContainer.appendChild(particle);
+    }
   }
 
   setupEventListeners() {
     // Call parent setup
     super.setupEventListeners();
 
-    // Click to advance
+    // Enhanced click to advance with visual feedback
     this.container.addEventListener("click", (e) => {
       // Don't advance if clicking on the continue button
       if (e.target.id === "continueBtn" || e.target.closest("#continueBtn")) {
@@ -82,24 +150,28 @@ class StorySegmentScreen extends Screen {
       }
 
       if (this.clickToAdvance && !this.isAdvancing) {
+        this.createClickEffect(e.clientX, e.clientY);
         this.advanceFrame();
       }
     });
 
-    // Continue button
+    // Enhanced continue button
     const continueBtn = document.getElementById("continueBtn");
     if (continueBtn) {
       continueBtn.addEventListener("click", (e) => {
         this.createRippleEffect(continueBtn, e);
+        this.createScreenFlash();
         this.exitStorySegment();
       });
     }
 
-    // Keyboard support
+    // Enhanced keyboard support
     document.addEventListener("keydown", (e) => {
       if (this.isActive) {
         if (e.code === "Space" || e.code === "Enter") {
+          e.preventDefault();
           if (this.segmentComplete) {
+            this.createScreenFlash();
             this.exitStorySegment();
           } else if (this.clickToAdvance && !this.isAdvancing) {
             this.advanceFrame();
@@ -109,21 +181,57 @@ class StorySegmentScreen extends Screen {
     });
   }
 
+  createClickEffect(x, y) {
+    const clickEffect = document.createElement("div");
+    clickEffect.className = "click-effect";
+    clickEffect.style.left = x + "px";
+    clickEffect.style.top = y + "px";
+    document.body.appendChild(clickEffect);
+
+    this.setManagedTimeout(() => {
+      clickEffect.remove();
+    }, 600);
+  }
+
+  createScreenFlash() {
+    const screenFlash = document.getElementById("screenFlash");
+    if (screenFlash) {
+      screenFlash.classList.add("flash-active");
+      this.setManagedTimeout(() => {
+        screenFlash.classList.remove("flash-active");
+      }, 300);
+    }
+  }
+
   init() {
     console.log("🚀 Initializing Story Segment Screen");
 
     // Call parent init
     super.init();
 
-    // Play story music if available
+    // Play enhanced story music
     if (this.audioManager) {
       this.audioManager.playSound("story_music", true, 0.3);
+      this.audioManager.playSound("ambient_atmosphere", true, 0.15);
     }
 
     // Hide click indicator initially
     const clickIndicator = document.getElementById("clickIndicator");
     if (clickIndicator) {
       clickIndicator.style.opacity = "0";
+    }
+
+    // Add entrance animation
+    const content = this.container.querySelector(".story-segment-content");
+    if (content) {
+      content.style.opacity = "0";
+      content.style.transform = "translateY(20px)";
+      content.style.transition = "all 1s ease-out";
+
+      this.setManagedTimeout(() => {
+        content.style.opacity = "1";
+        content.style.transform = "translateY(0)";
+      }, 200);
     }
   }
 
@@ -139,14 +247,20 @@ class StorySegmentScreen extends Screen {
 
     console.log(`📖 Showing frame ${frameIndex + 1}/${this.frames.length}`);
 
-    // Update background
+    // Update progress dots
+    this.updateProgressDots(frameIndex);
+
+    // Update background with enhanced effects
     this.updateBackground(frame.background);
 
-    // Update items
+    // Update items with enhanced animations
     this.updateItems(frame.items || []);
 
-    // Update text
+    // Update text with enhanced presentation
     this.updateText(frame.text || "");
+
+    // Update atmospheric effects
+    this.updateAtmosphere(frame);
 
     // Show/hide click indicator
     this.updateClickIndicator(frameIndex < this.frames.length - 1);
@@ -154,7 +268,15 @@ class StorySegmentScreen extends Screen {
     // Allow advancing after animations complete
     this.setManagedTimeout(() => {
       this.isAdvancing = false;
-    }, 1000);
+    }, 1200);
+  }
+
+  updateProgressDots(currentFrame) {
+    const dots = document.querySelectorAll(".progress-dot");
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === currentFrame);
+      dot.classList.toggle("completed", index < currentFrame);
+    });
   }
 
   updateBackground(backgroundData) {
@@ -173,12 +295,14 @@ class StorySegmentScreen extends Screen {
       background.style.backgroundSize = backgroundData.size;
     }
 
-    // Add fade transition
+    // Enhanced fade transition with scaling
     background.style.opacity = "0";
-    background.style.transition = "opacity 0.8s ease-in-out";
+    background.style.transform = "scale(1.05)";
+    background.style.transition = "all 1s ease-in-out";
 
     this.setManagedTimeout(() => {
       background.style.opacity = "1";
+      background.style.transform = "scale(1)";
     }, 100);
   }
 
@@ -186,76 +310,131 @@ class StorySegmentScreen extends Screen {
     const itemsLayer = document.getElementById("storyItems");
     if (!itemsLayer) return;
 
-    // Clear existing items
-    itemsLayer.innerHTML = "";
-
-    // Add new items
-    itemsData.forEach((item, index) => {
-      const itemElement = document.createElement("div");
-      itemElement.className = "story-item";
-      itemElement.id = `story-item-${index}`;
-
-      // Set content
-      if (item.image) {
-        itemElement.innerHTML = `<img src="${item.image}" alt="${
-          item.name || "Story Item"
-        }" />`;
-      } else if (item.symbol) {
-        itemElement.innerHTML = item.symbol;
-      } else if (item.text) {
-        itemElement.innerHTML = item.text;
-      }
-
-      // Set initial position and style
-      itemElement.style.cssText = `
-        position: absolute;
-        left: ${item.x || 50}%;
-        top: ${item.y || 50}%;
-        transform: translate(-50%, -50%) scale(${item.scale || 1});
-        opacity: ${item.opacity || 1};
-        transition: all 0.8s ease-in-out;
-        z-index: ${item.zIndex || 10};
-        font-size: ${item.fontSize || "2em"};
-        color: ${item.color || "#e0e0e0"};
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-      `;
-
-      // Add animation class if specified
-      if (item.animation) {
-        itemElement.classList.add(`story-animation-${item.animation}`);
-      }
-
-      itemsLayer.appendChild(itemElement);
-
-      // Animate to final position if specified
-      if (item.animateFrom) {
-        itemElement.style.left = `${item.animateFrom.x}%`;
-        itemElement.style.top = `${item.animateFrom.y}%`;
-        itemElement.style.transform = `translate(-50%, -50%) scale(${
-          item.animateFrom.scale || 0.5
-        })`;
-        itemElement.style.opacity = item.animateFrom.opacity || 0;
-
-        this.setManagedTimeout(() => {
-          itemElement.style.left = `${item.x || 50}%`;
-          itemElement.style.top = `${item.y || 50}%`;
-          itemElement.style.transform = `translate(-50%, -50%) scale(${
-            item.scale || 1
-          })`;
-          itemElement.style.opacity = item.opacity || 1;
-        }, 200);
-      }
+    // Clear existing items with fade out
+    const existingItems = itemsLayer.querySelectorAll(".story-item");
+    existingItems.forEach((item) => {
+      item.style.opacity = "0";
+      item.style.transform = "scale(0.8)";
     });
+
+    this.setManagedTimeout(() => {
+      itemsLayer.innerHTML = "";
+
+      // Add new items with enhanced effects
+      itemsData.forEach((item, index) => {
+        const itemElement = document.createElement("div");
+        itemElement.className = "story-item enhanced-item";
+        itemElement.id = `story-item-${index}`;
+
+        // Handle image content
+        if (item.image) {
+          const img = document.createElement("img");
+          img.src = item.image;
+          img.alt = item.name || "Story Item";
+          img.onload = () => {
+            // Apply tint if specified
+            if (item.tint) {
+              img.style.filter = `hue-rotate(${this.getTintHue(
+                item.tint
+              )}) saturate(150%)`;
+            }
+          };
+          itemElement.appendChild(img);
+        } else if (item.symbol) {
+          // Fallback for symbols
+          itemElement.innerHTML = item.symbol;
+        }
+
+        // Set initial position and enhanced styling
+        itemElement.style.cssText = `
+          position: absolute;
+          left: ${item.x || 50}%;
+          top: ${item.y || 50}%;
+          transform: translate(-50%, -50%) scale(${item.scale || 1});
+          opacity: ${item.opacity || 1};
+          transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          z-index: ${item.zIndex || 10};
+          font-size: ${item.fontSize || "2em"};
+          filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+        `;
+
+        // Add enhanced animation classes
+        if (item.animation) {
+          itemElement.classList.add(`story-animation-${item.animation}`);
+          itemElement.classList.add("enhanced-animation");
+        }
+
+        itemsLayer.appendChild(itemElement);
+
+        // Enhanced entrance animation
+        if (item.animateFrom) {
+          itemElement.style.left = `${item.animateFrom.x}%`;
+          itemElement.style.top = `${item.animateFrom.y}%`;
+          itemElement.style.transform = `translate(-50%, -50%) scale(${
+            item.animateFrom.scale || 0.3
+          }) rotate(${Math.random() * 360}deg)`;
+          itemElement.style.opacity = item.animateFrom.opacity || 0;
+
+          this.setManagedTimeout(() => {
+            itemElement.style.left = `${item.x || 50}%`;
+            itemElement.style.top = `${item.y || 50}%`;
+            itemElement.style.transform = `translate(-50%, -50%) scale(${
+              item.scale || 1
+            }) rotate(0deg)`;
+            itemElement.style.opacity = item.opacity || 1;
+          }, 300 + index * 100);
+        }
+
+        // Add hover effects for interactivity
+        itemElement.addEventListener("mouseenter", () => {
+          if (!this.isAdvancing) {
+            itemElement.style.transform = `translate(-50%, -50%) scale(${
+              (item.scale || 1) * 1.1
+            })`;
+            itemElement.style.filter =
+              "drop-shadow(0 0 20px rgba(255, 255, 255, 0.6))";
+          }
+        });
+
+        itemElement.addEventListener("mouseleave", () => {
+          if (!this.isAdvancing) {
+            itemElement.style.transform = `translate(-50%, -50%) scale(${
+              item.scale || 1
+            })`;
+            itemElement.style.filter =
+              "drop-shadow(0 0 10px rgba(0, 0, 0, 0.8))";
+          }
+        });
+      });
+    }, 200);
+  }
+
+  getTintHue(color) {
+    // Convert color to hue rotation
+    const colorMap = {
+      "#ff4444": "0deg",
+      "#ff0000": "0deg",
+      "#44ff44": "120deg",
+      "#4444ff": "240deg",
+      "#ffff44": "60deg",
+      "#ff44ff": "300deg",
+      "#44ffff": "180deg",
+      "#666": "0deg",
+      "#ffd700": "50deg",
+    };
+    return colorMap[color] || "0deg";
   }
 
   updateText(textData) {
     const textContent = document.getElementById("storyTextContent");
     const textBox = document.getElementById("storyTextBox");
+    const progressBar = document.getElementById("textProgressBar");
 
     if (!textContent || !textBox) return;
 
     if (!textData) {
       textBox.style.opacity = "0";
+      textBox.style.transform = "translateY(50px)";
       return;
     }
 
@@ -277,46 +456,109 @@ class StorySegmentScreen extends Screen {
 
     if (speaker) {
       const speakerElement = document.createElement("div");
-      speakerElement.className = "story-speaker";
+      speakerElement.className = "story-speaker enhanced-speaker";
       speakerElement.textContent = speaker;
+
+      // Add speaker-specific styling
+      if (speaker === "The Evil Tree" || speaker === "???") {
+        speakerElement.classList.add("evil-speaker");
+      }
+
       textContent.appendChild(speakerElement);
     }
 
     const textElement = document.createElement("div");
-    textElement.className = `story-text story-text-${style}`;
-    textElement.innerHTML = text.replace(/\n/g, "<br>");
+    textElement.className = `story-text story-text-${style} enhanced-text`;
     textContent.appendChild(textElement);
 
-    // Show text box with animation
+    // Enhanced text box entrance
     textBox.style.opacity = "0";
-    textBox.style.transform = "translateY(20px)";
-    textBox.style.transition = "all 0.6s ease-out";
+    textBox.style.transform = "translateY(50px) scale(0.95)";
+    textBox.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
     this.setManagedTimeout(() => {
       textBox.style.opacity = "1";
-      textBox.style.transform = "translateY(0)";
-    }, 300);
+      textBox.style.transform = "translateY(0) scale(1)";
+    }, 400);
 
-    // Type writer effect for text
+    // Enhanced typewriter effect
     if (text.length > 0) {
-      this.typeWriterEffect(textElement, text);
+      this.enhancedTypeWriterEffect(textElement, text, progressBar);
     }
   }
 
-  typeWriterEffect(element, text) {
+  enhancedTypeWriterEffect(element, text, progressBar) {
     element.innerHTML = "";
     let index = 0;
+    const words = text.split(" ");
+    let currentWord = 0;
 
     const typeInterval = setInterval(() => {
       if (index < text.length) {
         element.innerHTML += text.charAt(index);
+
+        // Update progress bar
+        if (progressBar) {
+          const progress = (index / text.length) * 100;
+          const fill = progressBar.querySelector(".progress-fill");
+          if (fill) {
+            fill.style.width = progress + "%";
+          }
+        }
+
+        // Add word-by-word reveal effect
+        if (text.charAt(index) === " ") {
+          const wordSpan = document.createElement("span");
+          wordSpan.className = "word-reveal";
+          wordSpan.style.animationDelay = currentWord * 0.05 + "s";
+          currentWord++;
+        }
+
         index++;
+
+        // Play typing sound occasionally
+        if (index % 3 === 0 && this.audioManager) {
+          this.audioManager.playSound("typewriter_click", false, 0.1);
+        }
       } else {
         clearInterval(typeInterval);
+        // Complete progress bar
+        if (progressBar) {
+          const fill = progressBar.querySelector(".progress-fill");
+          if (fill) {
+            fill.style.width = "100%";
+          }
+        }
       }
-    }, 30);
+    }, 40);
 
     this.intervals.push(typeInterval);
+  }
+
+  updateAtmosphere(frame) {
+    const atmosphere = document.getElementById("storyAtmosphere");
+    if (!atmosphere) return;
+
+    // Update atmospheric effects based on frame content
+    const fog = atmosphere.querySelector(".fog-layer");
+    const lightRays = atmosphere.querySelector(".light-rays");
+
+    if (frame.background && frame.background.image) {
+      // Adjust atmosphere based on background
+      if (frame.background.image.includes("void")) {
+        fog.style.opacity = "0.8";
+        lightRays.style.opacity = "0.2";
+      } else if (frame.background.image.includes("forest")) {
+        fog.style.opacity = "0.4";
+        lightRays.style.opacity = "0.6";
+      } else if (frame.background.image.includes("catacomb")) {
+        fog.style.opacity = "0.6";
+        lightRays.style.opacity = "0.3";
+      } else {
+        fog.style.opacity = "0.3";
+        lightRays.style.opacity = "0.5";
+      }
+    }
   }
 
   updateClickIndicator(show) {
@@ -325,9 +567,11 @@ class StorySegmentScreen extends Screen {
 
     if (show) {
       clickIndicator.style.opacity = "1";
+      clickIndicator.style.transform = "translateY(0) scale(1)";
       clickIndicator.style.pointerEvents = "auto";
     } else {
       clickIndicator.style.opacity = "0";
+      clickIndicator.style.transform = "translateY(10px) scale(0.9)";
       clickIndicator.style.pointerEvents = "none";
     }
   }
@@ -335,9 +579,10 @@ class StorySegmentScreen extends Screen {
   advanceFrame() {
     if (this.isAdvancing) return;
 
-    // Play advance sound
+    // Play enhanced advance sound
     if (this.audioManager) {
       this.audioManager.playSound("page_turn", false, 0.5);
+      this.audioManager.playSound("story_advance", false, 0.3);
     }
 
     this.showFrame(this.currentFrame + 1);
@@ -352,23 +597,55 @@ class StorySegmentScreen extends Screen {
     // Hide click indicator
     this.updateClickIndicator(false);
 
-    // Show continue button
+    // Show enhanced continue button
     const continueBtn = document.getElementById("continueBtn");
     if (continueBtn) {
       continueBtn.style.display = "block";
       continueBtn.style.opacity = "0";
-      continueBtn.style.transform = "translateY(20px)";
-      continueBtn.style.transition = "all 0.6s ease-out";
+      continueBtn.style.transform = "translateY(30px) scale(0.9)";
+      continueBtn.style.transition =
+        "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
       this.setManagedTimeout(() => {
         continueBtn.style.opacity = "1";
-        continueBtn.style.transform = "translateY(0)";
-      }, 500);
+        continueBtn.style.transform = "translateY(0) scale(1)";
+      }, 600);
     }
+
+    // Complete all progress dots
+    const dots = document.querySelectorAll(".progress-dot");
+    dots.forEach((dot) => {
+      dot.classList.add("completed");
+    });
 
     // Play completion sound
     if (this.audioManager) {
       this.audioManager.playSound("story_complete", false, 0.6);
+      this.audioManager.playSound("victory_chime", false, 0.4);
+    }
+
+    // Add completion particle burst
+    this.createCompletionEffect();
+  }
+
+  createCompletionEffect() {
+    const itemsLayer = document.getElementById("storyItems");
+    if (!itemsLayer) return;
+
+    // Create particle burst
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement("div");
+      particle.className = "completion-particle";
+      particle.style.left = "50%";
+      particle.style.top = "50%";
+      particle.style.transform = `translate(-50%, -50%) rotate(${
+        Math.random() * 360
+      }deg)`;
+      itemsLayer.appendChild(particle);
+
+      this.setManagedTimeout(() => {
+        particle.remove();
+      }, 2000);
     }
   }
 
@@ -378,14 +655,15 @@ class StorySegmentScreen extends Screen {
     // Play exit sound
     if (this.audioManager) {
       this.audioManager.playSound("story_exit", false, 0.7);
+      this.audioManager.stopSound("ambient_atmosphere");
     }
 
-    // Fade out
+    // Enhanced fade out
     const content = this.container.querySelector(".story-segment-content");
     if (content) {
       content.style.opacity = "0";
-      content.style.transform = "translateY(-20px)";
-      content.style.transition = "all 0.8s ease-in-out";
+      content.style.transform = "translateY(-30px) scale(0.95)";
+      content.style.transition = "all 1s ease-in-out";
     }
 
     // Transition to next screen
@@ -402,7 +680,7 @@ class StorySegmentScreen extends Screen {
           window.game.showScreen(this.nextScreen);
         }
       }
-    }, 800);
+    }, 1000);
   }
 
   handleKeydown(e) {
@@ -411,6 +689,7 @@ class StorySegmentScreen extends Screen {
 
     // Story segment specific keyboard shortcuts
     if (e.code === "ArrowRight" || e.code === "ArrowDown") {
+      e.preventDefault();
       if (this.segmentComplete) {
         this.exitStorySegment();
       } else if (this.clickToAdvance && !this.isAdvancing) {
@@ -418,8 +697,16 @@ class StorySegmentScreen extends Screen {
       }
     }
 
+    if (e.code === "ArrowLeft" || e.code === "ArrowUp") {
+      e.preventDefault();
+      if (this.currentFrame > 0 && !this.isAdvancing) {
+        this.showFrame(this.currentFrame - 1);
+      }
+    }
+
     // Skip to end
     if (e.code === "KeyS" && e.ctrlKey) {
+      e.preventDefault();
       this.showFrame(this.frames.length);
     }
   }
@@ -451,9 +738,15 @@ class StorySegmentScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
-    // Stop story music
+    // Stop all sounds
     if (this.audioManager) {
       this.audioManager.stopSound("story_music");
+      this.audioManager.stopSound("ambient_atmosphere");
+    }
+
+    // Clean up particle system
+    if (this.particleSystem) {
+      this.particleSystem = null;
     }
 
     // Reset state
@@ -465,6 +758,7 @@ class StorySegmentScreen extends Screen {
     this.nextScreenData = null;
     this.segmentComplete = false;
     this.clickToAdvance = true;
+    this.ambientSounds = [];
 
     // Call parent destroy
     super.destroy();
@@ -476,4 +770,4 @@ class StorySegmentScreen extends Screen {
 // Make StorySegmentScreen available globally
 window.StorySegmentScreen = StorySegmentScreen;
 
-console.log("📖 Story Segment Screen class loaded");
+console.log("📖 Enhanced Story Segment Screen class loaded");
