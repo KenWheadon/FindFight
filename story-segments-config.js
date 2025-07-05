@@ -8,7 +8,7 @@ const STORY_SEGMENTS = {
     frames: [
       {
         background: {
-          image: "images/detective-office-bg.jpg",
+          image: "images/office-bg.png",
           position: "center",
           size: "cover",
         },
@@ -38,7 +38,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/detective-office-bg.jpg",
+          image: "images/office-bg.png",
           position: "center",
           size: "cover",
         },
@@ -75,7 +75,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/detective-office-bg.jpg",
+          image: "images/office-bg.png",
           position: "center",
           size: "cover",
         },
@@ -473,7 +473,7 @@ const STORY_SEGMENTS = {
       },
       {
         background: {
-          image: "images/detective-office-bg.jpg",
+          image: "images/office-bg.png",
           position: "center",
           size: "cover",
         },

@@ -337,29 +337,46 @@ class RustyGame {
     }
   }
 
-  // Handle search completion
-  onSearchComplete(foundItems) {
-    console.log("✅ Search completed with items:", foundItems);
+  // Handle search completion - now includes stamina tracking
+  onSearchComplete(foundItems, finalStamina) {
+    console.log(
+      "✅ Search completed with items:",
+      foundItems,
+      "Final stamina:",
+      finalStamina
+    );
 
-    // Update game state with found items
+    // Update game state with found items and stamina
     this.updateGameState({
       foundItems: foundItems,
       playerItems: [...this.gameState.playerItems, ...foundItems],
+      playerStamina: finalStamina, // Store the stamina from search
     });
 
-    // Transition to fight screen
-    this.startFightScreen(foundItems);
+    // Transition to fight screen with the stamina value
+    this.startFightScreen(foundItems, null, finalStamina);
   }
 
-  // Method to start fight screen with found items
-  startFightScreen(foundItems, phase = null) {
-    console.log("⚔️ Starting fight screen with items:", foundItems);
+  // Method to start fight screen with found items and stamina
+  startFightScreen(foundItems, phase = null, startingStamina = null) {
+    console.log(
+      "⚔️ Starting fight screen with items:",
+      foundItems,
+      "Starting stamina:",
+      startingStamina
+    );
 
     // Use current phase from game state if not specified
     const currentPhase = phase || this.gameState.currentPhase || 1;
 
+    // Use passed stamina or default to game state stamina or 100
+    const stamina =
+      startingStamina !== null
+        ? startingStamina
+        : this.gameState.playerStamina || 100;
+
     if (this.screens.fight) {
-      this.screens.fight.initializeFight(foundItems, currentPhase);
+      this.screens.fight.initializeFight(foundItems, currentPhase, stamina);
       this.showScreen("fight");
     } else {
       console.error("Fight screen not available!");
@@ -505,18 +522,18 @@ class RustyGame {
             phasesCompleted: 3,
           });
         },
-        // Test fight scenarios
+        // Test fight scenarios with stamina
         testFightPhase1: () => {
           const testItems = ITEMS_UTILS.getRandomItems(10);
-          this.startFightScreen(testItems, 1);
+          this.startFightScreen(testItems, 1, 80); // Start with 80 stamina
         },
         testFightPhase2: () => {
           const testItems = ITEMS_UTILS.getRandomItems(15);
-          this.startFightScreen(testItems, 2);
+          this.startFightScreen(testItems, 2, 60); // Start with 60 stamina
         },
         testFightPhase3: () => {
           const testItems = ITEMS_UTILS.getRandomItems(21);
-          this.startFightScreen(testItems, 3);
+          this.startFightScreen(testItems, 3, 40); // Start with 40 stamina
         },
         // Test story segments
         testStoryIntro: () => {

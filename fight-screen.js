@@ -21,6 +21,7 @@ class FightScreen extends Screen {
     this.selectedCards = [];
     this.isPlayerTurn = true;
     this.combatInProgress = false;
+    this.cardAnimationInProgress = false;
     this.treeAttackDamage = 5;
     this.phaseDialogue = "";
     this.symbols = ["🔍", "🪓", "💔", "💭"];
@@ -29,14 +30,22 @@ class FightScreen extends Screen {
     console.log("⚔️ FightScreen instance created");
   }
 
-  // Initialize fight with found items from search
-  initializeFight(foundItems, phase = 1) {
-    console.log(`⚔️ Initializing fight - Phase ${phase}`, foundItems);
+  // Initialize fight with found items from search and starting stamina
+  initializeFight(foundItems, phase = 1, startingStamina = 100) {
+    console.log(
+      `⚔️ Initializing fight - Phase ${phase}`,
+      foundItems,
+      `Starting stamina: ${startingStamina}`
+    );
 
     this.currentPhase = phase;
     this.availableItems = [...foundItems];
     this.usedItems = [];
     this.firstTimeUse.clear();
+
+    // Set starting stamina from search screen
+    this.playerStamina = startingStamina;
+    this.maxPlayerStamina = 100; // Max stamina stays at 100
 
     // Set phase-specific values
     this.setPhaseParameters();
@@ -48,7 +57,7 @@ class FightScreen extends Screen {
     this.setTreeSymbols();
 
     console.log(
-      `⚔️ Fight initialized - Phase ${this.currentPhase}, Tree HP: ${this.treeHP}`
+      `⚔️ Fight initialized - Phase ${this.currentPhase}, Tree HP: ${this.treeHP}, Starting Stamina: ${this.playerStamina}`
     );
   }
 
@@ -146,27 +155,28 @@ class FightScreen extends Screen {
         
         <!-- Tree section -->
         <div class="tree-section">
-          <div class="tree-visual" id="treeVisual">
-            <div class="tree-image">🌳</div>
-            <div class="tree-health-bar">
-              <div class="health-bar-bg">
-                <div class="health-bar-fill" id="treeHealthFill"></div>
-              </div>
-              <div class="health-text" id="treeHealthText">
-                ${this.treeHP}/${this.maxTreeHP}
-              </div>
+          <!-- Tree health bar positioned above tree -->
+          <div class="tree-health-bar">
+            <div class="health-bar-bg">
+              <div class="health-bar-fill" id="treeHealthFill"></div>
+            </div>
+            <div class="health-text" id="treeHealthText">
+              ${this.treeHP}/${this.maxTreeHP}
             </div>
           </div>
           
-          <div class="tree-symbols">
-            <div class="symbol-container">
-              <div class="symbol-label">Weakness</div>
-              <div class="tree-symbol weakness" id="treeWeakness">${this.treeWeakness}</div>
+          <!-- Tree visual with symbols on sides -->
+          <div class="tree-visual-container">
+            <!-- Weakness symbol (left) -->
+            <div class="tree-symbol weakness" id="treeWeakness">${this.treeWeakness}</div>
+            
+            <!-- Tree image -->
+            <div class="tree-visual" id="treeVisual">
+              <img src="images/tree.png" alt="Evil Tree" class="tree-image" id="treeImage">
             </div>
-            <div class="symbol-container">
-              <div class="symbol-label">Immunity</div>
-              <div class="tree-symbol immunity" id="treeImmunity">${this.treeImmunity}</div>
-            </div>
+            
+            <!-- Immunity symbol (right) -->
+            <div class="tree-symbol immunity" id="treeImmunity">${this.treeImmunity}</div>
           </div>
           
           <div class="tree-dialogue" id="treeDialogue">
@@ -197,13 +207,8 @@ class FightScreen extends Screen {
             <!-- Cards will be rendered here -->
           </div>
           
-          <div class="combat-controls">
-            <button class="game-button secondary" id="endTurnBtn" disabled>
-              End Turn
-            </button>
-            <button class="game-button primary" id="playCardsBtn" disabled>
-              Play Selected Cards
-            </button>
+          <div class="combat-instructions">
+            <p>Select up to ${this.maxCardsPerTurn} cards and they will automatically be thrown at the tree</p>
           </div>
         </div>
         
@@ -219,22 +224,7 @@ class FightScreen extends Screen {
 
   setupEventListeners() {
     super.setupEventListeners();
-
-    // Combat controls
-    const playCardsBtn = document.getElementById("playCardsBtn");
-    const endTurnBtn = document.getElementById("endTurnBtn");
-
-    if (playCardsBtn) {
-      playCardsBtn.addEventListener("click", () => {
-        this.playSelectedCards();
-      });
-    }
-
-    if (endTurnBtn) {
-      endTurnBtn.addEventListener("click", () => {
-        this.endTurn();
-      });
-    }
+    // No combat control buttons needed anymore - cards auto-play when selected
   }
 
   init() {
@@ -246,19 +236,19 @@ class FightScreen extends Screen {
     }
 
     this.combatInProgress = false;
+    this.cardAnimationInProgress = false;
     this.isPlayerTurn = true;
   }
 
   handleCardClick(cardElement) {
     const cardId = cardElement.dataset.cardId;
     console.log("🃏 Card clicked:", cardId);
-    console.log(
-      "🃏 Current hand IDs:",
-      this.playerHand.map((c) => c.id)
-    );
-    console.log("🃏 Looking for card with ID:", cardId);
 
-    if (!this.isPlayerTurn || this.combatInProgress) {
+    if (
+      !this.isPlayerTurn ||
+      this.combatInProgress ||
+      this.cardAnimationInProgress
+    ) {
       console.log(
         "❌ Cannot select card - not player turn or combat in progress"
       );
@@ -269,10 +259,6 @@ class FightScreen extends Screen {
 
     if (!card) {
       console.log("❌ Card not found in hand:", cardId);
-      console.log(
-        "❌ Available card IDs:",
-        this.playerHand.map((c) => `${c.id} (${typeof c.id})`)
-      );
       return;
     }
 
@@ -293,27 +279,37 @@ class FightScreen extends Screen {
         cardElement.classList.add("selected");
         cardElement.querySelector(".card-content").classList.add("selected");
         console.log("✅ Card selected:", card.name);
+
+        // Auto-play cards if we've selected the maximum
+        if (
+          this.selectedCards.length ===
+          this.maxCardsPerTurn - this.cardsUsedThisTurn
+        ) {
+          setTimeout(() => this.playSelectedCards(), 500);
+        }
       } else {
         console.log("⚠️ Cannot select more cards this turn");
       }
     }
-
-    this.updateCombatControls();
   }
 
-  playSelectedCards() {
+  async playSelectedCards() {
     if (this.selectedCards.length === 0) return;
 
     console.log("🎮 Playing selected cards:", this.selectedCards);
     this.combatInProgress = true;
+    this.cardAnimationInProgress = true;
 
-    // Play each selected card
-    this.selectedCards.forEach((cardId) => {
+    // Play each selected card with staggered animation
+    for (let i = 0; i < this.selectedCards.length; i++) {
+      const cardId = this.selectedCards[i];
       const card = this.playerHand.find((c) => String(c.id) === String(cardId));
+
       if (card) {
-        this.playCard(card);
+        await this.animateCardThrow(cardId, card);
+        await this.delay(200); // Brief pause between cards
       }
-    });
+    }
 
     // Update turn state
     this.cardsUsedThisTurn += this.selectedCards.length;
@@ -330,13 +326,108 @@ class FightScreen extends Screen {
 
     this.selectedCards = [];
     this.renderHand();
-    this.updateCombatControls();
 
     // Check for end of turn or combat
     setTimeout(() => {
+      this.cardAnimationInProgress = false;
       this.combatInProgress = false;
       this.checkCombatState();
-    }, 1500);
+
+      // Auto-end turn if we've used all cards
+      if (this.cardsUsedThisTurn >= this.maxCardsPerTurn) {
+        setTimeout(() => this.endTurn(), 1000);
+      }
+    }, 1000);
+  }
+
+  async animateCardThrow(cardId, card) {
+    return new Promise((resolve) => {
+      const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+      const treeElement = document.getElementById("treeImage");
+
+      if (!cardElement || !treeElement) {
+        console.error("Card or tree element not found for animation");
+        this.playCard(card);
+        resolve();
+        return;
+      }
+
+      // Get positions
+      const cardRect = cardElement.getBoundingClientRect();
+      const treeRect = treeElement.getBoundingClientRect();
+
+      // Calculate throw trajectory
+      const startX = cardRect.left + cardRect.width / 2;
+      const startY = cardRect.top + cardRect.height / 2;
+      const endX = treeRect.left + treeRect.width / 2;
+      const endY = treeRect.top + treeRect.height / 2;
+
+      // Create flying card element
+      const flyingCard = cardElement.cloneNode(true);
+      flyingCard.style.position = "fixed";
+      flyingCard.style.left = startX + "px";
+      flyingCard.style.top = startY + "px";
+      flyingCard.style.zIndex = "1000";
+      flyingCard.style.pointerEvents = "none";
+      flyingCard.style.transform = "scale(0.8)";
+      flyingCard.classList.add("flying-card");
+
+      document.body.appendChild(flyingCard);
+
+      // Hide original card
+      cardElement.style.opacity = "0.3";
+
+      // Animate the flying card
+      const animation = flyingCard.animate(
+        [
+          {
+            transform: `translate(0, 0) scale(0.8) rotate(0deg)`,
+            opacity: 1,
+          },
+          {
+            transform: `translate(${endX - startX}px, ${
+              endY - startY
+            }px) scale(0.6) rotate(360deg)`,
+            opacity: 0.8,
+          },
+        ],
+        {
+          duration: 600,
+          easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        }
+      );
+
+      animation.addEventListener("finish", () => {
+        // Remove flying card
+        flyingCard.remove();
+
+        // Apply card effect
+        this.playCard(card);
+
+        // Create impact effect
+        this.createImpactEffect(endX, endY);
+
+        resolve();
+      });
+    });
+  }
+
+  createImpactEffect(x, y) {
+    // Create particle burst at impact point
+    this.createParticleBurst(x, y, 8, "rgba(255, 215, 0, 0.8)");
+
+    // Shake the tree
+    const treeImage = document.getElementById("treeImage");
+    if (treeImage) {
+      treeImage.classList.add("tree-hit");
+      setTimeout(() => {
+        treeImage.classList.remove("tree-hit");
+      }, 500);
+    }
+  }
+
+  delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   playCard(card) {
@@ -490,7 +581,6 @@ class FightScreen extends Screen {
 
     this.renderHand();
     this.updateUI();
-    this.updateCombatControls();
   }
 
   checkCombatState() {
@@ -550,7 +640,6 @@ class FightScreen extends Screen {
     this.playerHand.forEach((card, index) => {
       const cardElement = document.createElement("div");
       cardElement.className = "card-item";
-      // Use the card's id as the dataset cardId
       cardElement.dataset.cardId = String(card.id);
 
       const isSelected = this.selectedCards.includes(String(card.id));
@@ -649,29 +738,15 @@ class FightScreen extends Screen {
     });
   }
 
-  updateCombatControls() {
-    const playCardsBtn = document.getElementById("playCardsBtn");
-    const endTurnBtn = document.getElementById("endTurnBtn");
-
-    if (!this.isPlayerTurn || this.combatInProgress) {
-      if (playCardsBtn) playCardsBtn.disabled = true;
-      if (endTurnBtn) endTurnBtn.disabled = true;
-      return;
-    }
-
-    if (playCardsBtn) {
-      playCardsBtn.disabled = this.selectedCards.length === 0;
-    }
-
-    if (endTurnBtn) {
-      endTurnBtn.disabled = this.cardsUsedThisTurn === 0;
-    }
-  }
-
   handleKeydown(e) {
     super.handleKeydown(e);
 
-    if (!this.isPlayerTurn || this.combatInProgress) return;
+    if (
+      !this.isPlayerTurn ||
+      this.combatInProgress ||
+      this.cardAnimationInProgress
+    )
+      return;
 
     // Number keys to select cards
     const cardIndex = parseInt(e.key) - 1;
@@ -683,31 +758,18 @@ class FightScreen extends Screen {
         this.handleCardClick(cardElement);
       }
     }
-
-    // Space to play selected cards
-    if (e.code === "Space" && this.selectedCards.length > 0) {
-      e.preventDefault();
-      this.playSelectedCards();
-    }
-
-    // Enter to end turn
-    if (e.code === "Enter" && this.cardsUsedThisTurn > 0) {
-      e.preventDefault();
-      this.endTurn();
-    }
   }
 
   handleEscape() {
     console.log("🔙 Escape pressed on Fight Screen");
 
     // In combat, show pause menu or confirmation
-    if (this.combatInProgress) {
+    if (this.combatInProgress || this.cardAnimationInProgress) {
       this.showTemporaryMessage(
         "Combat in progress! Cannot exit now.",
         "warning"
       );
     } else {
-      // Could show pause menu or return to previous screen
       this.showTemporaryMessage("Press ESC again to forfeit combat", "warning");
     }
   }
@@ -731,6 +793,7 @@ class FightScreen extends Screen {
       selectedCards: this.selectedCards,
       isPlayerTurn: this.isPlayerTurn,
       combatInProgress: this.combatInProgress,
+      cardAnimationInProgress: this.cardAnimationInProgress,
     });
   }
 
@@ -741,8 +804,13 @@ class FightScreen extends Screen {
       this.audioManager.stopSound("combat_music");
     }
 
+    // Clean up any flying cards
+    const flyingCards = document.querySelectorAll(".flying-card");
+    flyingCards.forEach((card) => card.remove());
+
     // Reset combat state
     this.combatInProgress = false;
+    this.cardAnimationInProgress = false;
     this.isPlayerTurn = false;
     this.selectedCards = [];
     this.playerHand = [];

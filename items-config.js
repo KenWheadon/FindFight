@@ -254,7 +254,7 @@ const ITEMS_CONFIG = {
   locations: {
     detectiveOffice: {
       name: "Detective's Office",
-      backgroundImage: "images/park_bg.png",
+      backgroundImage: "images/park-bg.png",
       startingStamina: 100,
       maxStamina: 100,
       staminaDrainRate: 0.5,
@@ -288,7 +288,7 @@ const ITEMS_CONFIG = {
     },
     forestClearing: {
       name: "Forest Clearing",
-      backgroundImage: "images/forest_bg.png",
+      backgroundImage: "images/woods-bg.png",
       startingStamina: 80,
       maxStamina: 100,
       staminaDrainRate: 0.7,
@@ -322,7 +322,7 @@ const ITEMS_CONFIG = {
     },
     darkCatacombs: {
       name: "Dark Catacombs",
-      backgroundImage: "images/catacomb_bg.png",
+      backgroundImage: "images/catacomb-bg.png",
       startingStamina: 60,
       maxStamina: 100,
       staminaDrainRate: 1.0,
