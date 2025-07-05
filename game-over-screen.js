@@ -88,7 +88,7 @@ class GameOverScreen extends Screen {
         mainText:
           'The Evil Tree\'s roots have drained your strength. Its ancient whispers echo: "Another detective falls to the eternal hunger of the cursed box."',
         subText:
-          "Rusty collapses, overwhelmed by the tree's malevolent power. The investigation ends here... but the mystery remains.",
+          "Rusty collapses and fades away, his bones ripple and morph into an odd pulsing seed overwhelmed by the tree's malevolent power. The investigation ends here... but the mystery remains.",
         status: "Defeated by Evil Tree",
       };
     } else {

@@ -155,7 +155,6 @@
 }
 
 .rusty-image {
-  font-size: 4em;
   background: radial-gradient(
     circle,
     rgba(255, 215, 0, 0.3) 0%,
@@ -166,6 +165,18 @@
   padding: 20px;
   animation: victoryDance 2s ease-in-out infinite;
   filter: brightness(1.2);
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rusty-image img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
 }
 
 @keyframes victoryDance {
@@ -188,12 +199,22 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  font-size: 1.3em;
   background: rgba(255, 215, 0, 0.9);
   border: 2px solid #ffd700;
   border-radius: 50%;
-  padding: 5px;
+  padding: 8px;
   animation: badgeShine 1.5s ease-in-out infinite;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detective-badge img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
 @keyframes badgeShine {
@@ -365,9 +386,24 @@
 }
 
 .stat-icon {
-  font-size: 3em;
   margin-bottom: 10px;
   animation: statIconBounce 2s ease-in-out infinite;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+.stat-icon:not(:has(img)) {
+  font-size: 2.5em;
 }
 
 @keyframes statIconBounce {
@@ -435,10 +471,11 @@
 .victory-buttons .game-button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  min-width: 160px;
-  padding: 15px 25px;
-  font-size: 1.1em;
+  min-width: 200px;
+  padding: 20px 40px;
+  font-size: 1.3em;
   transition: all 0.3s ease;
 }
 
@@ -575,8 +612,25 @@
   }
 
   .rusty-image {
-    font-size: 3.5em;
     padding: 15px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .rusty-image img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .detective-badge {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+  }
+
+  .detective-badge img {
+    width: 24px;
+    height: 24px;
   }
 
   .story-segment {
@@ -598,7 +652,9 @@
   }
 
   .victory-buttons .game-button {
-    min-width: 200px;
+    padding: 15px 30px;
+    min-width: 220px;
+    font-size: 1.1em;
   }
 }
 
@@ -612,8 +668,25 @@
   }
 
   .rusty-image {
-    font-size: 3em;
     padding: 12px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .rusty-image img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .detective-badge {
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+  }
+
+  .detective-badge img {
+    width: 20px;
+    height: 20px;
   }
 
   .story-segment {
@@ -643,8 +716,9 @@
   }
 
   .victory-buttons .game-button {
-    padding: 12px 20px;
-    min-width: 180px;
+    padding: 12px 25px;
+    min-width: 200px;
+    font-size: 1em;
   }
 }
 

@@ -71,8 +71,12 @@ class VictoryScreen extends Screen {
         <div class="victory-main">
           <div class="victory-story">
             <div class="rusty-celebration">
-              <div class="rusty-image">🦝</div>
-              <div class="detective-badge">🔍</div>
+              <div class="rusty-image">
+                <img src="images/rusty.png" alt="Rusty the Raccoon Detective" />
+              </div>
+              <div class="detective-badge">
+                <img src="images/magnifying-glass.png" alt="Detective Badge" />
+              </div>
             </div>
             
             <div class="story-progress">
@@ -85,7 +89,7 @@ class VictoryScreen extends Screen {
               ${this.storySegments
                 .map(
                   (segment, index) => `
-                <div class="story-segment" data-segment="${index}">
+                <div class="story-segment" data-segment="${index}" id="story-segment-${index}">
                   <div class="story-title">${segment.title}</div>
                   <div class="story-text">${segment.text}</div>
                   <div class="story-click-hint">👆</div>
@@ -103,7 +107,9 @@ class VictoryScreen extends Screen {
           <div class="victory-stats">
             <div class="stats-title">Investigation Results</div>
             <div class="stat-card">
-              <div class="stat-icon">🔍</div>
+              <div class="stat-icon">
+                <img src="images/magnifying-glass.png" alt="Search Icon" />
+              </div>
               <div class="stat-number">${this.finalStats.itemsFound}</div>
               <div class="stat-label">Objects Found</div>
             </div>
@@ -121,17 +127,13 @@ class VictoryScreen extends Screen {
           <div class="victory-message">
             <p>🎉 Congratulations, Detective! 🎉</p>
             <p>You have successfully escaped the cursed box and defeated the Evil Tree!</p>
-            <p id="story-completion-message" style="opacity: 0;">Click on the story segments above to reveal the full tale of your victory!</p>
+            <p id="story-completion-message">Click on the story segments above to reveal the full tale of your victory!</p>
           </div>
           
           <div class="victory-buttons">
             <button class="game-button primary pulse" id="replayBtn">
               <span class="button-icon">🎮</span>
               <span class="button-text">Play Again</span>
-            </button>
-            <button class="game-button secondary" id="menuBtn">
-              <span class="button-icon">🏠</span>
-              <span class="button-text">Main Menu</span>
             </button>
           </div>
         </div>
@@ -145,6 +147,9 @@ class VictoryScreen extends Screen {
 
     // Initialize elements
     this.initializeElements();
+
+    // Setup story segment listeners after DOM is ready
+    this.setupStorySegmentListeners();
   }
 
   initializeElements() {
@@ -194,7 +199,6 @@ class VictoryScreen extends Screen {
 
     // Get DOM elements
     const replayBtn = document.getElementById("replayBtn");
-    const menuBtn = document.getElementById("menuBtn");
 
     // Replay button
     if (replayBtn) {
@@ -204,35 +208,48 @@ class VictoryScreen extends Screen {
       });
     }
 
-    // Menu button
-    if (menuBtn) {
-      menuBtn.addEventListener("click", (e) => {
-        this.createRippleEffect(menuBtn, e);
-        this.returnToMenu();
-      });
-    }
+    // Story segment click handlers - Set up after render
+    this.setupStorySegmentListeners();
+  }
 
+  setupStorySegmentListeners() {
     // Story segment click handlers
     const storySegments = this.container.querySelectorAll(".story-segment");
+    console.log(
+      "Setting up story segment listeners for",
+      storySegments.length,
+      "segments"
+    );
+
     storySegments.forEach((segment, index) => {
       segment.addEventListener("click", (e) => {
+        console.log("Story segment clicked:", index);
         this.revealStorySegment(index, e);
       });
+
+      // Add pointer cursor to make it clear they're clickable
+      segment.style.cursor = "pointer";
     });
   }
 
   revealStorySegment(index, event) {
     const segment = this.storySegments[index];
-    if (segment.revealed) return;
+    if (segment.revealed) {
+      console.log("Segment already revealed:", index);
+      return;
+    }
 
     const segmentElement = this.container.querySelector(
-      `[data-segment="${index}"]`
+      `#story-segment-${index}`
     );
     const progressDot = this.container.querySelector(
       `.progress-dot[data-segment="${index}"]`
     );
 
-    if (!segmentElement) return;
+    if (!segmentElement) {
+      console.log("Segment element not found:", index);
+      return;
+    }
 
     console.log(`📖 Revealing story segment: ${segment.id}`);
 
