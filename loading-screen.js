@@ -142,7 +142,7 @@ class LoadingScreen extends Screen {
     const imagesToLoad = [
       "images/logo.png",
       "images/company-logo.png",
-      "images/raccoon.png",
+      "images/rusty.png",
       "images/box.png",
       "images/tree.png",
       "images/favicon.ico",

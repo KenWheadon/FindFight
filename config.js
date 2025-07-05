@@ -97,7 +97,7 @@ const GAME_CONFIG = {
 const ASSETS = {
   images: {
     logo: "images/logo.png",
-    raccoon: "images/raccoon.png",
+    raccoon: "images/rusty.png",
     tree: "images/tree.png",
     box: "images/box.png",
   },

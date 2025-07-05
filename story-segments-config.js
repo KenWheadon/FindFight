@@ -45,7 +45,7 @@ const STORY_SEGMENTS = {
         items: [
           {
             image: "images/rusty.png",
-            x: 20,
+            x: 30,
             y: 60,
             scale: 3,
             animation: "float",
@@ -69,7 +69,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "People have been disappearing. All of them had one thing in common - they all received this mysterious wooden box.",
+          text: "Ghosts have been floating out every few hours. They all seem to be deseased detectives, but none of them do anything but float around for a few seconds before....",
           style: "normal",
         },
       },
@@ -82,14 +82,14 @@ const STORY_SEGMENTS = {
         items: [
           {
             image: "images/rusty.png",
-            x: 50,
+            x: 30,
             y: 60,
             scale: 3,
             animation: "float",
           },
           {
             image: "images/box.png",
-            x: 50,
+            x: 70,
             y: 40,
             scale: 3,
             animation: "glow",
@@ -97,7 +97,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "Against my better judgment, I'm going to open it. If I don't make it back... well, at least you'll know what happened.",
+          text: "going away just as quickly... just like that. My guts are tell my not to, but I'm going to open it. Someone has to get to the bottom of this mystery, and it's not the first strange case I've dealth with.",
           style: "emphasis",
         },
       },
