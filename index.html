@@ -10,6 +10,7 @@
     <link rel="preload" href="loading-screen.css" as="style" />
     <link rel="preload" href="start-screen.css" as="style" />
     <link rel="preload" href="search-screen.css" as="style" />
+    <link rel="preload" href="fight-screen.css" as="style" />
     <link rel="preload" href="game-over-screen.css" as="style" />
     <link rel="preload" href="victory-screen.css" as="style" />
     <link rel="preload" href="story-segment-screen.css" as="style" />
@@ -19,6 +20,7 @@
     <link rel="stylesheet" href="loading-screen.css" />
     <link rel="stylesheet" href="start-screen.css" />
     <link rel="stylesheet" href="search-screen.css" />
+    <link rel="stylesheet" href="fight-screen.css" />
     <link rel="stylesheet" href="game-over-screen.css" />
     <link rel="stylesheet" href="victory-screen.css" />
     <link rel="stylesheet" href="story-segment-screen.css" />
@@ -65,6 +67,7 @@
     <script src="loading-screen.js"></script>
     <script src="start-screen.js"></script>
     <script src="search-screen.js"></script>
+    <script src="fight-screen.js"></script>
     <script src="game-over-screen.js"></script>
     <script src="victory-screen.js"></script>
     <script src="story-segment-screen.js"></script>
@@ -82,7 +85,7 @@
         - gameDebug.showScreen('screenName') - Switch screens
         - gameDebug.gameState - View game state
         
-        Available screens: loading, start, search, gameOver, victory, storySegment
+        Available screens: loading, start, search, fight, gameOver, victory, storySegment
         Available locations: detectiveOffice, forestClearing, darkCatacombs
         
         Test commands:
@@ -93,6 +96,11 @@
         - gameDebug.testGameOverSearch() - Test search exhaustion game over
         - gameDebug.testGameOverTree() - Test tree attack game over
         - gameDebug.testVictory() - Test victory screen
+        
+        Fight Screen Tests:
+        - gameDebug.testFightPhase1() - Test Phase 1 fight (HP 20, Attack 5)
+        - gameDebug.testFightPhase2() - Test Phase 2 fight (HP 30, Attack 10)
+        - gameDebug.testFightPhase3() - Test Phase 3 fight (HP 50, Attack 15)
         
         Story Segment Tests:
         - gameDebug.testStoryIntro() - Test intro story

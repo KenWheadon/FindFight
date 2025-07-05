@@ -4,7 +4,7 @@ class RustyGame {
     // Centralized game state
     this.gameState = {
       currentScreen: "loading",
-      currentPhase: 0,
+      currentPhase: 1,
       treeHP: 100,
       playerStamina: 100,
       playerItems: [],
@@ -69,6 +69,10 @@ class RustyGame {
 
     if (window.SearchScreen) {
       this.screens.search = new SearchScreen(this.gameContainer, "search");
+    }
+
+    if (window.FightScreen) {
+      this.screens.fight = new FightScreen(this.gameContainer, "fight");
     }
 
     if (window.GameOverScreen) {
@@ -239,6 +243,9 @@ class RustyGame {
   completeFirstLevel() {
     console.log("🎯 First level completed, transitioning to second area");
 
+    // Update game state to track progression
+    this.updateGameState({ currentPhase: 2 });
+
     const locationData = ITEMS_UTILS.generateLocationData("forestClearing");
     if (!locationData) {
       console.error("Failed to generate forest location data");
@@ -252,6 +259,9 @@ class RustyGame {
 
   completeSecondLevel() {
     console.log("🎯 Second level completed, transitioning to final area");
+
+    // Update game state to track progression
+    this.updateGameState({ currentPhase: 3 });
 
     const locationData = ITEMS_UTILS.generateLocationData("darkCatacombs");
     if (!locationData) {
@@ -337,11 +347,53 @@ class RustyGame {
       playerItems: [...this.gameState.playerItems, ...foundItems],
     });
 
-    // For now, return to start screen
-    // In full game, this would transition to combat
-    setTimeout(() => {
+    // Transition to fight screen
+    this.startFightScreen(foundItems);
+  }
+
+  // Method to start fight screen with found items
+  startFightScreen(foundItems, phase = null) {
+    console.log("⚔️ Starting fight screen with items:", foundItems);
+
+    // Use current phase from game state if not specified
+    const currentPhase = phase || this.gameState.currentPhase || 1;
+
+    if (this.screens.fight) {
+      this.screens.fight.initializeFight(foundItems, currentPhase);
+      this.showScreen("fight");
+    } else {
+      console.error("Fight screen not available!");
+      // Fallback to start screen
       this.showScreen("start");
-    }, 1000);
+    }
+  }
+
+  // Handle fight completion (called from fight screen)
+  onFightComplete(phase, victory = true) {
+    console.log(`⚔️ Fight completed - Phase ${phase}, Victory: ${victory}`);
+
+    if (!victory) {
+      // Player was defeated
+      this.triggerGameOver("tree", "Defeated by the Evil Tree");
+      return;
+    }
+
+    // Victory - check if this was the final phase
+    if (phase >= 3) {
+      // Final victory
+      this.triggerVictory({
+        itemsFound: this.gameState.foundItems?.length || 0,
+        phasesCompleted: phase,
+        timeElapsed: Date.now(), // Could track actual time
+      });
+    } else {
+      // Progress to next phase
+      if (phase === 1) {
+        this.completeFirstLevel();
+      } else if (phase === 2) {
+        this.completeSecondLevel();
+      }
+    }
   }
 
   restartGame() {
@@ -350,7 +402,7 @@ class RustyGame {
     // Reset game state
     this.gameState = {
       currentScreen: "start",
-      currentPhase: 0,
+      currentPhase: 1,
       treeHP: 100,
       playerStamina: 100,
       playerItems: [],
@@ -452,6 +504,19 @@ class RustyGame {
             timeElapsed: 1200,
             phasesCompleted: 3,
           });
+        },
+        // Test fight scenarios
+        testFightPhase1: () => {
+          const testItems = ITEMS_UTILS.getRandomItems(10);
+          this.startFightScreen(testItems, 1);
+        },
+        testFightPhase2: () => {
+          const testItems = ITEMS_UTILS.getRandomItems(15);
+          this.startFightScreen(testItems, 2);
+        },
+        testFightPhase3: () => {
+          const testItems = ITEMS_UTILS.getRandomItems(21);
+          this.startFightScreen(testItems, 3);
         },
         // Test story segments
         testStoryIntro: () => {

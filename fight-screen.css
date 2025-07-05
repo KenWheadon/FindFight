@@ -1,0 +1,603 @@
+/* Fight Screen Styles for Rusty vs. The Evil Tree */
+
+.fight-screen-content {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  overflow: hidden;
+}
+
+/* Tree Section */
+.tree-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.tree-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tree-image {
+  font-size: 8em;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  animation: treeIdle 3s ease-in-out infinite alternate;
+  margin-bottom: 20px;
+}
+
+@keyframes treeIdle {
+  0% {
+    transform: scale(1) rotate(-1deg);
+    filter: brightness(1);
+  }
+  100% {
+    transform: scale(1.05) rotate(1deg);
+    filter: brightness(1.1);
+  }
+}
+
+.tree-health-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+}
+
+.health-bar-bg {
+  flex: 1;
+  height: 20px;
+  background: rgba(139, 0, 0, 0.3);
+  border: 2px solid #8b0000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff4444, #cc0000);
+  transition: width 0.5s ease;
+  border-radius: 8px;
+}
+
+.health-text {
+  font-weight: bold;
+  color: #ff4444;
+  font-family: "Courier New", monospace;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Tree Symbols */
+.tree-symbols {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.symbol-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.symbol-label {
+  font-size: 0.9em;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tree-symbol {
+  font-size: 3em;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid #666;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.tree-symbol.weakness {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+}
+
+.tree-symbol.immunity {
+  border-color: #4ecdc4;
+  box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+}
+
+/* Tree Dialogue */
+.tree-dialogue {
+  max-width: 600px;
+  text-align: center;
+  font-style: italic;
+  color: #d4af37;
+  font-size: 1.2em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px 25px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* Player Section */
+.player-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 10;
+  max-height: 50vh;
+}
+
+.player-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stamina-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stamina-label {
+  color: #4ecdc4;
+  font-weight: bold;
+  min-width: 60px;
+}
+
+.stamina-bar-bg {
+  flex: 1;
+  height: 20px;
+  background: rgba(0, 100, 100, 0.3);
+  border: 2px solid #4ecdc4;
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.stamina-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecdc4, #45b7b8);
+  transition: width 0.5s ease;
+  border-radius: 8px;
+}
+
+.stamina-text {
+  font-weight: bold;
+  color: #4ecdc4;
+  font-family: "Courier New", monospace;
+  min-width: 60px;
+  text-align: center;
+}
+
+.turn-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.turn-text {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #d4af37;
+}
+
+.cards-used {
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+/* Player Hand */
+.player-hand {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+  min-height: 140px;
+  align-items: center;
+}
+
+.card-item {
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.card-item:hover {
+  transform: translateY(-5px);
+}
+
+.card-content {
+  width: 100px;
+  height: 120px;
+  background: linear-gradient(145deg, #2c2c54, #40407a);
+  border: 2px solid #666;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.card-content.selected {
+  border-color: #d4af37;
+  background: linear-gradient(145deg, #40407a, #2c2c54);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  transform: translateY(-5px);
+}
+
+.card-content::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(212, 175, 55, 0.3),
+    transparent
+  );
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card-content.selected::after {
+  opacity: 1;
+}
+
+.card-symbol {
+  font-size: 2em;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.card-name {
+  font-size: 0.8em;
+  font-weight: bold;
+  text-align: center;
+  color: #e0e0e0;
+  line-height: 1.2;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.7em;
+}
+
+.card-damage {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.card-restore {
+  color: #4ecdc4;
+  font-weight: bold;
+}
+
+/* Combat Controls */
+.combat-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.combat-controls .game-button {
+  min-width: 150px;
+  font-size: 1.1em;
+  padding: 12px 24px;
+}
+
+.combat-controls .game-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.combat-controls .game-button:disabled:hover {
+  background: linear-gradient(145deg, #2c2c54, #40407a);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Combat Feedback */
+.combat-feedback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.feedback-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1.3em;
+  text-align: center;
+  animation: feedbackSlide 0.5s ease-out;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.feedback-message.critical {
+  background: rgba(255, 69, 0, 0.95);
+  color: white;
+  border: 2px solid #ff6b6b;
+}
+
+.feedback-message.normal {
+  background: rgba(70, 130, 180, 0.95);
+  color: white;
+  border: 2px solid #4682b4;
+}
+
+.feedback-message.immune {
+  background: rgba(128, 128, 128, 0.95);
+  color: white;
+  border: 2px solid #808080;
+}
+
+.feedback-message.cursed {
+  background: rgba(128, 0, 128, 0.95);
+  color: white;
+  border: 2px solid #8b008b;
+}
+
+.feedback-message.heal {
+  background: rgba(0, 128, 0, 0.95);
+  color: white;
+  border: 2px solid #4ecdc4;
+}
+
+.feedback-message.tree-attack {
+  background: rgba(139, 69, 19, 0.95);
+  color: white;
+  border: 2px solid #8b4513;
+}
+
+.feedback-message.dialogue {
+  background: rgba(212, 175, 55, 0.95);
+  color: #1a1a2e;
+  border: 2px solid #d4af37;
+  font-style: italic;
+  max-width: 400px;
+}
+
+@keyframes feedbackSlide {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
+
+/* Damage animations */
+.tree-damaged {
+  animation: treeDamage 0.5s ease-out;
+}
+
+@keyframes treeDamage {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  50% {
+    transform: scale(1.05) rotate(3deg);
+  }
+  75% {
+    transform: scale(1.08) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.player-damaged {
+  animation: playerDamage 0.3s ease-out;
+}
+
+@keyframes playerDamage {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .fight-screen-content {
+    padding: 10px;
+  }
+
+  .tree-image {
+    font-size: 5em;
+  }
+
+  .tree-symbols {
+    gap: 20px;
+  }
+
+  .tree-symbol {
+    width: 60px;
+    height: 60px;
+    font-size: 2em;
+  }
+
+  .player-hand {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .card-content {
+    width: 80px;
+    height: 100px;
+    padding: 8px;
+  }
+
+  .card-symbol {
+    font-size: 1.5em;
+  }
+
+  .card-name {
+    font-size: 0.7em;
+  }
+
+  .card-stats {
+    font-size: 0.6em;
+  }
+
+  .combat-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .combat-controls .game-button {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tree-dialogue {
+    font-size: 1em;
+    padding: 10px 15px;
+  }
+
+  .player-stats {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .stamina-bar {
+    justify-content: center;
+  }
+
+  .player-hand {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .feedback-message {
+    font-size: 1.1em;
+    padding: 10px 20px;
+    max-width: 300px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .tree-image {
+    animation: none;
+  }
+
+  .card-content,
+  .card-item {
+    transition: none;
+  }
+
+  .feedback-message {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card-content {
+    border-width: 3px;
+  }
+
+  .tree-symbol {
+    border-width: 4px;
+  }
+
+  .health-bar-bg,
+  .stamina-bar-bg {
+    border-width: 3px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .fight-screen-content {
+    background: white;
+    color: black;
+  }
+
+  .stars-layer,
+  .asteroids-layer,
+  .particles-layer {
+    display: none;
+  }
+}
