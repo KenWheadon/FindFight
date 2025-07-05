@@ -94,6 +94,12 @@ class FightScreen extends Screen {
         Math.random() * this.availableItems.length
       );
       const item = this.availableItems.splice(randomIndex, 1)[0];
+
+      // Ensure the item has an id property - use the item's original id
+      if (!item.id) {
+        item.id = item.id || `item_${Date.now()}_${Math.random()}`;
+      }
+
       return item;
     }
 
@@ -214,13 +220,6 @@ class FightScreen extends Screen {
   setupEventListeners() {
     super.setupEventListeners();
 
-    // Card selection
-    document.addEventListener("click", (e) => {
-      if (e.target.closest(".card-item")) {
-        this.handleCardClick(e.target.closest(".card-item"));
-      }
-    });
-
     // Combat controls
     const playCardsBtn = document.getElementById("playCardsBtn");
     const endTurnBtn = document.getElementById("endTurnBtn");
@@ -246,24 +245,45 @@ class FightScreen extends Screen {
       this.audioManager.playSound("combat_music", true, 0.4);
     }
 
-    this.combatInProgress = true;
+    this.combatInProgress = false;
     this.isPlayerTurn = true;
   }
 
   handleCardClick(cardElement) {
-    if (!this.isPlayerTurn || this.cardsUsedThisTurn >= this.maxCardsPerTurn) {
+    const cardId = cardElement.dataset.cardId;
+    console.log("🃏 Card clicked:", cardId);
+    console.log(
+      "🃏 Current hand IDs:",
+      this.playerHand.map((c) => c.id)
+    );
+    console.log("🃏 Looking for card with ID:", cardId);
+
+    if (!this.isPlayerTurn || this.combatInProgress) {
+      console.log(
+        "❌ Cannot select card - not player turn or combat in progress"
+      );
       return;
     }
 
-    const cardId = cardElement.dataset.cardId;
-    const card = this.playerHand.find((c) => c.id === cardId);
+    const card = this.playerHand.find((c) => String(c.id) === String(cardId));
 
-    if (!card) return;
+    if (!card) {
+      console.log("❌ Card not found in hand:", cardId);
+      console.log(
+        "❌ Available card IDs:",
+        this.playerHand.map((c) => `${c.id} (${typeof c.id})`)
+      );
+      return;
+    }
+
+    console.log("✅ Found card:", card.name, "with ID:", card.id);
 
     // Toggle card selection
     if (this.selectedCards.includes(cardId)) {
       this.selectedCards = this.selectedCards.filter((id) => id !== cardId);
       cardElement.classList.remove("selected");
+      cardElement.querySelector(".card-content").classList.remove("selected");
+      console.log("🔄 Card deselected:", card.name);
     } else {
       if (
         this.selectedCards.length <
@@ -271,6 +291,10 @@ class FightScreen extends Screen {
       ) {
         this.selectedCards.push(cardId);
         cardElement.classList.add("selected");
+        cardElement.querySelector(".card-content").classList.add("selected");
+        console.log("✅ Card selected:", card.name);
+      } else {
+        console.log("⚠️ Cannot select more cards this turn");
       }
     }
 
@@ -280,11 +304,12 @@ class FightScreen extends Screen {
   playSelectedCards() {
     if (this.selectedCards.length === 0) return;
 
+    console.log("🎮 Playing selected cards:", this.selectedCards);
     this.combatInProgress = true;
 
     // Play each selected card
     this.selectedCards.forEach((cardId) => {
-      const card = this.playerHand.find((c) => c.id === cardId);
+      const card = this.playerHand.find((c) => String(c.id) === String(cardId));
       if (card) {
         this.playCard(card);
       }
@@ -292,21 +317,26 @@ class FightScreen extends Screen {
 
     // Update turn state
     this.cardsUsedThisTurn += this.selectedCards.length;
-    this.selectedCards = [];
 
     // Remove played cards from hand
     this.selectedCards.forEach((cardId) => {
-      const cardIndex = this.playerHand.findIndex((c) => c.id === cardId);
+      const cardIndex = this.playerHand.findIndex(
+        (c) => String(c.id) === String(cardId)
+      );
       if (cardIndex !== -1) {
         this.usedItems.push(this.playerHand.splice(cardIndex, 1)[0]);
       }
     });
 
+    this.selectedCards = [];
     this.renderHand();
     this.updateCombatControls();
 
     // Check for end of turn or combat
-    this.checkCombatState();
+    setTimeout(() => {
+      this.combatInProgress = false;
+      this.checkCombatState();
+    }, 1500);
   }
 
   playCard(card) {
@@ -511,19 +541,32 @@ class FightScreen extends Screen {
     const handContainer = document.getElementById("playerHand");
     if (!handContainer) return;
 
+    console.log(
+      "🃏 Rendering hand with cards:",
+      this.playerHand.map((c) => `${c.name} (ID: ${c.id})`)
+    );
     handContainer.innerHTML = "";
 
-    this.playerHand.forEach((card) => {
+    this.playerHand.forEach((card, index) => {
       const cardElement = document.createElement("div");
       cardElement.className = "card-item";
-      cardElement.dataset.cardId = card.id;
+      // Use the card's id as the dataset cardId
+      cardElement.dataset.cardId = String(card.id);
 
-      const cardSymbol = this.getCardSymbol(card);
-      const isSelected = this.selectedCards.includes(card.id);
+      const isSelected = this.selectedCards.includes(String(card.id));
+
+      // Use item image if available, otherwise use symbol
+      let cardVisual = "";
+      if (card.image && !card.isPebble) {
+        cardVisual = `<img src="${card.image}" alt="${card.name}" class="card-image" />`;
+      } else {
+        const cardSymbol = this.getCardSymbol(card);
+        cardVisual = `<div class="card-symbol">${cardSymbol}</div>`;
+      }
 
       cardElement.innerHTML = `
         <div class="card-content ${isSelected ? "selected" : ""}">
-          <div class="card-symbol">${cardSymbol}</div>
+          ${cardVisual}
           <div class="card-name">${card.name}</div>
           <div class="card-stats">
             <div class="card-damage">DMG: ?</div>
@@ -538,8 +581,18 @@ class FightScreen extends Screen {
         damageElement.textContent = `DMG: ${card.damage || 0}`;
       }
 
+      // Add click event listener to each card
+      cardElement.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("🖱️ Card element clicked, calling handleCardClick");
+        this.handleCardClick(cardElement);
+      });
+
       handContainer.appendChild(cardElement);
     });
+
+    console.log("🃏 Hand rendered with", this.playerHand.length, "cards");
   }
 
   updateUI() {

@@ -32,165 +32,17 @@ const GAME_CONFIG = {
     particleCount: 20,
   },
 
-  // Game mechanics
-  items: {
-    normal: [
-      {
-        name: "Magnifying Glass",
-        type: "detection",
-        symbol: "🔍",
-        damage: 3,
-        cursed: false,
-      },
-      {
-        name: "Detective Badge",
-        type: "detection",
-        symbol: "🔍",
-        damage: 2,
-        cursed: false,
-      },
-      {
-        name: "Flashlight",
-        type: "detection",
-        symbol: "🔍",
-        damage: 4,
-        cursed: false,
-      },
-      {
-        name: "Compass",
-        type: "detection",
-        symbol: "🔍",
-        damage: 1,
-        cursed: false,
-      },
-      {
-        name: "Rusty Axe",
-        type: "weakness",
-        symbol: "🪓",
-        damage: 5,
-        cursed: false,
-      },
-      {
-        name: "Silver Blade",
-        type: "weakness",
-        symbol: "🪓",
-        damage: 6,
-        cursed: false,
-      },
-      {
-        name: "Iron Chisel",
-        type: "weakness",
-        symbol: "🪓",
-        damage: 3,
-        cursed: false,
-      },
-      {
-        name: "Wooden Stake",
-        type: "weakness",
-        symbol: "🪓",
-        damage: 2,
-        cursed: false,
-      },
-      {
-        name: "Torn Photo",
-        type: "emotional",
-        symbol: "💔",
-        damage: 4,
-        cursed: false,
-      },
-      {
-        name: "Love Letter",
-        type: "emotional",
-        symbol: "💔",
-        damage: 3,
-        cursed: false,
-      },
-      {
-        name: "Wedding Ring",
-        type: "emotional",
-        symbol: "💔",
-        damage: 5,
-        cursed: false,
-      },
-      {
-        name: "Child's Toy",
-        type: "emotional",
-        symbol: "💔",
-        damage: 2,
-        cursed: false,
-      },
-      {
-        name: "Ancient Book",
-        type: "mental",
-        symbol: "💭",
-        damage: 4,
-        cursed: false,
-      },
-      {
-        name: "Puzzle Box",
-        type: "mental",
-        symbol: "💭",
-        damage: 3,
-        cursed: false,
-      },
-      {
-        name: "Crystal Orb",
-        type: "mental",
-        symbol: "💭",
-        damage: 5,
-        cursed: false,
-      },
-      {
-        name: "Chess Piece",
-        type: "mental",
-        symbol: "💭",
-        damage: 2,
-        cursed: false,
-      },
-    ],
-    cursed: [
-      {
-        name: "Cursed Doll",
-        type: "cursed",
-        symbol: "💀",
-        damage: -5,
-        cursed: true,
-      },
-      {
-        name: "Poisoned Chalice",
-        type: "cursed",
-        symbol: "💀",
-        damage: -3,
-        cursed: true,
-      },
-      {
-        name: "Broken Mirror",
-        type: "cursed",
-        symbol: "💀",
-        damage: -4,
-        cursed: true,
-      },
-      {
-        name: "Withered Root",
-        type: "cursed",
-        symbol: "💀",
-        damage: -2,
-        cursed: true,
-      },
-    ],
-  },
-
   // Game phases
   phases: [
     {
-      hp: { start: 100, end: 80 },
+      hp: 20,
       treeAttack: 5,
       dialogue: "You don't belong here, little detective...",
       narrative:
         "The air here hums. The box stretches wider than physics should allow. I don't know how long I've been falling, but the smell of moss and smoke tells me I'm not alone. That tree... it's watching me. Time to search for answers. Time to fight.",
     },
     {
-      hp: { start: 80, end: 50 },
+      hp: 30,
       treeAttack: 10,
       dialogue:
         "Ask the blacksmith's daughter what she found beneath the roots...",
@@ -198,7 +50,7 @@ const GAME_CONFIG = {
         "The deeper I go, the more it shifts. The box ain't wood anymore—it's memory. Each object's a clue, a weapon, a whisper. The tree's not just alive—it's aware. It talks in dreams. It wants me to forget who I am. But I've still got my cards.",
     },
     {
-      hp: { start: 50, end: 0 },
+      hp: 50,
       treeAttack: 15,
       dialogue: "You opened the box. You are the next seed.",
       narrative:
@@ -211,16 +63,15 @@ const GAME_CONFIG = {
 
   // Player stats
   stamina: {
-    max: 100,
+    max: 60,
     searchDrainRate: 0.5,
     treeAttackDamage: [5, 10, 15],
   },
 
   // Combat settings
   combat: {
-    maxTurns: 3,
     maxCardsPerTurn: 2,
-    handSize: 3,
+    handSize: 5,
   },
 
   // Timer settings
