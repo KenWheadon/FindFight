@@ -33,6 +33,9 @@ class FightScreen extends Screen {
     // Tooltip system
     this.tooltip = null;
 
+    // Audio state tracking
+    this.lowStaminaWarningPlayed = false;
+
     console.log("⚔️ FightScreen instance created");
   }
 
@@ -51,6 +54,9 @@ class FightScreen extends Screen {
     // Set starting stamina from search screen
     this.playerStamina = startingStamina;
     this.maxPlayerStamina = 100;
+
+    // Reset audio state
+    this.lowStaminaWarningPlayed = false;
 
     // Set phase-specific values
     this.setPhaseParameters();
@@ -327,6 +333,7 @@ class FightScreen extends Screen {
     this.isPlayerTurn = true;
     this.messageQueue = [];
     this.isProcessingMessages = false;
+    this.lowStaminaWarningPlayed = false;
   }
 
   handleCardClick(cardElement) {
@@ -367,6 +374,12 @@ class FightScreen extends Screen {
         this.selectedCards.push(cardId);
         cardElement.classList.add("selected");
         cardElement.querySelector(".card-content").classList.add("selected");
+
+        // Play card select sound
+        if (this.audioManager) {
+          this.audioManager.playSound("card-select");
+        }
+
         console.log("✅ Card selected:", card.name);
 
         // Auto-play cards if we've selected the maximum
@@ -441,6 +454,11 @@ class FightScreen extends Screen {
         return;
       }
 
+      // Play card throw sound
+      if (this.audioManager) {
+        this.audioManager.playSound("card-throw");
+      }
+
       // Get positions
       const cardRect = cardElement.getBoundingClientRect();
       const treeRect = treeElement.getBoundingClientRect();
@@ -490,6 +508,11 @@ class FightScreen extends Screen {
         // Remove flying card
         flyingCard.remove();
 
+        // Play card hit sound
+        if (this.audioManager) {
+          this.audioManager.playSound("card-hit");
+        }
+
         // Apply card effect
         this.playCard(card);
 
@@ -527,6 +550,9 @@ class FightScreen extends Screen {
       ITEMS_UTILS.markItemAsUsed(card.id);
     }
 
+    // Store original stamina for change detection
+    const originalStamina = this.playerStamina;
+
     // Calculate damage/healing
     let damage = card.damage || 0;
     let stamina = card.restore || 0;
@@ -537,6 +563,10 @@ class FightScreen extends Screen {
     if (cardType === this.treeWeakness) {
       damage = Math.floor(damage * 1.5);
       this.queueCombatMessage(`🔥 Critical hit: ${damage} DMG!`, "critical");
+      // Play damage sound for critical hits
+      if (this.audioManager) {
+        this.audioManager.playSound("damage");
+      }
     } else if (cardType === this.treeImmunity) {
       damage = 0;
       this.queueCombatMessage(`🛡️ IMMUNE!`, "immune");
@@ -552,8 +582,16 @@ class FightScreen extends Screen {
         `☠️ CURSED ITEM! Tree heals ${damage} HP!`,
         "cursed"
       );
+      // Play cursed sound
+      if (this.audioManager) {
+        this.audioManager.playSound("cursed");
+      }
     } else {
       this.treeHP = Math.max(0, this.treeHP - damage);
+      // Play tree hurt sound if damage was dealt
+      if (damage > 0 && this.audioManager) {
+        this.audioManager.playSound("tree-hurt");
+      }
     }
 
     // Handle stamina changes (positive or negative)
@@ -565,12 +603,36 @@ class FightScreen extends Screen {
 
       if (stamina > 0) {
         this.queueCombatMessage(`💚 Restored ${stamina} stamina`, "heal");
+        // Play item sparkle sound for stamina restoration
+        if (this.audioManager) {
+          this.audioManager.playSound("item-sparkle");
+        }
       } else {
         this.queueCombatMessage(
           `💔 Lost ${Math.abs(stamina)} stamina`,
           "damage"
         );
       }
+    }
+
+    // Check for low stamina warning (only play once when dropping below 25%)
+    if (
+      this.playerStamina <= 25 &&
+      originalStamina > 25 &&
+      !this.lowStaminaWarningPlayed
+    ) {
+      this.lowStaminaWarningPlayed = true;
+      if (this.audioManager) {
+        // Delay the warning sound slightly so it doesn't overlap with other sounds
+        setTimeout(() => {
+          this.audioManager.playSound("stamina-low");
+        }, 500);
+      }
+    }
+
+    // Reset low stamina warning if stamina is restored above 25%
+    if (this.playerStamina > 25) {
+      this.lowStaminaWarningPlayed = false;
     }
 
     // No longer show card dialogue in combat messages - it's in the tooltip now
@@ -639,6 +701,11 @@ class FightScreen extends Screen {
 
   treeAttack() {
     console.log("🌳 Tree attacking");
+
+    // Play tree attack sound
+    if (this.audioManager) {
+      this.audioManager.playSound("tree-attack");
+    }
 
     // Tree attacks player
     this.playerStamina = Math.max(
@@ -713,6 +780,11 @@ class FightScreen extends Screen {
 
     this.combatInProgress = false;
 
+    // Play victory sound
+    if (this.audioManager) {
+      this.audioManager.playSound("victory-fanfare");
+    }
+
     // Notify the game controller
     if (window.game) {
       window.game.onFightComplete(this.currentPhase, true);
@@ -723,6 +795,11 @@ class FightScreen extends Screen {
     console.log("💀 Player defeated!");
 
     this.combatInProgress = false;
+
+    // Play defeat sound
+    if (this.audioManager) {
+      this.audioManager.playSound("defeat-sting");
+    }
 
     // Notify the game controller
     if (window.game) {
@@ -964,6 +1041,7 @@ class FightScreen extends Screen {
       cardAnimationInProgress: this.cardAnimationInProgress,
       messageQueueLength: this.messageQueue.length,
       isProcessingMessages: this.isProcessingMessages,
+      lowStaminaWarningPlayed: this.lowStaminaWarningPlayed,
     });
   }
 
@@ -993,6 +1071,7 @@ class FightScreen extends Screen {
     this.availableItems = [];
     this.usedItems = [];
     this.tooltip = null;
+    this.lowStaminaWarningPlayed = false;
 
     // Call parent destroy
     super.destroy();

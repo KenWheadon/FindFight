@@ -600,14 +600,14 @@ class SearchScreen extends Screen {
           this.searchState.foundItems,
           this.searchState.stamina
         );
-      }, 3000);
+      }, 500);
     } else {
       // Default behavior - return to start screen
       setTimeout(() => {
         if (window.game) {
           window.game.showScreen("start");
         }
-      }, 3000);
+      }, 500);
     }
   }
 
