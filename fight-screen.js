@@ -87,6 +87,20 @@ class FightScreen extends Screen {
     }
   }
 
+  // Get tree image based on current phase
+  getTreeImage() {
+    switch (this.currentPhase) {
+      case 1:
+        return "images/tree-small.png";
+      case 2:
+        return "images/tree.png";
+      case 3:
+        return "images/tree-stronger.png";
+      default:
+        return "images/tree.png";
+    }
+  }
+
   drawHand() {
     this.playerHand = [];
 
@@ -133,6 +147,7 @@ class FightScreen extends Screen {
       text: ["A small stone.", "Better than nothing.", "Reliable in a pinch."],
       cursed: false,
       isPebble: true,
+      hasUsed: true, // Pebbles are always known
     };
   }
 
@@ -180,7 +195,7 @@ class FightScreen extends Screen {
             
             <!-- Tree image -->
             <div class="tree-visual" id="treeVisual">
-              <img src="images/tree.png" alt="Evil Tree" class="tree-image" id="treeImage">
+              <img src="${this.getTreeImage()}" alt="Evil Tree" class="tree-image" id="treeImage">
             </div>
             
             <!-- Immunity symbol (right) -->
@@ -738,9 +753,11 @@ class FightScreen extends Screen {
         )}</div>`;
       }
 
-      // Show stats based on usage - but always show type now
-      const hasBeenUsed = ITEMS_UTILS.hasItemBeenUsed(card.id) || card.isPebble;
+      // Show stats based on usage - damage always shown, but restore based on hasUsed
+      const hasBeenUsed =
+        ITEMS_UTILS.hasItemBeenUsed(card.id) || card.isPebble || card.hasUsed;
       const damageDisplay = hasBeenUsed ? `DMG: ${card.damage || 0}` : "DMG: ?";
+      const restoreDisplay = hasBeenUsed ? `+${card.restore || 0}` : "?";
       const typeDisplay = this.getTypeDisplayName(card.type); // Always show type
 
       cardElement.innerHTML = `
@@ -749,7 +766,7 @@ class FightScreen extends Screen {
           <div class="card-name">${card.name}</div>
           <div class="card-stats">
             <div class="card-damage">${damageDisplay}</div>
-            <div class="card-restore">+${card.restore || 0}</div>
+            <div class="card-restore">Restore: ${restoreDisplay}</div>
           </div>
           <div class="card-type">${typeDisplay}</div>
         </div>
@@ -864,6 +881,12 @@ class FightScreen extends Screen {
       if (immunityImg) {
         immunityImg.src = ITEMS_UTILS.getTreeSymbolImage(this.treeImmunity);
       }
+    }
+
+    // Update tree image based on phase
+    const treeImage = document.getElementById("treeImage");
+    if (treeImage) {
+      treeImage.src = this.getTreeImage();
     }
 
     // Update turn info
