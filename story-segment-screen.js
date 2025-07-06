@@ -228,12 +228,6 @@ class StorySegmentScreen extends Screen {
     // Call parent init
     super.init();
 
-    // Play enhanced story music
-    if (this.audioManager) {
-      this.audioManager.playSound("story_music", true, 0.3);
-      this.audioManager.playSound("ambient_atmosphere", true, 0.15);
-    }
-
     // Hide click indicator initially
     const clickIndicator = document.getElementById("clickIndicator");
     if (clickIndicator) {
@@ -672,12 +666,6 @@ class StorySegmentScreen extends Screen {
   advanceFrame() {
     if (this.isAdvancing) return;
 
-    // Play enhanced advance sound
-    if (this.audioManager) {
-      this.audioManager.playSound("page_turn", false, 0.5);
-      this.audioManager.playSound("story_advance", false, 0.3);
-    }
-
     this.showFrame(this.currentFrame + 1);
   }
 
@@ -718,12 +706,6 @@ class StorySegmentScreen extends Screen {
       dot.classList.add("completed");
     });
 
-    // Play completion sound
-    if (this.audioManager) {
-      this.audioManager.playSound("story_complete", false, 0.6);
-      this.audioManager.playSound("victory_chime", false, 0.4);
-    }
-
     // Add completion particle burst
     this.createCompletionEffect();
   }
@@ -755,7 +737,6 @@ class StorySegmentScreen extends Screen {
     // Play exit sound
     if (this.audioManager) {
       this.audioManager.playSound("story_exit", false, 0.7);
-      this.audioManager.stopSound("ambient_atmosphere");
     }
 
     // Enhanced fade out
@@ -837,12 +818,6 @@ class StorySegmentScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
-    // Stop all sounds
-    if (this.audioManager) {
-      this.audioManager.stopSound("story_music");
-      this.audioManager.stopSound("ambient_atmosphere");
-    }
-
     // Clear any existing typewriter animation
     if (this.currentTypewriterInterval) {
       clearInterval(this.currentTypewriterInterval);

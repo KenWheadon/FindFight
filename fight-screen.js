@@ -323,10 +323,6 @@ class FightScreen extends Screen {
     console.log("🚀 Initializing Fight Screen");
     super.init();
 
-    if (this.audioManager) {
-      this.audioManager.playSound("combat_music", true, 0.4);
-    }
-
     this.combatInProgress = false;
     this.cardAnimationInProgress = false;
     this.isPlayerTurn = true;
@@ -718,11 +714,6 @@ class FightScreen extends Screen {
 
     this.combatInProgress = false;
 
-    if (this.audioManager) {
-      this.audioManager.stopSound("combat_music");
-      this.audioManager.playSound("victory", false, 0.8);
-    }
-
     // Notify the game controller
     if (window.game) {
       window.game.onFightComplete(this.currentPhase, true);
@@ -733,11 +724,6 @@ class FightScreen extends Screen {
     console.log("💀 Player defeated!");
 
     this.combatInProgress = false;
-
-    if (this.audioManager) {
-      this.audioManager.stopSound("combat_music");
-      this.audioManager.playSound("defeat", false, 0.8);
-    }
 
     // Notify the game controller
     if (window.game) {
@@ -998,11 +984,6 @@ class FightScreen extends Screen {
     if (this.messageTimer) {
       clearTimeout(this.messageTimer);
       this.messageTimer = null;
-    }
-
-    // Stop combat music
-    if (this.audioManager) {
-      this.audioManager.stopSound("combat_music");
     }
 
     // Clean up any flying cards

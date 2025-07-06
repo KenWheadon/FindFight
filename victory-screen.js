@@ -228,11 +228,6 @@ class VictoryScreen extends Screen {
       progressDot.classList.add("completed");
     }
 
-    // Play reveal sound
-    if (this.audioManager) {
-      this.audioManager.playSound("story_reveal", false, 0.6);
-    }
-
     // Create particle burst at click location
     const rect = segmentElement.getBoundingClientRect();
     const x = event.clientX;
@@ -300,11 +295,6 @@ class VictoryScreen extends Screen {
 
     // Call parent init
     super.init();
-
-    // Play victory sound
-    if (this.audioManager) {
-      this.audioManager.playSound("victory", false, 0.8);
-    }
 
     // Start celebration effects
     this.startCelebration();
@@ -556,11 +546,6 @@ class VictoryScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
-    // Stop any audio
-    if (this.audioManager) {
-      this.audioManager.stopSound("victory");
-    }
-
     // Reset state
     this.fadeInComplete = false;
     this.buttonsEnabled = true;

@@ -83,9 +83,15 @@ class StartScreen extends Screen {
                   <span class="name">Wrymskin</span>
                 </div>
                 <div class="credit-role">
-                  <span class="role">Audio Effect</span>
-                  <span class="name">https://freesound.org/: Name1, Name2, Name3, Name4</span>
+                  <span class="role">Audio Effect - freesound.org</span>
+                  <span class="name">Name1, Name2, Name3, Name4</span>
                 </div>
+
+                <div class="credit-role">
+                  <span class="role">Audio Effect - pixabay.com</span>
+                  <span class="name">Karim-Nessim</span>
+                </div>
+
                 <div class="credit-role">
                   <span class="role">Game Art</span>
                   <span class="name">ChatGPT</span>
@@ -193,11 +199,6 @@ class StartScreen extends Screen {
     // Call parent init
     super.init();
 
-    // Start background music
-    if (this.audioManager) {
-      this.audioManager.playSound("background_music", true, 0.4);
-    }
-
     // Show introduction after a brief delay
     this.setManagedTimeout(() => {
       this.showIntroduction();
@@ -242,11 +243,6 @@ class StartScreen extends Screen {
     console.log("🎯 Starting game from Start Screen");
 
     this.buttonsEnabled = false;
-
-    // Play start sound
-    if (this.audioManager) {
-      this.audioManager.playSound("game_start", false, 0.7);
-    }
 
     // Show starting message
     this.showTemporaryMessage("Beginning your investigation...", "info", 2000);
@@ -362,11 +358,6 @@ class StartScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
-    // Stop background music
-    if (this.audioManager) {
-      this.audioManager.stopSound("background_music");
-    }
-
     // Close credits if open
     if (this.creditsOpen) {
       this.hideCredits();

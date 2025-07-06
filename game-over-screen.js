@@ -209,11 +209,6 @@ class GameOverScreen extends Screen {
       progressDot.classList.add("completed");
     }
 
-    // Play reveal sound
-    if (this.audioManager) {
-      this.audioManager.playSound("story_reveal", false, 0.6);
-    }
-
     // Create particle burst at click location
     const rect = segmentElement.getBoundingClientRect();
     const x = event.clientX;
@@ -342,11 +337,6 @@ class GameOverScreen extends Screen {
 
     // Call parent init
     super.init();
-
-    // Play game over sound
-    if (this.audioManager) {
-      this.audioManager.playSound("game_over", false, 0.6);
-    }
 
     // Trigger screen shake effect
     this.triggerScreenShake(500);
@@ -488,11 +478,6 @@ class GameOverScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
-    // Stop any audio
-    if (this.audioManager) {
-      this.audioManager.stopSound("game_over");
-    }
-
     // Reset state
     this.fadeInComplete = false;
     this.buttonsEnabled = true;

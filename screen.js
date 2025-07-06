@@ -22,6 +22,7 @@ class Screen {
     this.render();
     this.setupEventListeners();
     this.startAnimations();
+    this.initializeAudio();
     this.startParticleSystem();
     this.isActive = true;
 
@@ -170,6 +171,15 @@ class Screen {
     };
 
     this.particleSystem.start();
+  }
+
+  // Initialize audio - compatibility method for screens that expect it
+  initializeAudio() {
+    // Audio manager is now set by the game controller
+    // This method is kept for compatibility with existing screen code
+    if (this.audioManager) {
+      console.log(`🔊 Audio initialized for ${this.screenName} screen`);
+    }
   }
 
   enableAudio() {

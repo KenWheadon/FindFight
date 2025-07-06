@@ -277,12 +277,6 @@ class SearchScreen extends Screen {
     if (!item.hasUsed) {
       this.foundItem(itemIndex);
     }
-
-    // Play sound
-    if (this.audioManager) {
-      const soundName = item.cursed ? "cursed" : "item-found";
-      this.audioManager.playSound(soundName);
-    }
   }
 
   foundItem(itemIndex) {
