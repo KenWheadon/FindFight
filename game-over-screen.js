@@ -172,6 +172,18 @@ class GameOverScreen extends Screen {
     const storySegments = this.container.querySelectorAll(".story-segment");
 
     storySegments.forEach((segment, index) => {
+      // Add hover sound effect
+      segment.addEventListener("mouseenter", () => {
+        if (
+          this.storySegments[index].unlocked &&
+          !this.storySegments[index].revealed
+        ) {
+          if (this.audioManager) {
+            this.audioManager.playSound("button-hover", false, 0.3);
+          }
+        }
+      });
+
       segment.addEventListener("click", (e) => {
         this.revealStorySegment(index, e);
       });
@@ -187,6 +199,11 @@ class GameOverScreen extends Screen {
     }
 
     console.log(`📖 Revealing story segment: ${segment.id}`);
+
+    // Play page turn sound
+    if (this.audioManager) {
+      this.audioManager.playSound("page-turn", false, 0.6);
+    }
 
     // Mark as revealed
     segment.revealed = true;
@@ -209,14 +226,22 @@ class GameOverScreen extends Screen {
       progressDot.classList.add("completed");
     }
 
-    // Create particle burst at click location
+    // Create particle burst at click location with sparkle sound
     const rect = segmentElement.getBoundingClientRect();
     const x = event.clientX;
     const y = event.clientY;
     this.createParticleBurst(x, y, 8, "rgba(255, 68, 68, 0.7)");
 
-    // Screen shake for impact
+    // Play sparkle sound for particle effect
+    if (this.audioManager) {
+      this.audioManager.playSound("item-sparkle", false, 0.4);
+    }
+
+    // Screen shake for impact with tree attack sound
     this.triggerScreenShake(200);
+    if (this.audioManager) {
+      this.audioManager.playSound("tree-attack", false, 0.5);
+    }
 
     // Unlock next segment
     if (index + 1 < this.storySegments.length) {
@@ -241,6 +266,11 @@ class GameOverScreen extends Screen {
 
     this.allSegmentsRevealed = true;
 
+    // Play cursed sound for the final reveal
+    if (this.audioManager) {
+      this.audioManager.playSound("cursed", false, 0.7);
+    }
+
     // Show the motivation message
     const motivationMessage = this.container.querySelector(
       ".motivation-message"
@@ -261,6 +291,11 @@ class GameOverScreen extends Screen {
       this.setManagedTimeout(() => {
         rightColumn.classList.add("visible");
         this.rightColumnVisible = true;
+
+        // Play a subtle atmospheric sound when the right column appears
+        if (this.audioManager) {
+          this.audioManager.playSound("stamina-low", false, 0.3);
+        }
       }, 800);
     }
 
@@ -278,18 +313,26 @@ class GameOverScreen extends Screen {
   }
 
   createFinalRevealEffect() {
-    // Create multiple dark particle bursts
+    // Create multiple dark particle bursts with sound
     for (let i = 0; i < 5; i++) {
       this.setManagedTimeout(() => {
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * window.innerHeight;
         this.createParticleBurst(x, y, 12, "rgba(139, 0, 0, 0.8)");
+
+        // Play sparkle sound for each burst
+        if (this.audioManager) {
+          this.audioManager.playSound("item-sparkle", false, 0.2);
+        }
       }, i * 300);
     }
 
-    // Screen shake sequence
+    // Screen shake sequence with tree attack sound
     this.setManagedTimeout(() => {
       this.triggerScreenShake(1000);
+      if (this.audioManager) {
+        this.audioManager.playSound("tree-attack", false, 0.6);
+      }
     }, 500);
   }
 
@@ -323,8 +366,14 @@ class GameOverScreen extends Screen {
     // Get DOM elements
     const restartBtn = document.getElementById("restartBtn");
 
-    // Restart button
+    // Restart button with hover and click sounds
     if (restartBtn) {
+      restartBtn.addEventListener("mouseenter", () => {
+        if (this.audioManager) {
+          this.audioManager.playSound("button-hover", false, 0.4);
+        }
+      });
+
       restartBtn.addEventListener("click", (e) => {
         this.createRippleEffect(restartBtn, e);
         this.restartGame();
@@ -337,6 +386,11 @@ class GameOverScreen extends Screen {
 
     // Call parent init
     super.init();
+
+    // Play defeat sting sound immediately
+    if (this.audioManager) {
+      this.audioManager.playSound("defeat-sting", false, 0.8);
+    }
 
     // Trigger screen shake effect
     this.triggerScreenShake(500);
@@ -356,12 +410,17 @@ class GameOverScreen extends Screen {
       gameOverContent.style.transform = "translateY(0)";
     }
 
-    // Animate left column
+    // Animate left column with typewriter sound
     const leftColumn = document.getElementById("leftColumn");
     if (leftColumn) {
       this.setManagedTimeout(() => {
         leftColumn.style.opacity = "1";
         leftColumn.style.transform = "translateX(0)";
+
+        // Play typewriter sound for text appearance
+        if (this.audioManager) {
+          this.audioManager.playSound("typewriter_click", false, 0.4);
+        }
       }, 300);
     }
 
@@ -379,9 +438,9 @@ class GameOverScreen extends Screen {
 
     this.buttonsEnabled = false;
 
-    // Play restart sound
+    // Play click sound
     if (this.audioManager) {
-      this.audioManager.playSound("button_click", false, 0.7);
+      this.audioManager.playSound("click", false, 0.7);
     }
 
     // Fade out the screen
@@ -406,9 +465,9 @@ class GameOverScreen extends Screen {
 
     this.buttonsEnabled = false;
 
-    // Play menu sound
+    // Play click sound
     if (this.audioManager) {
-      this.audioManager.playSound("button_click", false, 0.7);
+      this.audioManager.playSound("click", false, 0.7);
     }
 
     // Fade out the screen
@@ -496,11 +555,11 @@ class GameOverScreen extends Screen {
     // Call parent destroy
     super.destroy();
 
-    console.log("🗑️ Enhanced Game Over Screen destroyed");
+    console.log("🗑️ Game Over Screen destroyed");
   }
 }
 
 // Make GameOverScreen available globally
 window.GameOverScreen = GameOverScreen;
 
-console.log("💀 Enhanced Game Over Screen class loaded");
+console.log("💀 Game Over Screen class loaded");
