@@ -437,9 +437,9 @@ class FightScreen extends Screen {
 
       // Auto-end turn if we've used all cards
       if (this.cardsUsedThisTurn >= this.maxCardsPerTurn) {
-        setTimeout(() => this.endTurn(), 1000);
+        setTimeout(() => this.endTurn(), 250);
       }
-    }, 1000);
+    }, 750);
   }
 
   async animateCardThrow(cardId, card) {
@@ -696,7 +696,7 @@ class FightScreen extends Screen {
     // Tree's turn
     setTimeout(() => {
       this.treeAttack();
-    }, 1000);
+    }, 250);
   }
 
   treeAttack() {
@@ -730,10 +730,10 @@ class FightScreen extends Screen {
       return;
     }
 
-    // Start new turn
+    // Start new turn - reduced delay from 1500ms to 800ms
     setTimeout(() => {
       this.startNewTurn();
-    }, 1500);
+    }, 800);
   }
 
   startNewTurn() {
@@ -753,6 +753,11 @@ class FightScreen extends Screen {
       } else {
         break; // No more cards available
       }
+    }
+
+    // Play sound for new cards being drawn
+    if (cardsToAdd.length > 0 && this.audioManager) {
+      this.audioManager.playSound("item-found");
     }
 
     // Change tree symbols
@@ -871,8 +876,12 @@ class FightScreen extends Screen {
         this.handleCardClick(cardElement);
       });
 
-      // Tooltip event listeners
+      // Hover sound and tooltip event listeners
       cardElement.addEventListener("mouseenter", (e) => {
+        // Play hover sound
+        if (this.audioManager) {
+          this.audioManager.playSound("button-hover");
+        }
         this.showTooltip(card, e);
       });
 
