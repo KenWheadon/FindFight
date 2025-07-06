@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Item Positioning Tool - Rusty vs. The Evil Tree</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Courier New", monospace;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #e0e0e0;
+        overflow: hidden;
+      }
+
+      .tool-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Left Panel - Controls */
+      .control-panel {
+        width: 300px;
+        background: rgba(26, 26, 46, 0.9);
+        border-right: 2px solid rgba(212, 175, 55, 0.5);
+        padding: 20px;
+        overflow-y: auto;
+        z-index: 100;
+      }
+
+      .control-section {
+        margin-bottom: 25px;
+      }
+
+      .control-section h3 {
+        color: #d4af37;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .location-selector {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .location-btn {
+        background: linear-gradient(145deg, #2c2c54, #40407a);
+        color: #e0e0e0;
+        border: 2px solid #666;
+        border-radius: 8px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .location-btn:hover {
+        background: linear-gradient(145deg, #40407a, #2c2c54);
+        border-color: #888;
+      }
+
+      .location-btn.active {
+        background: linear-gradient(145deg, #d4af37, #b8941f);
+        color: #1a1a2e;
+        border-color: #d4af37;
+      }
+
+      .selected-item-info {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(212, 175, 55, 0.5);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .selected-item-info.no-selection {
+        border-color: #666;
+        color: #999;
+      }
+
+      .item-property {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .item-property label {
+        font-weight: bold;
+        color: #d4af37;
+      }
+
+      .item-property span {
+        color: #28a745;
+        font-weight: bold;
+      }
+
+      .export-section {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(40, 167, 69, 0.5);
+        border-radius: 8px;
+        padding: 15px;
+      }
+
+      .export-btn {
+        background: linear-gradient(145deg, #28a745, #218838);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1em;
+        font-family: "Courier New", monospace;
+      }
+
+      .export-btn:hover {
+        background: linear-gradient(145deg, #34ce57, #28a745);
+        transform: translateY(-2px);
+      }
+
+      .export-output {
+        margin-top: 15px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      /* Right Panel - Positioning Area */
+      .positioning-area {
+        flex: 1 !important;
+        position: relative !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .location-background {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #items-container {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+      }
+
+      .positioning-item {
+        position: absolute !important;
+        cursor: move !important;
+        border: 2px solid transparent !important;
+        border-radius: 8px !important;
+        transition: border-color 0.3s ease !important;
+        background-size: contain !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        user-select: none !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        transform-origin: center center !important;
+      }
+
+      .positioning-item:hover {
+        border-color: rgba(212, 175, 55, 0.7);
+      }
+
+      .positioning-item.selected {
+        border-color: #d4af37;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      }
+
+      .positioning-item.dragging {
+        border-color: #28a745;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+        z-index: 1000;
+      }
+
+      /* Resize handles */
+      .resize-handle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #d4af37;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        cursor: nw-resize;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .positioning-item:hover .resize-handle,
+      .positioning-item.selected .resize-handle {
+        opacity: 1;
+      }
+
+      .resize-handle.top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nw-resize;
+      }
+
+      .resize-handle.top-right {
+        top: -5px;
+        right: -5px;
+        cursor: ne-resize;
+      }
+
+      .resize-handle.bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: sw-resize;
+      }
+
+      .resize-handle.bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: se-resize;
+      }
+
+      /* Item label */
+      .item-label {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: #d4af37;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .positioning-item:hover .item-label,
+      .positioning-item.selected .item-label {
+        opacity: 1;
+      }
+
+      .instructions {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(212, 175, 55, 0.5);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .instructions ul {
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin-bottom: 5px;
+      }
+
+      .reset-btn {
+        background: linear-gradient(145deg, #dc3545, #c82333);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 0.9em;
+        font-family: "Courier New", monospace;
+        margin-top: 10px;
+      }
+
+      .reset-btn:hover {
+        background: linear-gradient(145deg, #e74c3c, #dc3545);
+        transform: translateY(-2px);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .control-panel {
+          width: 250px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .tool-container {
+          flex-direction: column;
+        }
+
+        .control-panel {
+          width: 100%;
+          height: 300px;
+        }
+
+        .positioning-area {
+          height: calc(100vh - 300px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tool-container">
+      <!-- Left Control Panel -->
+      <div class="control-panel">
+        <div class="control-section">
+          <h3>🎯 Item Positioning Tool</h3>
+          <div class="instructions">
+            <ul>
+              <li>Click items to select them</li>
+              <li>Drag items to reposition</li>
+              <li>Drag corner handles to resize</li>
+              <li>Switch locations to position for each</li>
+              <li>Export when done positioning</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="control-section">
+          <h3>📍 Location</h3>
+          <div class="location-selector">
+            <button class="location-btn active" data-location="detectiveOffice">
+              Detective's Office
+            </button>
+            <button class="location-btn" data-location="forestClearing">
+              Forest Clearing
+            </button>
+            <button class="location-btn" data-location="darkCatacombs">
+              Dark Catacombs
+            </button>
+          </div>
+        </div>
+
+        <div class="control-section">
+          <h3>🎯 Selected Item</h3>
+          <div class="selected-item-info no-selection" id="selected-item-info">
+            <div class="item-property">
+              <label>Name:</label>
+              <span id="selected-name">None selected</span>
+            </div>
+            <div class="item-property">
+              <label>X Position:</label>
+              <span id="selected-x">-</span>
+            </div>
+            <div class="item-property">
+              <label>Y Position:</label>
+              <span id="selected-y">-</span>
+            </div>
+            <div class="item-property">
+              <label>Scale:</label>
+              <span id="selected-scale">-</span>
+            </div>
+            <div class="item-property">
+              <label>Initially Visible:</label>
+              <span id="selected-visible">-</span>
+            </div>
+          </div>
+          <button class="reset-btn" onclick="resetCurrentLocation()">
+            Reset Current Location
+          </button>
+        </div>
+
+        <div class="control-section">
+          <h3>💾 Export</h3>
+          <div class="export-section">
+            <button class="export-btn" onclick="exportItemPositions()">
+              Export Item Positions
+            </button>
+            <div class="export-output" id="export-output"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Positioning Area -->
+      <div class="positioning-area">
+        <div class="location-background" id="location-background"></div>
+        <div class="items-container" id="items-container"></div>
+      </div>
+    </div>
+
+    <script>
+      // Items Configuration (embedded for the tool)
+      const ITEMS_CONFIG = {
+        items: [
+          {
+            id: 1,
+            name: "Part Sign",
+            image: "images/item_1.png",
+            symbol: "🪧",
+            damage: 3,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 2,
+            name: "Milkshake",
+            image: "images/item_2.png",
+            symbol: "🥤",
+            damage: 2,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 3,
+            name: "Baseball Cap",
+            image: "images/item_3.png",
+            symbol: "🧢",
+            damage: 4,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 4,
+            name: "Map",
+            image: "images/item_4.png",
+            symbol: "🗺️",
+            damage: 1,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 5,
+            name: "No Walking Sign",
+            image: "images/item_5.png",
+            symbol: "🚷",
+            damage: 5,
+            restore: 0,
+            type: "weakness",
+            cursed: false,
+          },
+          {
+            id: 6,
+            name: "Horseshoe",
+            image: "images/item_6.png",
+            symbol: "🪖",
+            damage: 6,
+            restore: 0,
+            type: "weakness",
+            cursed: false,
+          },
+          {
+            id: 7,
+            name: "Arrow",
+            image: "images/item_7.png",
+            symbol: "🏹",
+            damage: 3,
+            restore: 0,
+            type: "weakness",
+            cursed: false,
+          },
+          {
+            id: 8,
+            name: "Acorn",
+            image: "images/item_8.png",
+            symbol: "🌰",
+            damage: 2,
+            restore: 0,
+            type: "weakness",
+            cursed: false,
+          },
+          {
+            id: 9,
+            name: "Water Bottle",
+            image: "images/item_9.png",
+            symbol: "💧",
+            damage: 4,
+            restore: 0,
+            type: "emotional",
+            cursed: false,
+          },
+          {
+            id: 10,
+            name: "Pink Flower",
+            image: "images/item_10.png",
+            symbol: "🌸",
+            damage: 3,
+            restore: 0,
+            type: "emotional",
+            cursed: false,
+          },
+          {
+            id: 11,
+            name: "Fallen Leaf",
+            image: "images/item_11.png",
+            symbol: "🍂",
+            damage: 5,
+            restore: 0,
+            type: "emotional",
+            cursed: false,
+          },
+          {
+            id: 12,
+            name: "Pad Lock",
+            image: "images/item_12.png",
+            symbol: "🔒",
+            damage: 2,
+            restore: 0,
+            type: "emotional",
+            cursed: false,
+          },
+          {
+            id: 13,
+            name: "Pinecone",
+            image: "images/item_13.png",
+            symbol: "🌲",
+            damage: 4,
+            restore: 0,
+            type: "mental",
+            cursed: false,
+          },
+          {
+            id: 14,
+            name: "Tennis Ball",
+            image: "images/item_14.png",
+            symbol: "🎾",
+            damage: 3,
+            restore: 0,
+            type: "mental",
+            cursed: false,
+          },
+          {
+            id: 15,
+            name: "Purse",
+            image: "images/item_15.png",
+            symbol: "👜",
+            damage: 5,
+            restore: 0,
+            type: "mental",
+            cursed: false,
+          },
+          {
+            id: 16,
+            name: "Street Lamp",
+            image: "images/item_16.png",
+            symbol: "🌃",
+            damage: 2,
+            restore: 0,
+            type: "mental",
+            cursed: false,
+          },
+          {
+            id: 17,
+            name: "Message Board",
+            image: "images/item_17.png",
+            symbol: "📋",
+            damage: 4,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 18,
+            name: "Stereo",
+            image: "images/item_18.png",
+            symbol: "📻",
+            damage: 3,
+            restore: 0,
+            type: "detection",
+            cursed: false,
+          },
+          {
+            id: 19,
+            name: "Rock",
+            image: "images/item_19.png",
+            symbol: "🪨",
+            damage: 5,
+            restore: 0,
+            type: "weakness",
+            cursed: false,
+          },
+          {
+            id: 20,
+            name: "Backpack",
+            image: "images/item_20.png",
+            symbol: "🎒",
+            damage: 2,
+            restore: 0,
+            type: "emotional",
+            cursed: false,
+          },
+          {
+            id: 21,
+            name: "Flying Kite",
+            image: "images/item_21.png",
+            symbol: "🪁",
+            damage: 4,
+            restore: 0,
+            type: "mental",
+            cursed: false,
+          },
+        ],
+        locations: {
+          detectiveOffice: {
+            name: "Detective's Office",
+            backgroundImage: "images/park-bg.png",
+            itemPositions: [
+              { itemId: 1, x: 15, y: 25, scale: 0.8, initiallyVisible: true },
+              { itemId: 2, x: 85, y: 15, scale: 0.9, initiallyVisible: true },
+              { itemId: 3, x: 25, y: 70, scale: 1.0, initiallyVisible: true },
+              { itemId: 4, x: 75, y: 80, scale: 0.7, initiallyVisible: true },
+              { itemId: 5, x: 45, y: 30, scale: 1.1, initiallyVisible: true },
+              { itemId: 6, x: 65, y: 45, scale: 0.8, initiallyVisible: true },
+              { itemId: 7, x: 10, y: 60, scale: 0.9, initiallyVisible: true },
+              { itemId: 8, x: 90, y: 35, scale: 0.6, initiallyVisible: true },
+              { itemId: 9, x: 35, y: 85, scale: 1.0, initiallyVisible: true },
+              { itemId: 10, x: 55, y: 10, scale: 0.8, initiallyVisible: true },
+              { itemId: 11, x: 20, y: 40, scale: 0.9, initiallyVisible: false },
+              { itemId: 12, x: 80, y: 60, scale: 0.7, initiallyVisible: false },
+              { itemId: 13, x: 30, y: 50, scale: 1.2, initiallyVisible: false },
+              { itemId: 14, x: 70, y: 25, scale: 0.8, initiallyVisible: false },
+              { itemId: 15, x: 40, y: 65, scale: 1.0, initiallyVisible: false },
+              { itemId: 16, x: 60, y: 75, scale: 0.9, initiallyVisible: false },
+              { itemId: 17, x: 15, y: 80, scale: 0.8, initiallyVisible: false },
+              { itemId: 18, x: 85, y: 50, scale: 1.1, initiallyVisible: false },
+              { itemId: 19, x: 25, y: 20, scale: 0.7, initiallyVisible: false },
+              { itemId: 20, x: 75, y: 65, scale: 1.0, initiallyVisible: false },
+              { itemId: 21, x: 50, y: 40, scale: 0.8, initiallyVisible: false },
+            ],
+          },
+          forestClearing: {
+            name: "Forest Clearing",
+            backgroundImage: "images/woods-bg.png",
+            itemPositions: [
+              { itemId: 1, x: 20, y: 30, scale: 0.9, initiallyVisible: true },
+              { itemId: 2, x: 80, y: 20, scale: 0.8, initiallyVisible: true },
+              { itemId: 3, x: 30, y: 75, scale: 1.1, initiallyVisible: true },
+              { itemId: 4, x: 70, y: 85, scale: 0.7, initiallyVisible: true },
+              { itemId: 5, x: 50, y: 35, scale: 1.0, initiallyVisible: true },
+              { itemId: 6, x: 60, y: 50, scale: 0.9, initiallyVisible: true },
+              { itemId: 7, x: 15, y: 65, scale: 0.8, initiallyVisible: true },
+              { itemId: 8, x: 85, y: 40, scale: 0.6, initiallyVisible: true },
+              { itemId: 9, x: 40, y: 80, scale: 1.0, initiallyVisible: true },
+              { itemId: 10, x: 55, y: 15, scale: 0.8, initiallyVisible: true },
+              { itemId: 11, x: 25, y: 45, scale: 0.9, initiallyVisible: false },
+              { itemId: 12, x: 75, y: 65, scale: 0.7, initiallyVisible: false },
+              { itemId: 13, x: 35, y: 55, scale: 1.2, initiallyVisible: false },
+              { itemId: 14, x: 65, y: 30, scale: 0.8, initiallyVisible: false },
+              { itemId: 15, x: 45, y: 70, scale: 1.0, initiallyVisible: false },
+              { itemId: 16, x: 55, y: 80, scale: 0.9, initiallyVisible: false },
+              { itemId: 17, x: 10, y: 85, scale: 0.8, initiallyVisible: false },
+              { itemId: 18, x: 90, y: 55, scale: 1.1, initiallyVisible: false },
+              { itemId: 19, x: 30, y: 25, scale: 0.7, initiallyVisible: false },
+              { itemId: 20, x: 70, y: 70, scale: 1.0, initiallyVisible: false },
+              { itemId: 21, x: 45, y: 45, scale: 0.8, initiallyVisible: false },
+            ],
+          },
+          darkCatacombs: {
+            name: "Dark Catacombs",
+            backgroundImage: "images/catacomb-bg.png",
+            itemPositions: [
+              { itemId: 1, x: 25, y: 35, scale: 0.8, initiallyVisible: true },
+              { itemId: 2, x: 75, y: 25, scale: 0.9, initiallyVisible: true },
+              { itemId: 3, x: 35, y: 70, scale: 1.0, initiallyVisible: true },
+              { itemId: 4, x: 65, y: 80, scale: 0.7, initiallyVisible: true },
+              { itemId: 5, x: 45, y: 40, scale: 1.1, initiallyVisible: true },
+              { itemId: 6, x: 55, y: 55, scale: 0.8, initiallyVisible: true },
+              { itemId: 7, x: 20, y: 60, scale: 0.9, initiallyVisible: true },
+              { itemId: 8, x: 80, y: 45, scale: 0.6, initiallyVisible: true },
+              { itemId: 9, x: 30, y: 85, scale: 1.0, initiallyVisible: true },
+              { itemId: 10, x: 60, y: 20, scale: 0.8, initiallyVisible: true },
+              { itemId: 11, x: 15, y: 50, scale: 0.9, initiallyVisible: false },
+              { itemId: 12, x: 85, y: 65, scale: 0.7, initiallyVisible: false },
+              { itemId: 13, x: 40, y: 60, scale: 1.2, initiallyVisible: false },
+              { itemId: 14, x: 70, y: 35, scale: 0.8, initiallyVisible: false },
+              { itemId: 15, x: 50, y: 75, scale: 1.0, initiallyVisible: false },
+              { itemId: 16, x: 60, y: 85, scale: 0.9, initiallyVisible: false },
+              { itemId: 17, x: 10, y: 80, scale: 0.8, initiallyVisible: false },
+              { itemId: 18, x: 90, y: 60, scale: 1.1, initiallyVisible: false },
+              { itemId: 19, x: 35, y: 30, scale: 0.7, initiallyVisible: false },
+              { itemId: 20, x: 75, y: 70, scale: 1.0, initiallyVisible: false },
+              { itemId: 21, x: 55, y: 50, scale: 0.8, initiallyVisible: false },
+            ],
+          },
+        },
+      };
+
+      // Tool state
+      let currentLocation = "detectiveOffice";
+      let selectedItem = null;
+      let isDragging = false;
+      let isResizing = false;
+      let dragOffset = { x: 0, y: 0 };
+      let resizeStartData = null;
+
+      // Initialize the tool
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeTool();
+      });
+
+      function initializeTool() {
+        setupLocationSelector();
+        loadLocation(currentLocation);
+        setupEventListeners();
+        console.log("📐 Item Positioning Tool initialized");
+      }
+
+      function setupLocationSelector() {
+        const locationBtns = document.querySelectorAll(".location-btn");
+        locationBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const location = this.dataset.location;
+            if (location !== currentLocation) {
+              switchLocation(location);
+            }
+          });
+        });
+      }
+
+      function switchLocation(locationName) {
+        currentLocation = locationName;
+
+        // Update active button
+        document.querySelectorAll(".location-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document
+          .querySelector(`[data-location="${locationName}"]`)
+          .classList.add("active");
+
+        // Load location
+        loadLocation(locationName);
+
+        // Clear selection
+        clearSelection();
+
+        console.log(`📍 Switched to location: ${locationName}`);
+      }
+
+      function loadLocation(locationName) {
+        const location = ITEMS_CONFIG.locations[locationName];
+        if (!location) {
+          console.error(`Location ${locationName} not found`);
+          return;
+        }
+
+        // Set background
+        const background = document.getElementById("location-background");
+        background.style.backgroundImage = `url('${location.backgroundImage}')`;
+
+        // Render items
+        renderItems(location.itemPositions);
+      }
+
+      function renderItems(itemPositions) {
+        const container = document.getElementById("items-container");
+        container.innerHTML = "";
+
+        itemPositions.forEach((position, index) => {
+          const item = ITEMS_CONFIG.items.find(
+            (item) => item.id === position.itemId
+          );
+          if (!item) return;
+
+          const itemElement = createItemElement(item, position, index);
+          container.appendChild(itemElement);
+        });
+      }
+
+      function createItemElement(item, position, index) {
+        const itemElement = document.createElement("div");
+        itemElement.className = "positioning-item";
+        itemElement.dataset.itemId = item.id;
+        itemElement.dataset.positionIndex = index;
+
+        // Set position and scale
+        const containerRect = document
+          .getElementById("items-container")
+          .getBoundingClientRect();
+        itemElement.style.left = `${position.x}%`;
+        itemElement.style.top = `${position.y}%`;
+        itemElement.style.transform = `scale(${position.scale})`;
+
+        // Calculate size based on scale
+        const baseSize = 40;
+        const size = baseSize * position.scale;
+        itemElement.style.width = `${size}px`;
+        itemElement.style.height = `${size}px`;
+
+        // Set content
+        if (item.image) {
+          itemElement.style.backgroundImage = `url('${item.image}')`;
+        } else {
+          itemElement.innerHTML = item.symbol || "?";
+          itemElement.style.display = "flex";
+          itemElement.style.alignItems = "center";
+          itemElement.style.justifyContent = "center";
+          itemElement.style.fontSize = `${size * 0.6}px`;
+        }
+
+        // Add label
+        const label = document.createElement("div");
+        label.className = "item-label";
+        label.textContent = item.name;
+        itemElement.appendChild(label);
+
+        // Add resize handles
+        const corners = [
+          "top-left",
+          "top-right",
+          "bottom-left",
+          "bottom-right",
+        ];
+        corners.forEach((corner) => {
+          const handle = document.createElement("div");
+          handle.className = `resize-handle ${corner}`;
+          handle.dataset.corner = corner;
+          itemElement.appendChild(handle);
+        });
+
+        return itemElement;
+      }
+
+      function setupEventListeners() {
+        const container = document.getElementById("items-container");
+
+        // Mouse events for dragging and resizing
+        container.addEventListener("mousedown", handleMouseDown);
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+
+        // Touch events for mobile
+        container.addEventListener("touchstart", handleTouchStart);
+        document.addEventListener("touchmove", handleTouchMove);
+        document.addEventListener("touchend", handleTouchEnd);
+
+        // Prevent default drag behavior
+        container.addEventListener("dragstart", (e) => e.preventDefault());
+      }
+
+      function handleMouseDown(e) {
+        const item = e.target.closest(".positioning-item");
+        if (!item) return;
+
+        e.preventDefault();
+
+        if (e.target.classList.contains("resize-handle")) {
+          startResize(item, e.target.dataset.corner, e.clientX, e.clientY);
+        } else {
+          startDrag(item, e.clientX, e.clientY);
+        }
+      }
+
+      function handleMouseMove(e) {
+        if (isDragging) {
+          updateDrag(e.clientX, e.clientY);
+        } else if (isResizing) {
+          updateResize(e.clientX, e.clientY);
+        }
+      }
+
+      function handleMouseUp(e) {
+        if (isDragging) {
+          endDrag();
+        } else if (isResizing) {
+          endResize();
+        }
+      }
+
+      function handleTouchStart(e) {
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          handleMouseDown({
+            target: e.target,
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            preventDefault: () => e.preventDefault(),
+          });
+        }
+      }
+
+      function handleTouchMove(e) {
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+        }
+      }
+
+      function handleTouchEnd(e) {
+        handleMouseUp(e);
+      }
+
+      function startDrag(item, clientX, clientY) {
+        isDragging = true;
+        selectedItem = item;
+
+        const container = document.getElementById("items-container");
+        const containerRect = container.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+
+        // Calculate offset from mouse to item's top-left corner (same calculation for both X and Y)
+        dragOffset.x = clientX - itemRect.left;
+        dragOffset.y = clientY - itemRect.top;
+
+        item.classList.add("dragging");
+        selectItem(item);
+      }
+
+      function updateDrag(clientX, clientY) {
+        if (!selectedItem) return;
+
+        const container = document.getElementById("items-container");
+        const containerRect = container.getBoundingClientRect();
+
+        // Calculate where the item's top-left corner should be
+        const newItemLeft = clientX - dragOffset.x;
+        const newItemTop = clientY - dragOffset.y;
+
+        // Convert to percentage relative to container
+        const x =
+          ((newItemLeft - containerRect.left) / containerRect.width) * 100;
+        const y =
+          ((newItemTop - containerRect.top) / containerRect.height) * 100;
+
+        // Clamp to container bounds
+        const clampedX = Math.max(0, Math.min(95, x));
+        const clampedY = Math.max(0, Math.min(95, y));
+
+        // ONLY update position properties, leave all other styles intact
+        selectedItem.style.setProperty("left", `${clampedX}%`, "important");
+        selectedItem.style.setProperty("top", `${clampedY}%`, "important");
+
+        // Force reflow to ensure the positioning takes effect
+        selectedItem.offsetHeight;
+
+        updateItemPosition(selectedItem, clampedX, clampedY);
+        updateSelectedItemInfo();
+      }
+
+      function endDrag() {
+        if (selectedItem) {
+          selectedItem.classList.remove("dragging");
+        }
+        isDragging = false;
+      }
+
+      function startResize(item, corner, clientX, clientY) {
+        isResizing = true;
+        selectedItem = item;
+
+        const rect = item.getBoundingClientRect();
+        const currentScale = getCurrentScale(item);
+
+        resizeStartData = {
+          corner,
+          startX: clientX,
+          startY: clientY,
+          startScale: currentScale,
+          startWidth: rect.width,
+          startHeight: rect.height,
+        };
+
+        selectItem(item);
+      }
+
+      function updateResize(clientX, clientY) {
+        if (!selectedItem || !resizeStartData) return;
+
+        const deltaX = clientX - resizeStartData.startX;
+        const deltaY = clientY - resizeStartData.startY;
+
+        // Calculate scale change based on diagonal movement
+        const diagonal = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const direction = deltaX + deltaY > 0 ? 1 : -1;
+
+        const scaleChange = (diagonal * direction) / 200; // Adjust sensitivity
+        let newScale = resizeStartData.startScale + scaleChange;
+
+        // Clamp scale
+        newScale = Math.max(0.2, Math.min(3.0, newScale));
+
+        // Apply scale
+        selectedItem.style.transform = `scale(${newScale})`;
+
+        // Update size
+        const baseSize = 40;
+        const newSize = baseSize * newScale;
+        selectedItem.style.width = `${newSize}px`;
+        selectedItem.style.height = `${newSize}px`;
+
+        // Update font size if using symbol
+        if (!selectedItem.style.backgroundImage) {
+          selectedItem.style.fontSize = `${newSize * 0.6}px`;
+        }
+
+        updateItemScale(selectedItem, newScale);
+        updateSelectedItemInfo();
+      }
+
+      function endResize() {
+        isResizing = false;
+        resizeStartData = null;
+      }
+
+      function selectItem(item) {
+        // Clear previous selection
+        document.querySelectorAll(".positioning-item").forEach((el) => {
+          el.classList.remove("selected");
+        });
+
+        // Select new item
+        item.classList.add("selected");
+        selectedItem = item;
+
+        updateSelectedItemInfo();
+      }
+
+      function clearSelection() {
+        document.querySelectorAll(".positioning-item").forEach((el) => {
+          el.classList.remove("selected");
+        });
+        selectedItem = null;
+        updateSelectedItemInfo();
+      }
+
+      function updateSelectedItemInfo() {
+        const infoPanel = document.getElementById("selected-item-info");
+        const nameEl = document.getElementById("selected-name");
+        const xEl = document.getElementById("selected-x");
+        const yEl = document.getElementById("selected-y");
+        const scaleEl = document.getElementById("selected-scale");
+        const visibleEl = document.getElementById("selected-visible");
+
+        if (!selectedItem) {
+          infoPanel.classList.add("no-selection");
+          nameEl.textContent = "None selected";
+          xEl.textContent = "-";
+          yEl.textContent = "-";
+          scaleEl.textContent = "-";
+          visibleEl.textContent = "-";
+          return;
+        }
+
+        infoPanel.classList.remove("no-selection");
+
+        const itemId = parseInt(selectedItem.dataset.itemId);
+        const item = ITEMS_CONFIG.items.find((item) => item.id === itemId);
+        const position = getCurrentItemPosition(selectedItem);
+
+        nameEl.textContent = item.name;
+        xEl.textContent = `${position.x.toFixed(1)}%`;
+        yEl.textContent = `${position.y.toFixed(1)}%`;
+        scaleEl.textContent = position.scale.toFixed(2);
+        visibleEl.textContent = position.initiallyVisible ? "Yes" : "No";
+      }
+
+      function getCurrentItemPosition(itemElement) {
+        const positionIndex = parseInt(itemElement.dataset.positionIndex);
+        const currentPositions =
+          ITEMS_CONFIG.locations[currentLocation].itemPositions;
+        return currentPositions[positionIndex];
+      }
+
+      function getCurrentScale(itemElement) {
+        const transform = itemElement.style.transform;
+        const match = transform.match(/scale\(([^)]+)\)/);
+        return match ? parseFloat(match[1]) : 1.0;
+      }
+
+      function updateItemPosition(itemElement, x, y) {
+        const positionIndex = parseInt(itemElement.dataset.positionIndex);
+        const currentPositions =
+          ITEMS_CONFIG.locations[currentLocation].itemPositions;
+        currentPositions[positionIndex].x = x;
+        currentPositions[positionIndex].y = y;
+      }
+
+      function updateItemScale(itemElement, scale) {
+        const positionIndex = parseInt(itemElement.dataset.positionIndex);
+        const currentPositions =
+          ITEMS_CONFIG.locations[currentLocation].itemPositions;
+        currentPositions[positionIndex].scale = scale;
+      }
+
+      function resetCurrentLocation() {
+        if (
+          confirm(
+            `Reset all items in ${ITEMS_CONFIG.locations[currentLocation].name} to default positions?`
+          )
+        ) {
+          // This would reset to original positions - for now just reload
+          location.reload();
+        }
+      }
+
+      function exportItemPositions() {
+        const positions = ITEMS_CONFIG.locations[currentLocation].itemPositions;
+
+        const output = positions
+          .map((pos) => {
+            return `        { itemId: ${pos.itemId}, x: ${pos.x.toFixed(
+              1
+            )}, y: ${pos.y.toFixed(1)}, scale: ${pos.scale.toFixed(
+              2
+            )}, initiallyVisible: ${pos.initiallyVisible} }`;
+          })
+          .join(",\n");
+
+        const fullOutput = `[\n${output}\n      ]`;
+
+        const exportOutput = document.getElementById("export-output");
+        exportOutput.textContent = fullOutput;
+
+        // Copy to clipboard
+        navigator.clipboard
+          .writeText(fullOutput)
+          .then(() => {
+            console.log("✅ Item positions copied to clipboard");
+            alert("Item positions copied to clipboard!");
+          })
+          .catch((err) => {
+            console.error("Failed to copy to clipboard:", err);
+          });
+      }
+
+      // Click outside to deselect
+      document.addEventListener("click", function (e) {
+        if (
+          !e.target.closest(".positioning-item") &&
+          !e.target.closest(".control-panel")
+        ) {
+          clearSelection();
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          clearSelection();
+        } else if (e.key === "Delete" && selectedItem) {
+          // Could add delete functionality here
+        }
+      });
+    </script>
+  </body>
+</html>
