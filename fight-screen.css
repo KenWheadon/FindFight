@@ -348,21 +348,8 @@
   margin-bottom: 10px;
 }
 
-.card-stats {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 0.9em;
-  margin-bottom: 5px;
-}
-
 .card-damage {
   color: #ff6b6b;
-  font-weight: bold;
-}
-
-.card-restore {
-  color: #4ecdc4;
   font-weight: bold;
 }
 

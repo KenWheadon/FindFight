@@ -456,12 +456,11 @@ const ITEMS_UTILS = {
     return ITEMS_CONFIG.items.find((item) => item.id === id);
   },
 
-  // Mark item as used
+  // Mark item as not used - work around for now
   markItemAsUsed(itemId) {
     const item = ITEMS_CONFIG.items.find((item) => item.id === itemId);
     if (item) {
-      item.hasUsed = true;
-      console.log(`📚 Item ${item.name} marked as used - revealing stats`);
+      item.hasUsed = false;
     }
   },
 
@@ -499,7 +498,7 @@ const ITEMS_UTILS = {
           y: pos.y,
           scale: pos.scale || 1.0,
           initiallyVisible: pos.initiallyVisible || false,
-          hasUsed: item.hasUsed, // Include the hasUsed state
+          hasUsed: false,
         };
       })
       .filter((item) => item !== null);
@@ -536,7 +535,7 @@ const ITEMS_UTILS = {
       y: 20 + Math.floor(index / 4) * 20,
       scale: 0.8 + Math.random() * 0.4, // Random scale between 0.8 and 1.2
       initiallyVisible: index < 5, // First 5 visible immediately
-      hasUsed: item.hasUsed,
+      hasUsed: false,
     }));
 
     return {

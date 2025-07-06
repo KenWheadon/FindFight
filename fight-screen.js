@@ -156,8 +156,7 @@ class FightScreen extends Screen {
       symbol: "🪨",
       image: "images/pebble.png", // Updated to use pebble.png
       damage: 1,
-      restore: 1,
-      type: "weakness",
+      type: "",
       text: ["A small stone.", "Better than nothing.", "Reliable in a pinch."],
       cursed: false,
       isPebble: true,
@@ -763,20 +762,15 @@ class FightScreen extends Screen {
       }
 
       // Show stats based on usage - damage always shown, but restore based on hasUsed
-      const hasBeenUsed =
-        ITEMS_UTILS.hasItemBeenUsed(card.id) || card.isPebble || card.hasUsed;
+      const hasBeenUsed = true;
       const damageDisplay = hasBeenUsed ? `DMG: ${card.damage || 0}` : "DMG: ?";
-      const restoreDisplay = hasBeenUsed ? `+${card.restore || 0}` : "?";
       const typeDisplay = this.getTypeDisplayName(card.type); // Always show type
 
       cardElement.innerHTML = `
         <div class="card-content ${isSelected ? "selected" : ""}">
           ${cardVisual}
           <div class="card-name">${card.name}</div>
-          <div class="card-stats">
-            <div class="card-damage">${damageDisplay}</div>
-            <div class="card-restore">Restore: ${restoreDisplay}</div>
-          </div>
+           <div class="card-damage">${damageDisplay}</div>
           <div class="card-type">${typeDisplay}</div>
         </div>
       `;

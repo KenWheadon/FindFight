@@ -460,6 +460,9 @@ class RustyGame {
     // Update game state to track progression
     this.updateGameState({ currentPhase: 2 });
 
+    // Reset item usage state for new level
+    this.resetItemUsageState();
+
     const locationData = ITEMS_UTILS.generateLocationData("forestClearing");
     if (!locationData) {
       console.error("Failed to generate forest location data");
@@ -477,6 +480,9 @@ class RustyGame {
     // Update game state to track progression
     this.updateGameState({ currentPhase: 3 });
 
+    // Reset item usage state for new level
+    this.resetItemUsageState();
+
     const locationData = ITEMS_UTILS.generateLocationData("darkCatacombs");
     if (!locationData) {
       console.error("Failed to generate catacombs location data");
@@ -486,6 +492,20 @@ class RustyGame {
 
     // Show confrontation story segment, then go to catacombs
     this.showStorySegment("confrontation", locationData);
+  }
+
+  // Reset item usage state between levels
+  resetItemUsageState() {
+    console.log("🔄 Resetting item usage state for new level");
+
+    // Reset items through ITEMS_UTILS if the method exists
+    if (ITEMS_UTILS && ITEMS_UTILS.resetAllItemUsage) {
+      ITEMS_UTILS.resetAllItemUsage();
+    } else {
+      console.warn(
+        "ITEMS_UTILS.resetAllItemUsage method not found - items may not reset properly"
+      );
+    }
   }
 
   // Game state management
@@ -632,6 +652,9 @@ class RustyGame {
   restartGame() {
     console.log("🔄 Restarting game");
 
+    // Reset item usage state when restarting
+    this.resetItemUsageState();
+
     // Reset game state
     this.gameState = {
       currentScreen: "start",
@@ -723,6 +746,14 @@ class RustyGame {
         stopMusic: () => this.audioManager.stopMusic(),
         setMusicVolume: (volume) => this.audioManager.setMusicVolume(volume),
         setSfxVolume: (volume) => this.audioManager.setSfxVolume(volume),
+        // Item reset debug methods
+        resetItems: () => this.resetItemUsageState(),
+        checkItemState: () => {
+          console.log("Current item usage state:");
+          if (ITEMS_UTILS && ITEMS_UTILS.debugItemUsage) {
+            ITEMS_UTILS.debugItemUsage();
+          }
+        },
         // Quick test searches using items config
         testOffice: () => {
           const locationData =

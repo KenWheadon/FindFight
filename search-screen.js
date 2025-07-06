@@ -216,10 +216,6 @@ class SearchScreen extends Screen {
         itemElement.classList.add("hidden");
       }
 
-      // Add classes based on item state
-      if (item.hasUsed) {
-        itemElement.classList.add("found");
-      }
       if (item.cursed) {
         itemElement.classList.add("cursed");
       }
@@ -284,7 +280,7 @@ class SearchScreen extends Screen {
     if (!item || item.hasUsed) return;
 
     // Mark as used
-    item.hasUsed = true;
+    item.hasUsed = false;
     this.searchState.foundItems.push(item);
 
     // Get item element for animation
@@ -301,11 +297,6 @@ class SearchScreen extends Screen {
 
     // Update UI
     this.updateUI();
-
-    // Check if all items found
-    if (this.searchState.foundItems.length === this.searchState.items.length) {
-      this.allItemsFound();
-    }
 
     console.log(
       `✅ Item found: ${item.name} (${this.searchState.foundItems.length}/${this.searchState.items.length})`
@@ -462,18 +453,6 @@ class SearchScreen extends Screen {
         // Fallback to exit if game method not available
         this.onSearchExit();
       }
-    }, 2000);
-  }
-
-  allItemsFound() {
-    this.showTemporaryMessage(
-      "All items found! Excellent detective work!",
-      "success"
-    );
-    this.triggerScreenShake(500);
-
-    setTimeout(() => {
-      this.finishSearch();
     }, 2000);
   }
 

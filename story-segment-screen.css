@@ -496,7 +496,7 @@
 /* Enhanced Controls */
 .story-controls {
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   right: 30px;
   z-index: 30;
 }

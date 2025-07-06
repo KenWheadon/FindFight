@@ -97,7 +97,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "going away just as quickly... My guts are telling me not to open it, but someone has to get to the bottom of this mystery, and it's not the first strange case I've handled.",
+          text: "going away as quickly... I know I shouldn't open it, but the mystery is too much for me, and it's my first strange case.",
           style: "emphasis",
         },
       },
@@ -222,7 +222,7 @@ const STORY_SEGMENTS = {
             image: "images/tree.png",
             x: 80,
             y: 60,
-            scale: 6,
+            scale: 8,
             animation: "glow",
             tint: "#ff4444",
           },
