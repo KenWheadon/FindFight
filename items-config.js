@@ -16,6 +16,7 @@ const ITEMS_CONFIG = {
         "Rusty metal edges.",
       ],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 2,
@@ -31,6 +32,7 @@ const ITEMS_CONFIG = {
         "Still cold somehow.",
       ],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 3,
@@ -42,6 +44,7 @@ const ITEMS_CONFIG = {
       type: "detection",
       text: ["Well-worn and comfortable.", "Shades the eyes.", "Lucky charm."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 4,
@@ -53,6 +56,7 @@ const ITEMS_CONFIG = {
       type: "detection",
       text: ["Shows the way.", "X marks the spot.", "Folded many times."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 5,
@@ -68,6 +72,7 @@ const ITEMS_CONFIG = {
         "Red means business.",
       ],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 6,
@@ -79,6 +84,7 @@ const ITEMS_CONFIG = {
       type: "weakness",
       text: ["Brings good luck.", "Iron protection.", "U-shaped power."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 7,
@@ -90,6 +96,7 @@ const ITEMS_CONFIG = {
       type: "weakness",
       text: ["Points the direction.", "Sharp and true.", "Flies straight."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 8,
@@ -101,6 +108,7 @@ const ITEMS_CONFIG = {
       type: "weakness",
       text: ["Small but mighty.", "Future oak tree.", "Nature's promise."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 9,
@@ -112,6 +120,7 @@ const ITEMS_CONFIG = {
       type: "emotional",
       text: ["Life-giving liquid.", "Hydration station.", "Crystal clear."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 10,
@@ -123,6 +132,7 @@ const ITEMS_CONFIG = {
       type: "emotional",
       text: ["Delicate beauty.", "Sweet fragrance.", "Love's symbol."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 11,
@@ -134,6 +144,7 @@ const ITEMS_CONFIG = {
       type: "emotional",
       text: ["Autumn's gift.", "Golden memories.", "Time's passage."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 12,
@@ -145,6 +156,7 @@ const ITEMS_CONFIG = {
       type: "emotional",
       text: ["Keeps secrets safe.", "Click to unlock.", "Security symbol."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 13,
@@ -156,6 +168,7 @@ const ITEMS_CONFIG = {
       type: "mental",
       text: ["Forest's gift.", "Spiral patterns.", "Seeds of wisdom."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 14,
@@ -167,6 +180,7 @@ const ITEMS_CONFIG = {
       type: "mental",
       text: ["Bounces back.", "Fuzzy exterior.", "Game time."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 15,
@@ -178,6 +192,7 @@ const ITEMS_CONFIG = {
       type: "mental",
       text: ["Holds everything.", "Mystery contents.", "Fashion statement."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 16,
@@ -189,6 +204,7 @@ const ITEMS_CONFIG = {
       type: "mental",
       text: ["Lights the way.", "Beacon of hope.", "Night's companion."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 17,
@@ -200,6 +216,7 @@ const ITEMS_CONFIG = {
       type: "detection",
       text: ["Information hub.", "Community voice.", "Posted notices."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 18,
@@ -211,6 +228,7 @@ const ITEMS_CONFIG = {
       type: "detection",
       text: ["Music maker.", "Sound waves.", "Vintage vibes."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 19,
@@ -222,6 +240,7 @@ const ITEMS_CONFIG = {
       type: "weakness",
       text: ["Solid foundation.", "Ancient strength.", "Earthly power."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 20,
@@ -233,6 +252,7 @@ const ITEMS_CONFIG = {
       type: "emotional",
       text: ["Adventure ready.", "Carries memories.", "Journey's companion."],
       cursed: false,
+      hasUsed: false,
     },
     {
       id: 21,
@@ -244,6 +264,7 @@ const ITEMS_CONFIG = {
       type: "mental",
       text: ["Soars high.", "Wind's friend.", "Childhood joy."],
       cursed: false,
+      hasUsed: false,
     },
   ],
 
@@ -346,6 +367,14 @@ const ITEMS_CONFIG = {
       ],
     },
   },
+
+  // Tree symbol images mapping
+  treeSymbols: {
+    detection: "images/symbol-detection.png",
+    weakness: "images/symbol-weakness.png",
+    emotional: "images/symbol-emotional.png",
+    mental: "images/symbol-mental.png",
+  },
 };
 
 // Utility functions for working with items
@@ -353,6 +382,21 @@ const ITEMS_UTILS = {
   // Get item by ID
   getItemById(id) {
     return ITEMS_CONFIG.items.find((item) => item.id === id);
+  },
+
+  // Mark item as used
+  markItemAsUsed(itemId) {
+    const item = ITEMS_CONFIG.items.find((item) => item.id === itemId);
+    if (item) {
+      item.hasUsed = true;
+      console.log(`📚 Item ${item.name} marked as used - revealing stats`);
+    }
+  },
+
+  // Check if item has been used
+  hasItemBeenUsed(itemId) {
+    const item = ITEMS_CONFIG.items.find((item) => item.id === itemId);
+    return item ? item.hasUsed : false;
   },
 
   // Get location configuration
@@ -383,7 +427,7 @@ const ITEMS_UTILS = {
           y: pos.y,
           scale: pos.scale || 1.0,
           initiallyVisible: pos.initiallyVisible || false,
-          hasUsed: false,
+          hasUsed: item.hasUsed, // Include the hasUsed state
         };
       })
       .filter((item) => item !== null);
@@ -420,7 +464,7 @@ const ITEMS_UTILS = {
       y: 20 + Math.floor(index / 4) * 20,
       scale: 0.8 + Math.random() * 0.4, // Random scale between 0.8 and 1.2
       initiallyVisible: index < 5, // First 5 visible immediately
-      hasUsed: false,
+      hasUsed: item.hasUsed,
     }));
 
     return {
@@ -432,6 +476,11 @@ const ITEMS_UTILS = {
       revealDuration: 60,
       items: itemsWithPositions,
     };
+  },
+
+  // Get tree symbol image path
+  getTreeSymbolImage(type) {
+    return ITEMS_CONFIG.treeSymbols[type] || "images/symbol-detection.png";
   },
 
   // Shuffle array utility
@@ -472,6 +521,8 @@ const ITEMS_UTILS = {
       if (!item.type) errors.push(`Item ${item.id} missing type`);
       if (!item.text || !Array.isArray(item.text))
         errors.push(`Item ${item.id} missing or invalid text array`);
+      if (item.hasUsed === undefined)
+        errors.push(`Item ${item.id} missing hasUsed property`);
     });
 
     // Check location configurations
