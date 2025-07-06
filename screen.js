@@ -4,7 +4,7 @@ class Screen {
     this.container = container;
     this.screenName = screenName;
     this.isActive = false;
-    this.audioManager = null;
+    this.audioManager = null; // Will be set by the game controller
     this.particleSystem = null;
     this.intervals = [];
     this.timeouts = [];
@@ -22,7 +22,6 @@ class Screen {
     this.render();
     this.setupEventListeners();
     this.startAnimations();
-    this.initializeAudio();
     this.startParticleSystem();
     this.isActive = true;
 
@@ -62,7 +61,10 @@ class Screen {
     }
   }
 
-  handleEscape() {}
+  handleEscape() {
+    // Generic escape handling - can be overridden
+    console.log(`Escape pressed on ${this.screenName} screen`);
+  }
 
   startAnimations() {
     this.createStars();
@@ -168,57 +170,6 @@ class Screen {
     };
 
     this.particleSystem.start();
-  }
-
-  // Generic audio management
-  initializeAudio() {
-    this.audioManager = {
-      enabled: false,
-      sounds: {},
-
-      enable() {
-        this.enabled = true;
-        console.log(`🔊 ${this.screenName} Screen audio enabled`);
-      },
-
-      playSound(soundName, loop = false, volume = 1.0) {
-        if (!this.enabled) return;
-
-        console.log(
-          `🎵 Playing sound: ${soundName}${
-            loop ? " (looped)" : ""
-          } at volume ${volume}`
-        );
-
-        // In real implementation, would play actual audio files
-        /*
-        if (!this.sounds[soundName]) {
-          this.sounds[soundName] = new Audio(`audio/${soundName}.mp3`);
-          this.sounds[soundName].volume = 0.7 * volume;
-        }
-        
-        const audio = this.sounds[soundName];
-        audio.loop = loop;
-        audio.volume = 0.7 * volume;
-        audio.currentTime = 0;
-        audio.play().catch(e => console.warn('Audio failed:', e));
-        */
-      },
-
-      stopSound(soundName) {
-        if (!this.enabled || !this.sounds[soundName]) return;
-
-        console.log(`🔇 Stopped sound: ${soundName}`);
-        // this.sounds[soundName].pause();
-        // this.sounds[soundName].currentTime = 0;
-      },
-
-      stopAllSounds() {
-        Object.keys(this.sounds).forEach((soundName) => {
-          this.stopSound(soundName);
-        });
-      },
-    };
   }
 
   enableAudio() {
@@ -501,11 +452,6 @@ class Screen {
     this.timeouts.forEach((timeout) => clearTimeout(timeout));
     this.timeouts = [];
 
-    // Stop all audio
-    if (this.audioManager) {
-      this.audioManager.stopAllSounds();
-    }
-
     // Clear container
     if (this.container) {
       this.container.innerHTML = "";
@@ -553,6 +499,7 @@ class Screen {
       timeouts: this.timeouts.length,
       particles: this.particleSystem?.particles?.length || 0,
       audioEnabled: this.audioManager?.enabled || false,
+      currentMusic: this.audioManager?.currentMusicName || null,
       config: this.config,
     });
   }

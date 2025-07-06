@@ -26,6 +26,9 @@ class RustyGame {
     this.currentScreenInstance = null;
     this.gameContainer = null;
 
+    // Centralized Audio Manager
+    this.audioManager = null;
+
     // Initialize game
     this.init();
   }
@@ -49,6 +52,9 @@ class RustyGame {
       return;
     }
 
+    // Initialize centralized audio manager
+    this.initializeAudioManager();
+
     // Initialize screens
     this.initializeScreens();
 
@@ -59,22 +65,219 @@ class RustyGame {
     this.showScreen("loading");
   }
 
+  initializeAudioManager() {
+    this.audioManager = {
+      enabled: false,
+      sounds: {},
+      currentMusic: null,
+      currentMusicName: null,
+      musicVolume: 0.4,
+      sfxVolume: 0.7,
+
+      enable() {
+        this.enabled = true;
+        console.log("🔊 Centralized audio manager enabled");
+      },
+
+      preloadAudio(name, src) {
+        if (!this.sounds[name]) {
+          this.sounds[name] = new Audio(src);
+          this.sounds[name].preload = "auto";
+          console.log(`🎵 Preloaded audio: ${name}`);
+        }
+      },
+
+      playMusic(musicName, loop = true, volume = null) {
+        if (!this.enabled) return;
+
+        const actualVolume = volume !== null ? volume : this.musicVolume;
+        const audioPath = `audio/${musicName}.mp3`;
+
+        console.log(`🎵 Playing music: ${musicName}`);
+
+        // Stop current music if different
+        if (this.currentMusic && this.currentMusicName !== musicName) {
+          this.stopMusic();
+        }
+
+        // Don't restart if same music is already playing
+        if (
+          this.currentMusicName === musicName &&
+          this.currentMusic &&
+          !this.currentMusic.paused
+        ) {
+          return;
+        }
+
+        // Preload if not already loaded
+        this.preloadAudio(musicName, audioPath);
+
+        this.currentMusic = this.sounds[musicName];
+        this.currentMusicName = musicName;
+        this.currentMusic.loop = loop;
+        this.currentMusic.volume = actualVolume;
+        this.currentMusic.currentTime = 0;
+
+        this.currentMusic.play().catch((e) => {
+          console.warn(`Music playback failed for ${musicName}:`, e);
+        });
+      },
+
+      stopMusic() {
+        if (this.currentMusic) {
+          console.log(`🔇 Stopping music: ${this.currentMusicName}`);
+          this.currentMusic.pause();
+          this.currentMusic.currentTime = 0;
+          this.currentMusic = null;
+          this.currentMusicName = null;
+        }
+      },
+
+      fadeOutMusic(duration = 1000) {
+        if (!this.currentMusic) return;
+
+        const startVolume = this.currentMusic.volume;
+        const fadeSteps = 20;
+        const stepDuration = duration / fadeSteps;
+        const volumeStep = startVolume / fadeSteps;
+
+        let step = 0;
+        const fadeInterval = setInterval(() => {
+          step++;
+          this.currentMusic.volume = Math.max(
+            0,
+            startVolume - volumeStep * step
+          );
+
+          if (step >= fadeSteps) {
+            clearInterval(fadeInterval);
+            this.stopMusic();
+          }
+        }, stepDuration);
+      },
+
+      playSound(soundName, loop = false, volume = null) {
+        if (!this.enabled) return;
+
+        const actualVolume = volume !== null ? volume : this.sfxVolume;
+        const audioPath = `audio/${soundName}.mp3`;
+
+        console.log(`🎵 Playing sound: ${soundName}`);
+
+        // Preload if not already loaded
+        this.preloadAudio(soundName, audioPath);
+
+        const sound = this.sounds[soundName];
+        sound.loop = loop;
+        sound.volume = actualVolume;
+        sound.currentTime = 0;
+
+        sound.play().catch((e) => {
+          console.warn(`Sound playback failed for ${soundName}:`, e);
+        });
+      },
+
+      stopSound(soundName) {
+        if (!this.enabled || !this.sounds[soundName]) return;
+
+        console.log(`🔇 Stopped sound: ${soundName}`);
+        this.sounds[soundName].pause();
+        this.sounds[soundName].currentTime = 0;
+      },
+
+      stopAllSounds() {
+        Object.keys(this.sounds).forEach((soundName) => {
+          if (soundName !== this.currentMusicName) {
+            this.stopSound(soundName);
+          }
+        });
+      },
+
+      setMusicVolume(volume) {
+        this.musicVolume = Math.max(0, Math.min(1, volume));
+        if (this.currentMusic) {
+          this.currentMusic.volume = this.musicVolume;
+        }
+      },
+
+      setSfxVolume(volume) {
+        this.sfxVolume = Math.max(0, Math.min(1, volume));
+      },
+    };
+
+    // Enable audio on first user interaction
+    document.addEventListener(
+      "click",
+      () => {
+        this.audioManager.enable();
+      },
+      { once: true }
+    );
+
+    console.log("🎵 Centralized audio manager initialized");
+  }
+
+  // Helper method to determine music based on screen and context
+  getMusicForScreen(screenName, context = {}) {
+    switch (screenName) {
+      case "start":
+        return "main-menu";
+
+      case "storySegment":
+        // Determine story music based on segment or phase
+        const phase = context.phase || this.gameState.currentPhase || 1;
+        if (phase === 1) return "story-1";
+        if (phase === 2) return "story-2";
+        if (phase === 3) return "story-3";
+        return "story-1";
+
+      case "search":
+        // Determine search music based on location
+        const location = context.location || "detectiveOffice";
+        if (location === "detectiveOffice") return "search-park";
+        if (location === "forestClearing") return "search-forest";
+        if (location === "darkCatacombs") return "search-catacombs";
+        return "search-park";
+
+      case "fight":
+        // Determine battle music based on phase
+        const fightPhase = context.phase || this.gameState.currentPhase || 1;
+        if (fightPhase === 1) return "battle-park";
+        if (fightPhase === 2) return "battle-forest";
+        if (fightPhase === 3) return "battle-catacombs";
+        return "battle-park";
+
+      case "gameOver":
+        return "end-lose";
+
+      case "victory":
+        return "end-win";
+
+      default:
+        return null;
+    }
+  }
+
   initializeScreens() {
-    // Create screen instances with the shared container
+    // Create screen instances with the shared container and audio manager
     if (window.LoadingScreen) {
       this.screens.loading = new LoadingScreen(this.gameContainer, "loading");
+      this.screens.loading.audioManager = this.audioManager;
     }
 
     if (window.StartScreen) {
       this.screens.start = new StartScreen(this.gameContainer, "start");
+      this.screens.start.audioManager = this.audioManager;
     }
 
     if (window.SearchScreen) {
       this.screens.search = new SearchScreen(this.gameContainer, "search");
+      this.screens.search.audioManager = this.audioManager;
     }
 
     if (window.FightScreen) {
       this.screens.fight = new FightScreen(this.gameContainer, "fight");
+      this.screens.fight.audioManager = this.audioManager;
     }
 
     if (window.GameOverScreen) {
@@ -82,10 +285,12 @@ class RustyGame {
         this.gameContainer,
         "gameOver"
       );
+      this.screens.gameOver.audioManager = this.audioManager;
     }
 
     if (window.VictoryScreen) {
       this.screens.victory = new VictoryScreen(this.gameContainer, "victory");
+      this.screens.victory.audioManager = this.audioManager;
     }
 
     if (window.StorySegmentScreen) {
@@ -93,6 +298,7 @@ class RustyGame {
         this.gameContainer,
         "storySegment"
       );
+      this.screens.storySegment.audioManager = this.audioManager;
     }
 
     console.log("📱 Screen instances created:", Object.keys(this.screens));
@@ -118,7 +324,7 @@ class RustyGame {
   }
 
   // Screen management
-  showScreen(screenName) {
+  showScreen(screenName, context = {}) {
     console.log(`🔄 Transitioning to ${screenName} screen`);
 
     // Cleanup current screen
@@ -134,6 +340,12 @@ class RustyGame {
 
     // Add the new screen class
     this.gameContainer.classList.add(`${screenName}-screen`);
+
+    // Handle music transitions
+    const newMusic = this.getMusicForScreen(screenName, context);
+    if (newMusic) {
+      this.audioManager.playMusic(newMusic);
+    }
 
     // Initialize new screen
     if (this.screens[screenName]) {
@@ -178,8 +390,8 @@ class RustyGame {
       this.screens.storySegment.initializeStorySegment(segmentData);
     }
 
-    // Show the story segment screen
-    this.showScreen("storySegment");
+    // Show the story segment screen with context for music
+    this.showScreen("storySegment", { phase: this.gameState.currentPhase });
   }
 
   // Victory methods
@@ -333,7 +545,8 @@ class RustyGame {
 
     if (this.screens.search) {
       this.screens.search.initializeSearch(locationData);
-      this.showScreen("search");
+      // Pass location context for music
+      this.showScreen("search", { location: locationData.id });
     } else {
       console.error("Search screen not available!");
     }
@@ -379,7 +592,8 @@ class RustyGame {
 
     if (this.screens.fight) {
       this.screens.fight.initializeFight(foundItems, currentPhase, stamina);
-      this.showScreen("fight");
+      // Pass phase context for music
+      this.showScreen("fight", { phase: currentPhase });
     } else {
       console.error("Fight screen not available!");
       // Fallback to start screen
@@ -458,6 +672,10 @@ class RustyGame {
     if (this.currentScreenInstance && this.currentScreenInstance.pause) {
       this.currentScreenInstance.pause();
     }
+    // Pause music
+    if (this.audioManager && this.audioManager.currentMusic) {
+      this.audioManager.currentMusic.pause();
+    }
   }
 
   resumeGame() {
@@ -465,6 +683,12 @@ class RustyGame {
     // Resume any paused timers/animations
     if (this.currentScreenInstance && this.currentScreenInstance.resume) {
       this.currentScreenInstance.resume();
+    }
+    // Resume music
+    if (this.audioManager && this.audioManager.currentMusic) {
+      this.audioManager.currentMusic.play().catch((e) => {
+        console.warn("Failed to resume music:", e);
+      });
     }
   }
 
@@ -475,6 +699,8 @@ class RustyGame {
     console.log("Current Screen:", this.currentScreenInstance?.screenName);
     console.log("Available Screens:", Object.keys(this.screens));
     console.log("Game Container:", this.gameContainer);
+    console.log("Audio Manager:", this.audioManager);
+    console.log("Current Music:", this.audioManager?.currentMusicName);
 
     if (this.currentScreenInstance && this.currentScreenInstance.debug) {
       this.currentScreenInstance.debug();
@@ -490,7 +716,13 @@ class RustyGame {
         gameState: this.gameState,
         screens: this.screens,
         container: this.gameContainer,
+        audioManager: this.audioManager,
         startSearch: (locationData) => this.startSearchScreen(locationData),
+        // Audio debug methods
+        playMusic: (musicName) => this.audioManager.playMusic(musicName),
+        stopMusic: () => this.audioManager.stopMusic(),
+        setMusicVolume: (volume) => this.audioManager.setMusicVolume(volume),
+        setSfxVolume: (volume) => this.audioManager.setSfxVolume(volume),
         // Quick test searches using items config
         testOffice: () => {
           const locationData =
