@@ -156,6 +156,11 @@ class StorySegmentScreen extends Screen {
       }
 
       if (this.clickToAdvance && !this.isAdvancing) {
+        // Play click sound
+        if (this.audioManager) {
+          this.audioManager.playSound("click", false, 0.5);
+        }
+
         this.createClickEffect(e.clientX, e.clientY);
 
         // If currently typing, complete the text animation first
@@ -171,7 +176,19 @@ class StorySegmentScreen extends Screen {
     // Enhanced continue button
     const continueBtn = document.getElementById("continueBtn");
     if (continueBtn) {
+      // Button hover sound
+      continueBtn.addEventListener("mouseenter", () => {
+        if (this.audioManager) {
+          this.audioManager.playSound("button-hover", false, 0.3);
+        }
+      });
+
       continueBtn.addEventListener("click", (e) => {
+        // Play click sound
+        if (this.audioManager) {
+          this.audioManager.playSound("click", false, 0.5);
+        }
+
         this.createRippleEffect(continueBtn, e);
         this.createScreenFlash();
         this.exitStorySegment();
@@ -183,6 +200,12 @@ class StorySegmentScreen extends Screen {
       if (this.isActive) {
         if (e.code === "Space" || e.code === "Enter") {
           e.preventDefault();
+
+          // Play click sound for keyboard navigation
+          if (this.audioManager) {
+            this.audioManager.playSound("click", false, 0.5);
+          }
+
           if (this.segmentComplete) {
             this.createScreenFlash();
             this.exitStorySegment();
@@ -246,6 +269,23 @@ class StorySegmentScreen extends Screen {
         content.style.transform = "translateY(0)";
       }, 200);
     }
+
+    // Play appropriate atmospheric sound based on segment
+    this.playSegmentAtmosphericSound();
+  }
+
+  // Play atmospheric sound based on segment type
+  playSegmentAtmosphericSound() {
+    if (!this.audioManager || !this.currentSegment) return;
+
+    const segmentName = this.currentSegment.name;
+
+    // Play appropriate atmospheric sound for dramatic segments
+    if (segmentName === "Victory Setup") {
+      this.audioManager.playSound("victory-fanfare", false, 0.4);
+    } else if (segmentName === "Defeat Setup") {
+      this.audioManager.playSound("defeat-sting", false, 0.4);
+    }
   }
 
   showFrame(frameIndex) {
@@ -267,6 +307,11 @@ class StorySegmentScreen extends Screen {
     }
 
     console.log(`📖 Showing frame ${frameIndex + 1}/${this.frames.length}`);
+
+    // Play page turn sound when advancing frames (but not for first frame)
+    if (frameIndex > 0 && this.audioManager) {
+      this.audioManager.playSound("page-turn", false, 0.3);
+    }
 
     // Hide click indicator immediately when showing new frame
     this.updateClickIndicator(false);
@@ -387,7 +432,7 @@ class StorySegmentScreen extends Screen {
 
         itemsLayer.appendChild(itemElement);
 
-        // Enhanced entrance animation
+        // Enhanced entrance animation with sound
         if (item.animateFrom) {
           itemElement.style.left = `${item.animateFrom.x}%`;
           itemElement.style.top = `${item.animateFrom.y}%`;
@@ -403,6 +448,11 @@ class StorySegmentScreen extends Screen {
               item.scale || 1
             }) rotate(0deg)`;
             itemElement.style.opacity = item.opacity || 1;
+
+            // Play item sparkle sound for animated items
+            if (this.audioManager) {
+              this.audioManager.playSound("item-sparkle", false, 0.2);
+            }
           }, 300 + index * 100);
         }
 
@@ -552,9 +602,9 @@ class StorySegmentScreen extends Screen {
 
         index++;
 
-        // Play typing sound occasionally
-        if (index % 3 === 0 && this.audioManager) {
-          this.audioManager.playSound("typewriter_click", false, 0.1);
+        // Play typing sound occasionally (reduced frequency to avoid overwhelming)
+        if (index % 4 === 0 && this.audioManager) {
+          this.audioManager.playSound("typewriter_click", false, 0.08);
         }
       } else {
         this.finishTextAnimation(progressBar);
@@ -682,6 +732,11 @@ class StorySegmentScreen extends Screen {
       this.currentTypewriterInterval = null;
     }
 
+    // Play success sound when segment completes
+    if (this.audioManager) {
+      this.audioManager.playSound("success", false, 0.5);
+    }
+
     // Hide click indicator
     this.updateClickIndicator(false);
 
@@ -733,11 +788,6 @@ class StorySegmentScreen extends Screen {
 
   exitStorySegment() {
     console.log("📖 Exiting story segment to:", this.nextScreen);
-
-    // Play exit sound
-    if (this.audioManager) {
-      this.audioManager.playSound("story_exit", false, 0.7);
-    }
 
     // Enhanced fade out
     const content = this.container.querySelector(".story-segment-content");
