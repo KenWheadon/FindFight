@@ -617,8 +617,8 @@
 /* Progress Indicator */
 .story-progress {
   position: absolute;
-  bottom: 108px;
-  right: 52px;
+  bottom: 10%;
+  right: 1.75%;
   z-index: 25;
 }
 
