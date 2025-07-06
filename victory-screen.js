@@ -249,15 +249,6 @@ class VictoryScreen extends Screen {
     if (this.currentRevealedCount >= this.storySegments.length) {
       this.onAllSegmentsRevealed();
     }
-
-    // Show success message
-    this.showTemporaryMessage(
-      `✨ ${segment.title
-        .replace("Click to ", "")
-        .replace("...", "")} revealed!`,
-      "success",
-      2000
-    );
   }
 
   onAllSegmentsRevealed() {
@@ -279,13 +270,6 @@ class VictoryScreen extends Screen {
 
     // Create celebration effect
     this.createFinalCelebration();
-
-    // Show completion message
-    this.showTemporaryMessage(
-      "🎊 The complete story has been revealed! 🎊",
-      "success",
-      3000
-    );
   }
 
   createFinalCelebration() {
@@ -405,9 +389,6 @@ class VictoryScreen extends Screen {
       this.audioManager.playSound("button_click", false, 0.7);
     }
 
-    // Show replay message
-    this.showTemporaryMessage("Starting new adventure...", "success", 2000);
-
     // Create final celebration burst
     this.createParticleBurst(
       window.innerWidth / 2,
@@ -442,9 +423,6 @@ class VictoryScreen extends Screen {
     if (this.audioManager) {
       this.audioManager.playSound("button_click", false, 0.7);
     }
-
-    // Show menu message
-    this.showTemporaryMessage("Returning to main menu...", "info", 2000);
 
     // Fade out the screen
     const victoryContent = this.container.querySelector(".victory-content");

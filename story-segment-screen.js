@@ -14,6 +14,7 @@ class StorySegmentScreen extends Screen {
     this.clickToAdvance = true;
     this.particleSystem = null;
     this.ambientSounds = [];
+    this.textAnimationComplete = false; // Track when text animation is done
 
     console.log("📖 StorySegmentScreen instance created");
   }
@@ -28,6 +29,7 @@ class StorySegmentScreen extends Screen {
     this.segmentComplete = false;
     this.clickToAdvance = true;
     this.isAdvancing = false;
+    this.textAnimationComplete = false;
 
     console.log("📖 Story segment initialized:", segmentData.name);
   }
@@ -149,7 +151,11 @@ class StorySegmentScreen extends Screen {
         return;
       }
 
-      if (this.clickToAdvance && !this.isAdvancing) {
+      if (
+        this.clickToAdvance &&
+        !this.isAdvancing &&
+        this.textAnimationComplete
+      ) {
         this.createClickEffect(e.clientX, e.clientY);
         this.advanceFrame();
       }
@@ -173,7 +179,11 @@ class StorySegmentScreen extends Screen {
           if (this.segmentComplete) {
             this.createScreenFlash();
             this.exitStorySegment();
-          } else if (this.clickToAdvance && !this.isAdvancing) {
+          } else if (
+            this.clickToAdvance &&
+            !this.isAdvancing &&
+            this.textAnimationComplete
+          ) {
             this.advanceFrame();
           }
         }
@@ -244,8 +254,12 @@ class StorySegmentScreen extends Screen {
     const frame = this.frames[frameIndex];
     this.currentFrame = frameIndex;
     this.isAdvancing = true;
+    this.textAnimationComplete = false;
 
     console.log(`📖 Showing frame ${frameIndex + 1}/${this.frames.length}`);
+
+    // Hide click indicator immediately when showing new frame
+    this.updateClickIndicator(false);
 
     // Update progress dots
     this.updateProgressDots(frameIndex);
@@ -261,9 +275,6 @@ class StorySegmentScreen extends Screen {
 
     // Update atmospheric effects
     this.updateAtmosphere(frame);
-
-    // Show/hide click indicator
-    this.updateClickIndicator(frameIndex < this.frames.length - 1);
 
     // Allow advancing after animations complete
     this.setManagedTimeout(() => {
@@ -435,6 +446,7 @@ class StorySegmentScreen extends Screen {
     if (!textData) {
       textBox.style.opacity = "0";
       textBox.style.transform = "translateY(50px)";
+      this.textAnimationComplete = true;
       return;
     }
 
@@ -454,6 +466,7 @@ class StorySegmentScreen extends Screen {
     // Clear and set new content
     textContent.innerHTML = "";
 
+    // Create speaker element first if we have a speaker
     if (speaker) {
       const speakerElement = document.createElement("div");
       speakerElement.className = "story-speaker enhanced-speaker";
@@ -467,6 +480,7 @@ class StorySegmentScreen extends Screen {
       textContent.appendChild(speakerElement);
     }
 
+    // Create text element
     const textElement = document.createElement("div");
     textElement.className = `story-text story-text-${style} enhanced-text`;
     textContent.appendChild(textElement);
@@ -484,6 +498,15 @@ class StorySegmentScreen extends Screen {
     // Enhanced typewriter effect
     if (text.length > 0) {
       this.enhancedTypeWriterEffect(textElement, text, progressBar);
+    } else {
+      // If no text, mark as complete immediately
+      this.textAnimationComplete = true;
+      // Show click indicator if not the last frame
+      if (this.currentFrame < this.frames.length - 1) {
+        this.setManagedTimeout(() => {
+          this.updateClickIndicator(true);
+        }, 800);
+      }
     }
   }
 
@@ -522,12 +545,23 @@ class StorySegmentScreen extends Screen {
         }
       } else {
         clearInterval(typeInterval);
+
         // Complete progress bar
         if (progressBar) {
           const fill = progressBar.querySelector(".progress-fill");
           if (fill) {
             fill.style.width = "100%";
           }
+        }
+
+        // Mark text animation as complete
+        this.textAnimationComplete = true;
+
+        // Show click indicator if not the last frame
+        if (this.currentFrame < this.frames.length - 1) {
+          this.setManagedTimeout(() => {
+            this.updateClickIndicator(true);
+          }, 500);
         }
       }
     }, 40);
@@ -692,7 +726,11 @@ class StorySegmentScreen extends Screen {
       e.preventDefault();
       if (this.segmentComplete) {
         this.exitStorySegment();
-      } else if (this.clickToAdvance && !this.isAdvancing) {
+      } else if (
+        this.clickToAdvance &&
+        !this.isAdvancing &&
+        this.textAnimationComplete
+      ) {
         this.advanceFrame();
       }
     }
@@ -731,6 +769,7 @@ class StorySegmentScreen extends Screen {
       segmentComplete: this.segmentComplete,
       clickToAdvance: this.clickToAdvance,
       isAdvancing: this.isAdvancing,
+      textAnimationComplete: this.textAnimationComplete,
       nextScreen: this.nextScreen,
       currentSegment: this.currentSegment?.name,
     });
@@ -758,6 +797,7 @@ class StorySegmentScreen extends Screen {
     this.nextScreenData = null;
     this.segmentComplete = false;
     this.clickToAdvance = true;
+    this.textAnimationComplete = false;
     this.ambientSounds = [];
 
     // Call parent destroy
