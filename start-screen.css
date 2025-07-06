@@ -73,16 +73,6 @@
   }
 }
 
-/* Story Introduction */
-.story-intro {
-  max-width: 700px;
-  margin: 20px 0;
-  position: relative;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.8s ease-out;
-}
-
 .story-text {
   background: rgba(0, 0, 0, 0.5);
   border: 2px solid rgba(212, 175, 55, 0.3);
@@ -302,7 +292,7 @@
 
 .credits-header {
   text-align: center;
-  padding: 30px 30px 20px 30px;
+  padding: 20px 30px 10px 30px;
   border-bottom: 2px solid rgba(212, 175, 55, 0.2);
   position: relative;
 }
@@ -620,7 +610,6 @@
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .logo-section,
-  .story-intro,
   .game-controls {
     transition: none !important;
   }
