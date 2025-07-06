@@ -89,7 +89,7 @@ class StartScreen extends Screen {
 
                 <div class="credit-role">
                   <span class="role">Audio Effect - pixabay.com</span>
-                  <span class="name">Karim-Nessim</span>
+                  <span class="name">Karim-Nessim, Universfield, freesound_community</span>
                 </div>
 
                 <div class="credit-role">
