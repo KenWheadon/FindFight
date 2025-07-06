@@ -519,7 +519,7 @@ class FightScreen extends Screen {
     // Process next message after delay
     setTimeout(() => {
       this.processMessageQueue();
-    }, 1200);
+    }, 2000);
   }
 
   showCombatFeedback(message, type) {
