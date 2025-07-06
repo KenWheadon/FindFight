@@ -16,6 +16,7 @@ class SearchScreen extends Screen {
       searchStartTime: null,
       revealDuration: 60, // seconds to reveal all items
       revealedItems: new Set(), // track which items have been revealed
+      lowStaminaWarningPlayed: false, // track if low stamina warning was played
     };
 
     // Timer intervals
@@ -33,6 +34,7 @@ class SearchScreen extends Screen {
     this.searchState.staminaDrainRate = locationData.staminaDrainRate || 0.5;
     this.searchState.revealDuration = locationData.revealDuration || 60;
     this.searchState.revealedItems = new Set();
+    this.searchState.lowStaminaWarningPlayed = false;
 
     // Mark initially visible items as revealed
     this.searchState.items.forEach((item, index) => {
@@ -227,28 +229,72 @@ class SearchScreen extends Screen {
   setupEventListeners() {
     super.setupEventListeners();
 
-    // Item click handlers
+    // Item click handlers - handle both items and empty space
     this.container.addEventListener("click", (e) => {
       if (e.target.classList.contains("search-item")) {
         this.handleItemClick(e);
+      } else if (e.target.closest(".search-area")) {
+        // Clicked on empty space in search area
+        this.handleEmptySpaceClick(e);
       }
     });
 
-    // Control button handlers
+    // Control button handlers with audio
     const pauseBtn = this.container.querySelector("#search-pause-btn");
     const finishBtn = this.container.querySelector("#search-finish-btn");
     const resumeBtn = this.container.querySelector("#resume-btn");
 
     if (pauseBtn) {
-      pauseBtn.addEventListener("click", () => this.togglePause());
+      // Add hover effect
+      pauseBtn.addEventListener("mouseenter", () => {
+        this.playAudio("button-hover");
+      });
+
+      pauseBtn.addEventListener("click", () => {
+        this.playAudio("click");
+        this.togglePause();
+      });
     }
 
     if (finishBtn) {
-      finishBtn.addEventListener("click", () => this.finishSearch());
+      // Add hover effect
+      finishBtn.addEventListener("mouseenter", () => {
+        this.playAudio("button-hover");
+      });
+
+      finishBtn.addEventListener("click", () => {
+        this.playAudio("click");
+        this.finishSearch();
+      });
     }
 
     if (resumeBtn) {
-      resumeBtn.addEventListener("click", () => this.togglePause());
+      // Add hover effect
+      resumeBtn.addEventListener("mouseenter", () => {
+        this.playAudio("button-hover");
+      });
+
+      resumeBtn.addEventListener("click", () => {
+        this.playAudio("click");
+        this.togglePause();
+      });
+    }
+
+    // Add hover effects to all buttons
+    const allButtons = this.container.querySelectorAll(
+      ".search-control-btn, .game-button"
+    );
+    allButtons.forEach((button) => {
+      button.addEventListener("mouseenter", () => {
+        this.playAudio("button-hover");
+      });
+    });
+  }
+
+  // Helper method to play audio
+  playAudio(soundName) {
+    if (this.audioManager && this.audioManager.enabled) {
+      this.audioManager.playSound(soundName);
     }
   }
 
@@ -275,6 +321,40 @@ class SearchScreen extends Screen {
     }
   }
 
+  handleEmptySpaceClick(event) {
+    if (this.searchState.isPaused) return;
+
+    // Play subtle click sound for empty space
+    this.playAudio("click");
+
+    // Optional: Add a subtle visual feedback
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Create a small, subtle ripple effect
+    const ripple = document.createElement("div");
+    ripple.style.cssText = `
+      position: fixed;
+      left: ${x - 10}px;
+      top: ${y - 10}px;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+      animation: emptyClickRipple 0.5s ease-out forwards;
+    `;
+
+    document.body.appendChild(ripple);
+
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.parentNode.removeChild(ripple);
+      }
+    }, 500);
+  }
+
   foundItem(itemIndex) {
     const item = this.searchState.items[itemIndex];
     if (!item || item.hasUsed) return;
@@ -282,6 +362,13 @@ class SearchScreen extends Screen {
     // Mark as used
     item.hasUsed = false;
     this.searchState.foundItems.push(item);
+
+    // Play appropriate audio based on item type
+    if (item.cursed) {
+      this.playAudio("cursed");
+    } else {
+      this.playAudio("item-sparkle");
+    }
 
     // Get item element for animation
     const itemElement = this.container.querySelector(
@@ -315,6 +402,17 @@ class SearchScreen extends Screen {
         this.searchState.stamina -= this.searchState.staminaDrainRate;
         this.searchState.stamina = Math.max(0, this.searchState.stamina);
         this.updateUI();
+
+        // Play low stamina warning at 20% (only once)
+        const staminaPercentage =
+          (this.searchState.stamina / this.searchState.maxStamina) * 100;
+        if (
+          staminaPercentage <= 20 &&
+          !this.searchState.lowStaminaWarningPlayed
+        ) {
+          this.playAudio("stamina-low");
+          this.searchState.lowStaminaWarningPlayed = true;
+        }
 
         if (this.searchState.stamina <= 0) {
           this.staminaDepleted();
@@ -366,6 +464,9 @@ class SearchScreen extends Screen {
     if (itemElement) {
       itemElement.classList.remove("hidden");
       itemElement.classList.add("visible");
+
+      // Play sparkle sound when item reveals
+      this.playAudio("item-found");
     }
 
     console.log(`👁️ Item revealed: ${this.searchState.items[itemIndex].name}`);
@@ -440,6 +541,10 @@ class SearchScreen extends Screen {
 
   staminaDepleted() {
     this.stopSearch();
+
+    // Play defeat sound
+    this.playAudio("defeat-sting");
+
     this.showTemporaryMessage(
       "Stamina depleted! Rusty is too tired to continue.",
       "error"
@@ -481,6 +586,9 @@ class SearchScreen extends Screen {
   onSearchComplete() {
     console.log("✅ Search completed");
     console.log("Found items:", this.searchState.foundItems);
+
+    // Play success sound
+    this.playAudio("success");
 
     // Show results first
     this.showSearchResults();
@@ -687,6 +795,23 @@ class SearchScreen extends Screen {
     this.initializeAudio();
     this.isActive = true;
 
+    // Add CSS for empty click ripple animation
+    this.injectCSS(
+      "empty-click-styles",
+      `
+      @keyframes emptyClickRipple {
+        0% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(3);
+          opacity: 0;
+        }
+      }
+    `
+    );
+
     console.log(`✅ ${this.screenName} Screen initialized`);
 
     // Start search after a brief delay
@@ -707,12 +832,15 @@ class SearchScreen extends Screen {
 
     if (e.code === "Space") {
       e.preventDefault();
+      this.playAudio("click");
       this.togglePause();
     } else if (e.code === "Enter") {
       e.preventDefault();
+      this.playAudio("click");
       this.finishSearch();
     } else if (e.code === "Escape") {
       e.preventDefault();
+      this.playAudio("click");
       this.exitSearch();
     }
   }
