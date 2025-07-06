@@ -97,18 +97,18 @@ class FightScreen extends Screen {
     switch (this.currentPhase) {
       case 1:
         this.treeHP = this.maxTreeHP = 20;
-        this.treeAttackDamage = 4;
+        this.treeAttackDamage = 3;
         this.phaseDialogue = "You don't belong here, little detective...";
         break;
       case 2:
         this.treeHP = this.maxTreeHP = 30;
-        this.treeAttackDamage = 8;
+        this.treeAttackDamage = 6;
         this.phaseDialogue =
           "Ask yourself why you really couldn't resist the box....";
         break;
       case 3:
         this.treeHP = this.maxTreeHP = 40;
-        this.treeAttackDamage = 12;
+        this.treeAttackDamage = 9;
         this.phaseDialogue = "You opened the box. You *are* the next seed.";
         break;
     }
@@ -619,7 +619,7 @@ class FightScreen extends Screen {
     const cardType = card.type;
 
     if (cardType === this.treeWeakness) {
-      damage = Math.floor(damage * 1.5);
+      damage = Math.floor(damage * 2);
       this.queueCombatMessage(`🔥 Critical hit: ${damage} DMG!`, "critical");
       // Play damage sound for critical hits
       if (this.audioManager) {

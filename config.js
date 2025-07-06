@@ -27,7 +27,7 @@ const GAME_CONFIG = {
 
   // Animation configuration
   animations: {
-    starCount: 50,
+    starCount: 40,
     asteroidCount: 8,
     particleCount: 20,
   },

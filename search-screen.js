@@ -17,6 +17,7 @@ class SearchScreen extends Screen {
       revealDuration: 60, // seconds to reveal all items
       revealedItems: new Set(), // track which items have been revealed
       lowStaminaWarningPlayed: false, // track if low stamina warning was played
+      foundItemIds: new Set(), // track which items have been found to prevent duplicates
     };
 
     // Timer intervals
@@ -26,9 +27,16 @@ class SearchScreen extends Screen {
 
   // Initialize the search screen with location data
   initializeSearch(locationData) {
+    console.log(
+      "🔍 Initializing search with location data:",
+      locationData.name
+    );
+
+    // Reset search state completely
     this.searchState.currentLocation = locationData;
     this.searchState.items = [...locationData.items]; // Copy items array
-    this.searchState.foundItems = [];
+    this.searchState.foundItems = []; // Clear found items
+    this.searchState.foundItemIds = new Set(); // Clear found item IDs
     this.searchState.stamina = locationData.startingStamina || 100;
     this.searchState.maxStamina = locationData.maxStamina || 100;
     this.searchState.staminaDrainRate = locationData.staminaDrainRate || 0.5;
@@ -42,6 +50,15 @@ class SearchScreen extends Screen {
         this.searchState.revealedItems.add(index);
       }
     });
+
+    // Check for duplicates in the location data
+    const itemNames = this.searchState.items.map((item) => item.name);
+    const uniqueNames = [...new Set(itemNames)];
+    if (itemNames.length !== uniqueNames.length) {
+      console.warn("🚨 Duplicate items detected in location data!");
+      console.warn("All items:", itemNames);
+      console.warn("Unique items:", uniqueNames);
+    }
 
     console.log(`🔍 Search initialized for location: ${locationData.name}`);
     console.log(`📦 Total items: ${this.searchState.items.length}`);
@@ -304,10 +321,29 @@ class SearchScreen extends Screen {
     const itemIndex = parseInt(event.target.dataset.itemIndex);
     const item = this.searchState.items[itemIndex];
 
-    if (!item) return;
+    console.log(`🖱️ Item clicked: ${item?.name} (index: ${itemIndex})`);
+
+    if (!item) {
+      console.warn("❌ No item found at index:", itemIndex);
+      return;
+    }
 
     // Only allow clicking on revealed items
-    if (!this.searchState.revealedItems.has(itemIndex)) return;
+    if (!this.searchState.revealedItems.has(itemIndex)) {
+      console.log("❌ Item not revealed yet:", item.name);
+      return;
+    }
+
+    // Create unique identifier for the item
+    const itemId = item.id || `${item.name}_${itemIndex}`;
+
+    // Check if already collected - this is the key fix!
+    if (this.searchState.foundItemIds.has(itemId)) {
+      console.log(`⚠️ Item already collected: ${item.name} (ID: ${itemId})`);
+      return;
+    }
+
+    console.log(`✅ Collecting item: ${item.name} (ID: ${itemId})`);
 
     // Create sparkle particle effect
     this.createSparkleEffect(event.target, event);
@@ -315,10 +351,8 @@ class SearchScreen extends Screen {
     // Create ripple effect
     this.createRippleEffect(event.target, event);
 
-    // If item hasn't been used, mark as found
-    if (!item.hasUsed) {
-      this.foundItem(itemIndex);
-    }
+    // Mark as found
+    this.foundItem(itemIndex);
   }
 
   handleEmptySpaceClick(event) {
@@ -357,11 +391,45 @@ class SearchScreen extends Screen {
 
   foundItem(itemIndex) {
     const item = this.searchState.items[itemIndex];
-    if (!item || item.hasUsed) return;
+    if (!item) {
+      console.warn("❌ No item found at index:", itemIndex);
+      return;
+    }
 
-    // Mark as used
-    item.hasUsed = false;
+    // Create unique identifier for the item
+    const itemId = item.id || `${item.name}_${itemIndex}`;
+
+    // Double-check if already found (safety net)
+    if (this.searchState.foundItemIds.has(itemId)) {
+      console.warn(
+        `⚠️ Item already found (safety check): ${item.name} (ID: ${itemId})`
+      );
+      return;
+    }
+
+    console.log(`🎯 Processing found item: ${item.name} (index: ${itemIndex})`);
+
+    // Ensure item has a unique ID
+    if (!item.id) {
+      item.id = `search_item_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+      console.log(`🆔 Generated ID for item: ${item.name} -> ${item.id}`);
+    }
+
+    // Mark as found IMMEDIATELY to prevent double collection
+    this.searchState.foundItemIds.add(itemId);
     this.searchState.foundItems.push(item);
+
+    console.log(`✅ Item successfully found: ${item.name} (ID: ${item.id})`);
+    console.log(
+      `📊 Total found: ${this.searchState.foundItems.length}/${this.searchState.items.length}`
+    );
+    console.log(
+      `🔒 Found item IDs: ${Array.from(this.searchState.foundItemIds).join(
+        ", "
+      )}`
+    );
 
     // Play appropriate audio based on item type
     if (item.cursed) {
@@ -375,6 +443,10 @@ class SearchScreen extends Screen {
       `[data-item-index="${itemIndex}"]`
     );
     if (itemElement) {
+      // Disable further clicks on this item
+      itemElement.style.pointerEvents = "none";
+      itemElement.classList.add("collected");
+
       // Start wiggle animation with scaling
       this.wiggleItem(itemElement, () => {
         // After wiggle, fly to collection
@@ -384,10 +456,6 @@ class SearchScreen extends Screen {
 
     // Update UI
     this.updateUI();
-
-    console.log(
-      `✅ Item found: ${item.name} (${this.searchState.foundItems.length}/${this.searchState.items.length})`
-    );
   }
 
   startSearch() {
@@ -585,7 +653,19 @@ class SearchScreen extends Screen {
   // Callback methods - to be overridden by game controller
   onSearchComplete() {
     console.log("✅ Search completed");
-    console.log("Found items:", this.searchState.foundItems);
+    console.log(
+      "Found items:",
+      this.searchState.foundItems.map((item) => `${item.name} (ID: ${item.id})`)
+    );
+
+    // Check for duplicates before sending to game
+    const itemNames = this.searchState.foundItems.map((item) => item.name);
+    const uniqueNames = [...new Set(itemNames)];
+    if (itemNames.length !== uniqueNames.length) {
+      console.warn("🚨 Duplicate items detected before sending to game!");
+      console.warn("All items:", itemNames);
+      console.warn("Unique items:", uniqueNames);
+    }
 
     // Play success sound
     this.playAudio("success");
@@ -849,6 +929,14 @@ class SearchScreen extends Screen {
   debug() {
     super.debug();
     console.log("🔍 Search State:", this.searchState);
+    console.log(
+      "🔍 Found Item IDs:",
+      Array.from(this.searchState.foundItemIds)
+    );
+    console.log(
+      "🔍 Found Items:",
+      this.searchState.foundItems.map((item) => `${item.name} (ID: ${item.id})`)
+    );
   }
 }
 
