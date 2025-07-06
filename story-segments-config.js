@@ -14,10 +14,10 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-unsure.png",
             x: 30,
             y: 60,
-            scale: 3,
+            scale: 6,
             animation: "float",
             animateFrom: { x: 25, y: 60, scale: 2, opacity: 0 },
           },
@@ -44,10 +44,10 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-unsure.png",
             x: 30,
             y: 60,
-            scale: 3,
+            scale: 6,
             animation: "float",
           },
           {
@@ -97,7 +97,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "going away just as quickly... just like that. My guts are telling me not to, but I'm going to open it anyway. Someone has to get to the bottom of this mystery, and it's not the first strange case I've dealth with.",
+          text: "going away just as quickly... My guts are telling me not to open it, but someone has to get to the bottom of this mystery, and it's not the first strange case I've handled.",
           style: "emphasis",
         },
       },

@@ -45,9 +45,9 @@ const GAME_CONFIG = {
       hp: 30,
       treeAttack: 10,
       dialogue:
-        "Ask the blacksmith's daughter what she found beneath the roots...",
+        "Have you figured it out yet detective? What I'm doing here? Why you're here?",
       narrative:
-        "The deeper I go, the more it shifts. The box ain't wood anymore—it's memory. Each object's a clue, a weapon, a whisper. The tree's not just alive—it's aware. It talks in dreams. It wants me to forget who I am. But I've still got my cards.",
+        "The deeper I go, the more it shifts. The box ain't cardboard anymore—it's memory. Each object's a clue, a memory, a whisper. The tree's not just alive—it's aware and it wants something from me.",
     },
     {
       hp: 50,
