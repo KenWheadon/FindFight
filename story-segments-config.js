@@ -166,7 +166,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "Rusty",
-          text: "That was just the beginning. The tree... it's not just alive. It's ancient. And it's hungry.",
+          text: "That was just the beginning. The tree... it' alive, it's ancient, and it's hungry.",
           style: "normal",
         },
       },
@@ -274,12 +274,12 @@ const STORY_SEGMENTS = {
             scale: 1.5,
             animation: "pulse",
             opacity: 0.8,
-            animateFrom: { x: 90, y: 10, scale: 0.5, opacity: 0 },
+            animateFrom: { x: 90, y: 50, scale: 0.5, opacity: 0 },
           },
         ],
         text: {
           speaker: "Rusty",
-          text: "This is it. The heart of the curse. The catacombs beneath the box. The tree's power is strongest here.",
+          text: "This is it. The heart of the curse. The catacombs inside the box. The tree's power is strongest here.",
           style: "normal",
         },
       },
@@ -579,11 +579,11 @@ const STORY_SEGMENTS = {
         items: [
           {
             image: "images/skull.png",
-            x: 70,
-            y: 20,
+            x: 25,
+            y: 55,
             scale: 2,
             animation: "pulse",
-            animateFrom: { x: 80, y: 10, scale: 1, opacity: 0 },
+            animateFrom: { x: 25, y: 25, scale: 1, opacity: 0 },
           },
           {
             image: "images/tree-won.png",

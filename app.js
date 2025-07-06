@@ -17,6 +17,8 @@ class RustyGame {
       visibleItems: [],
       gameStarted: false,
       loadingComplete: false,
+      gameOverType: null,
+      gameOverMessage: "",
     };
 
     // Screen instances
@@ -208,12 +210,12 @@ class RustyGame {
   triggerGameOver(type, message = "") {
     console.log(`💀 Game Over triggered - Type: ${type}, Message: ${message}`);
 
-    // Show defeat setup story first
-    this.showStorySegment("defeatSetup");
-
     // Store game over info for when we actually show the game over screen
     this.gameState.gameOverType = type;
     this.gameState.gameOverMessage = message;
+
+    // Show defeat setup story first
+    this.showStorySegment("defeatSetup");
   }
 
   // Show game over screen directly (called from story segment)
@@ -432,6 +434,8 @@ class RustyGame {
       visibleItems: [],
       gameStarted: false,
       loadingComplete: true,
+      gameOverType: null,
+      gameOverMessage: "",
     };
 
     this.showScreen("start");
