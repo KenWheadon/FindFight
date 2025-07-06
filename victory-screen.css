@@ -341,6 +341,7 @@
   align-items: center;
   min-width: 200px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .stats-title {

@@ -337,9 +337,9 @@ class StartScreen extends Screen {
   }
 
   playLogoAppearSound() {
-    if (this.audioManager) {
-      this.audioManager.playSound("item-sparkle", false, 0.5);
-    }
+    // if (this.audioManager) {
+    //   this.audioManager.playSound("item-sparkle", false, 0.5);
+    // }
   }
 
   playTypewriterSound() {

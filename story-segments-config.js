@@ -383,7 +383,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-suprised.png",
             x: 30,
             y: 60,
             scale: 3,
@@ -421,7 +421,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-unsure.png",
             x: 30,
             y: 60,
             scale: 3,
@@ -467,7 +467,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-happy.png",
             x: 30,
             y: 60,
             scale: 3,

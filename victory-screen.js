@@ -166,8 +166,15 @@ class VictoryScreen extends Screen {
     // Get DOM elements
     const replayBtn = document.getElementById("replayBtn");
 
-    // Replay button
+    // Replay button with enhanced sound effects
     if (replayBtn) {
+      // Add hover sound effect
+      replayBtn.addEventListener("mouseenter", () => {
+        if (this.audioManager) {
+          this.audioManager.playSound("button-hover", false, 0.6);
+        }
+      });
+
       replayBtn.addEventListener("click", (e) => {
         this.createRippleEffect(replayBtn, e);
         this.replayGame();
@@ -188,6 +195,13 @@ class VictoryScreen extends Screen {
     );
 
     storySegments.forEach((segment, index) => {
+      // Add hover sound effect for story segments
+      segment.addEventListener("mouseenter", () => {
+        if (this.audioManager && !this.storySegments[index].revealed) {
+          this.audioManager.playSound("button-hover", false, 0.4);
+        }
+      });
+
       segment.addEventListener("click", (e) => {
         console.log("Story segment clicked:", index);
         this.revealStorySegment(index, e);
@@ -219,6 +233,17 @@ class VictoryScreen extends Screen {
 
     console.log(`📖 Revealing story segment: ${segment.id}`);
 
+    // Play story reveal sound effects
+    if (this.audioManager) {
+      // Page turn sound for the narrative feel
+      this.audioManager.playSound("page-turn", false, 0.7);
+
+      // Success sound with a slight delay for layered effect
+      this.setManagedTimeout(() => {
+        this.audioManager.playSound("success", false, 0.6);
+      }, 200);
+    }
+
     // Mark as revealed
     segment.revealed = true;
     segmentElement.classList.add("revealed");
@@ -228,7 +253,7 @@ class VictoryScreen extends Screen {
       progressDot.classList.add("completed");
     }
 
-    // Create particle burst at click location
+    // Create particle burst at click location with sparkle sound
     const rect = segmentElement.getBoundingClientRect();
     const x = event.clientX;
     const y = event.clientY;
@@ -284,6 +309,15 @@ class VictoryScreen extends Screen {
         this.createParticleBurst(x, y, 12, color);
       }, i * 200);
     }
+
+    // Play sparkle sound effects during celebration
+    if (this.audioManager) {
+      for (let i = 0; i < 3; i++) {
+        this.setManagedTimeout(() => {
+          this.audioManager.playSound("item-sparkle", false, 0.5);
+        }, i * 400);
+      }
+    }
   }
 
   init() {
@@ -326,10 +360,13 @@ class VictoryScreen extends Screen {
       this.createParticleBurst(x, y, 10, color);
     };
 
-    // Create multiple bursts
+    // Create multiple bursts with sparkle sounds
     for (let i = 0; i < 3; i++) {
       this.setManagedTimeout(() => {
         createRandomBurst();
+        // if (this.audioManager) {
+        //   this.audioManager.playSound("item-sparkle", false, 0.4);
+        // }
       }, i * 500);
     }
 
@@ -338,6 +375,9 @@ class VictoryScreen extends Screen {
       if (Math.random() < 0.2) {
         // 20% chance each interval
         createRandomBurst();
+        if (this.audioManager) {
+          this.audioManager.playSound("item-sparkle", false, 0.3);
+        }
       }
     }, 3000);
   }
@@ -374,9 +414,9 @@ class VictoryScreen extends Screen {
 
     this.buttonsEnabled = false;
 
-    // Play button sound
+    // Play button click sound
     if (this.audioManager) {
-      this.audioManager.playSound("button_click", false, 0.7);
+      this.audioManager.playSound("click", false, 0.8);
     }
 
     // Create final celebration burst
@@ -386,6 +426,11 @@ class VictoryScreen extends Screen {
       20,
       "rgba(255, 215, 0, 0.8)"
     );
+
+    // Play sparkle sound for final burst
+    if (this.audioManager) {
+      this.audioManager.playSound("item-sparkle", false, 0.6);
+    }
 
     // Fade out the screen
     const victoryContent = this.container.querySelector(".victory-content");
@@ -409,9 +454,9 @@ class VictoryScreen extends Screen {
 
     this.buttonsEnabled = false;
 
-    // Play menu sound
+    // Play button click sound
     if (this.audioManager) {
-      this.audioManager.playSound("button_click", false, 0.7);
+      this.audioManager.playSound("click", false, 0.8);
     }
 
     // Fade out the screen
@@ -444,7 +489,7 @@ class VictoryScreen extends Screen {
       }
     }
 
-    // Story reveal shortcuts
+    // Story reveal shortcuts with sound effects
     if (e.code === "Digit1" || e.code === "Numpad1") {
       this.revealStorySegment(0, {
         clientX: window.innerWidth / 2,
@@ -529,6 +574,17 @@ class VictoryScreen extends Screen {
     };
 
     this.particleSystem.start();
+  }
+
+  // Override particle burst to include sound effects
+  createParticleBurst(x, y, count = 12, color = "rgba(0, 255, 136, 0.8)") {
+    // Call parent method
+    super.createParticleBurst(x, y, count, color);
+
+    // Add sparkle sound effect for particle bursts
+    if (this.audioManager) {
+      this.audioManager.playSound("item-sparkle", false, 0.3);
+    }
   }
 
   // Debug method override
