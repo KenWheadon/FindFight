@@ -120,6 +120,7 @@
         width: 100%;
         font-size: 1em;
         font-family: "Courier New", monospace;
+        margin-bottom: 10px;
       }
 
       .export-btn:hover {
@@ -128,7 +129,6 @@
       }
 
       .export-output {
-        margin-top: 15px;
         background: rgba(0, 0, 0, 0.8);
         border: 1px solid #444;
         border-radius: 4px;
@@ -138,57 +138,51 @@
         font-size: 12px;
         white-space: pre-wrap;
         word-break: break-all;
+        margin-top: 10px;
       }
 
       /* Right Panel - Positioning Area */
       .positioning-area {
-        flex: 1 !important;
-        position: relative !important;
-        overflow: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        flex: 1;
+        position: relative;
+        overflow: hidden;
       }
 
       .location-background {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
       }
 
-      #items-container {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
+      .items-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
       }
 
       .positioning-item {
-        position: absolute !important;
-        cursor: move !important;
-        border: 2px solid transparent !important;
-        border-radius: 8px !important;
-        transition: border-color 0.3s ease !important;
-        background-size: contain !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        user-select: none !important;
-        min-width: 20px !important;
-        min-height: 20px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
-        transform-origin: center center !important;
+        position: absolute;
+        cursor: move;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        user-select: none;
+        min-width: 20px;
+        min-height: 20px;
+        transform-origin: center center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .positioning-item:hover {
@@ -307,6 +301,31 @@
         transform: translateY(-2px);
       }
 
+      /* Status indicator */
+      .status-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #d4af37;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 200;
+      }
+
+      .status-indicator.loading {
+        color: #ffc107;
+      }
+
+      .status-indicator.error {
+        color: #dc3545;
+      }
+
+      .status-indicator.success {
+        color: #28a745;
+      }
+
       /* Responsive */
       @media (max-width: 1024px) {
         .control-panel {
@@ -331,6 +350,8 @@
     </style>
   </head>
   <body>
+    <div class="status-indicator loading" id="status-indicator">Loading...</div>
+
     <div class="tool-container">
       <!-- Left Control Panel -->
       <div class="control-panel">
@@ -349,16 +370,8 @@
 
         <div class="control-section">
           <h3>📍 Location</h3>
-          <div class="location-selector">
-            <button class="location-btn active" data-location="detectiveOffice">
-              Detective's Office
-            </button>
-            <button class="location-btn" data-location="forestClearing">
-              Forest Clearing
-            </button>
-            <button class="location-btn" data-location="darkCatacombs">
-              Dark Catacombs
-            </button>
+          <div class="location-selector" id="location-selector">
+            <!-- Location buttons will be populated here -->
           </div>
         </div>
 
@@ -394,8 +407,11 @@
         <div class="control-section">
           <h3>💾 Export</h3>
           <div class="export-section">
-            <button class="export-btn" onclick="exportItemPositions()">
-              Export Item Positions
+            <button class="export-btn" onclick="exportCurrentLocation()">
+              Export Current Location
+            </button>
+            <button class="export-btn" onclick="exportAllLocations()">
+              Export All Locations
             </button>
             <div class="export-output" id="export-output"></div>
           </div>
@@ -410,307 +426,12 @@
     </div>
 
     <script>
-      // Items Configuration (embedded for the tool)
-      const ITEMS_CONFIG = {
-        items: [
-          {
-            id: 1,
-            name: "Part Sign",
-            image: "images/item_1.png",
-            symbol: "🪧",
-            damage: 3,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 2,
-            name: "Milkshake",
-            image: "images/item_2.png",
-            symbol: "🥤",
-            damage: 2,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 3,
-            name: "Baseball Cap",
-            image: "images/item_3.png",
-            symbol: "🧢",
-            damage: 4,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 4,
-            name: "Map",
-            image: "images/item_4.png",
-            symbol: "🗺️",
-            damage: 1,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 5,
-            name: "No Walking Sign",
-            image: "images/item_5.png",
-            symbol: "🚷",
-            damage: 5,
-            restore: 0,
-            type: "weakness",
-            cursed: false,
-          },
-          {
-            id: 6,
-            name: "Horseshoe",
-            image: "images/item_6.png",
-            symbol: "🪖",
-            damage: 6,
-            restore: 0,
-            type: "weakness",
-            cursed: false,
-          },
-          {
-            id: 7,
-            name: "Arrow",
-            image: "images/item_7.png",
-            symbol: "🏹",
-            damage: 3,
-            restore: 0,
-            type: "weakness",
-            cursed: false,
-          },
-          {
-            id: 8,
-            name: "Acorn",
-            image: "images/item_8.png",
-            symbol: "🌰",
-            damage: 2,
-            restore: 0,
-            type: "weakness",
-            cursed: false,
-          },
-          {
-            id: 9,
-            name: "Water Bottle",
-            image: "images/item_9.png",
-            symbol: "💧",
-            damage: 4,
-            restore: 0,
-            type: "emotional",
-            cursed: false,
-          },
-          {
-            id: 10,
-            name: "Pink Flower",
-            image: "images/item_10.png",
-            symbol: "🌸",
-            damage: 3,
-            restore: 0,
-            type: "emotional",
-            cursed: false,
-          },
-          {
-            id: 11,
-            name: "Fallen Leaf",
-            image: "images/item_11.png",
-            symbol: "🍂",
-            damage: 5,
-            restore: 0,
-            type: "emotional",
-            cursed: false,
-          },
-          {
-            id: 12,
-            name: "Pad Lock",
-            image: "images/item_12.png",
-            symbol: "🔒",
-            damage: 2,
-            restore: 0,
-            type: "emotional",
-            cursed: false,
-          },
-          {
-            id: 13,
-            name: "Pinecone",
-            image: "images/item_13.png",
-            symbol: "🌲",
-            damage: 4,
-            restore: 0,
-            type: "mental",
-            cursed: false,
-          },
-          {
-            id: 14,
-            name: "Tennis Ball",
-            image: "images/item_14.png",
-            symbol: "🎾",
-            damage: 3,
-            restore: 0,
-            type: "mental",
-            cursed: false,
-          },
-          {
-            id: 15,
-            name: "Purse",
-            image: "images/item_15.png",
-            symbol: "👜",
-            damage: 5,
-            restore: 0,
-            type: "mental",
-            cursed: false,
-          },
-          {
-            id: 16,
-            name: "Street Lamp",
-            image: "images/item_16.png",
-            symbol: "🌃",
-            damage: 2,
-            restore: 0,
-            type: "mental",
-            cursed: false,
-          },
-          {
-            id: 17,
-            name: "Message Board",
-            image: "images/item_17.png",
-            symbol: "📋",
-            damage: 4,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 18,
-            name: "Stereo",
-            image: "images/item_18.png",
-            symbol: "📻",
-            damage: 3,
-            restore: 0,
-            type: "detection",
-            cursed: false,
-          },
-          {
-            id: 19,
-            name: "Rock",
-            image: "images/item_19.png",
-            symbol: "🪨",
-            damage: 5,
-            restore: 0,
-            type: "weakness",
-            cursed: false,
-          },
-          {
-            id: 20,
-            name: "Backpack",
-            image: "images/item_20.png",
-            symbol: "🎒",
-            damage: 2,
-            restore: 0,
-            type: "emotional",
-            cursed: false,
-          },
-          {
-            id: 21,
-            name: "Flying Kite",
-            image: "images/item_21.png",
-            symbol: "🪁",
-            damage: 4,
-            restore: 0,
-            type: "mental",
-            cursed: false,
-          },
-        ],
-        locations: {
-          detectiveOffice: {
-            name: "Detective's Office",
-            backgroundImage: "images/park-bg.png",
-            itemPositions: [
-              { itemId: 1, x: 15, y: 25, scale: 0.8, initiallyVisible: true },
-              { itemId: 2, x: 85, y: 15, scale: 0.9, initiallyVisible: true },
-              { itemId: 3, x: 25, y: 70, scale: 1.0, initiallyVisible: true },
-              { itemId: 4, x: 75, y: 80, scale: 0.7, initiallyVisible: true },
-              { itemId: 5, x: 45, y: 30, scale: 1.1, initiallyVisible: true },
-              { itemId: 6, x: 65, y: 45, scale: 0.8, initiallyVisible: true },
-              { itemId: 7, x: 10, y: 60, scale: 0.9, initiallyVisible: true },
-              { itemId: 8, x: 90, y: 35, scale: 0.6, initiallyVisible: true },
-              { itemId: 9, x: 35, y: 85, scale: 1.0, initiallyVisible: true },
-              { itemId: 10, x: 55, y: 10, scale: 0.8, initiallyVisible: true },
-              { itemId: 11, x: 20, y: 40, scale: 0.9, initiallyVisible: false },
-              { itemId: 12, x: 80, y: 60, scale: 0.7, initiallyVisible: false },
-              { itemId: 13, x: 30, y: 50, scale: 1.2, initiallyVisible: false },
-              { itemId: 14, x: 70, y: 25, scale: 0.8, initiallyVisible: false },
-              { itemId: 15, x: 40, y: 65, scale: 1.0, initiallyVisible: false },
-              { itemId: 16, x: 60, y: 75, scale: 0.9, initiallyVisible: false },
-              { itemId: 17, x: 15, y: 80, scale: 0.8, initiallyVisible: false },
-              { itemId: 18, x: 85, y: 50, scale: 1.1, initiallyVisible: false },
-              { itemId: 19, x: 25, y: 20, scale: 0.7, initiallyVisible: false },
-              { itemId: 20, x: 75, y: 65, scale: 1.0, initiallyVisible: false },
-              { itemId: 21, x: 50, y: 40, scale: 0.8, initiallyVisible: false },
-            ],
-          },
-          forestClearing: {
-            name: "Forest Clearing",
-            backgroundImage: "images/woods-bg.png",
-            itemPositions: [
-              { itemId: 1, x: 20, y: 30, scale: 0.9, initiallyVisible: true },
-              { itemId: 2, x: 80, y: 20, scale: 0.8, initiallyVisible: true },
-              { itemId: 3, x: 30, y: 75, scale: 1.1, initiallyVisible: true },
-              { itemId: 4, x: 70, y: 85, scale: 0.7, initiallyVisible: true },
-              { itemId: 5, x: 50, y: 35, scale: 1.0, initiallyVisible: true },
-              { itemId: 6, x: 60, y: 50, scale: 0.9, initiallyVisible: true },
-              { itemId: 7, x: 15, y: 65, scale: 0.8, initiallyVisible: true },
-              { itemId: 8, x: 85, y: 40, scale: 0.6, initiallyVisible: true },
-              { itemId: 9, x: 40, y: 80, scale: 1.0, initiallyVisible: true },
-              { itemId: 10, x: 55, y: 15, scale: 0.8, initiallyVisible: true },
-              { itemId: 11, x: 25, y: 45, scale: 0.9, initiallyVisible: false },
-              { itemId: 12, x: 75, y: 65, scale: 0.7, initiallyVisible: false },
-              { itemId: 13, x: 35, y: 55, scale: 1.2, initiallyVisible: false },
-              { itemId: 14, x: 65, y: 30, scale: 0.8, initiallyVisible: false },
-              { itemId: 15, x: 45, y: 70, scale: 1.0, initiallyVisible: false },
-              { itemId: 16, x: 55, y: 80, scale: 0.9, initiallyVisible: false },
-              { itemId: 17, x: 10, y: 85, scale: 0.8, initiallyVisible: false },
-              { itemId: 18, x: 90, y: 55, scale: 1.1, initiallyVisible: false },
-              { itemId: 19, x: 30, y: 25, scale: 0.7, initiallyVisible: false },
-              { itemId: 20, x: 70, y: 70, scale: 1.0, initiallyVisible: false },
-              { itemId: 21, x: 45, y: 45, scale: 0.8, initiallyVisible: false },
-            ],
-          },
-          darkCatacombs: {
-            name: "Dark Catacombs",
-            backgroundImage: "images/catacomb-bg.png",
-            itemPositions: [
-              { itemId: 1, x: 25, y: 35, scale: 0.8, initiallyVisible: true },
-              { itemId: 2, x: 75, y: 25, scale: 0.9, initiallyVisible: true },
-              { itemId: 3, x: 35, y: 70, scale: 1.0, initiallyVisible: true },
-              { itemId: 4, x: 65, y: 80, scale: 0.7, initiallyVisible: true },
-              { itemId: 5, x: 45, y: 40, scale: 1.1, initiallyVisible: true },
-              { itemId: 6, x: 55, y: 55, scale: 0.8, initiallyVisible: true },
-              { itemId: 7, x: 20, y: 60, scale: 0.9, initiallyVisible: true },
-              { itemId: 8, x: 80, y: 45, scale: 0.6, initiallyVisible: true },
-              { itemId: 9, x: 30, y: 85, scale: 1.0, initiallyVisible: true },
-              { itemId: 10, x: 60, y: 20, scale: 0.8, initiallyVisible: true },
-              { itemId: 11, x: 15, y: 50, scale: 0.9, initiallyVisible: false },
-              { itemId: 12, x: 85, y: 65, scale: 0.7, initiallyVisible: false },
-              { itemId: 13, x: 40, y: 60, scale: 1.2, initiallyVisible: false },
-              { itemId: 14, x: 70, y: 35, scale: 0.8, initiallyVisible: false },
-              { itemId: 15, x: 50, y: 75, scale: 1.0, initiallyVisible: false },
-              { itemId: 16, x: 60, y: 85, scale: 0.9, initiallyVisible: false },
-              { itemId: 17, x: 10, y: 80, scale: 0.8, initiallyVisible: false },
-              { itemId: 18, x: 90, y: 60, scale: 1.1, initiallyVisible: false },
-              { itemId: 19, x: 35, y: 30, scale: 0.7, initiallyVisible: false },
-              { itemId: 20, x: 75, y: 70, scale: 1.0, initiallyVisible: false },
-              { itemId: 21, x: 55, y: 50, scale: 0.8, initiallyVisible: false },
-            ],
-          },
-        },
-      };
+      // Configuration storage
+      let ITEMS_CONFIG = null;
+      let ITEMS_UTILS = null;
 
       // Tool state
-      let currentLocation = "detectiveOffice";
+      let currentLocation = null;
       let selectedItem = null;
       let isDragging = false;
       let isResizing = false;
@@ -719,25 +440,310 @@
 
       // Initialize the tool
       document.addEventListener("DOMContentLoaded", function () {
-        initializeTool();
+        loadGameConfig();
       });
 
+      function updateStatus(message, type = "loading") {
+        const indicator = document.getElementById("status-indicator");
+        indicator.textContent = message;
+        indicator.className = `status-indicator ${type}`;
+
+        if (type === "success") {
+          setTimeout(() => {
+            indicator.style.display = "none";
+          }, 2000);
+        }
+      }
+
+      function loadGameConfig() {
+        updateStatus("Loading game configuration...", "loading");
+        console.log("🔍 Loading game configuration...");
+
+        // Try to load from the actual game files
+        if (window.ITEMS_CONFIG && window.ITEMS_UTILS) {
+          ITEMS_CONFIG = window.ITEMS_CONFIG;
+          ITEMS_UTILS = window.ITEMS_UTILS;
+          console.log("✅ Game config loaded from window globals");
+          initializeTool();
+          return;
+        }
+
+        // Try multiple loading strategies
+        loadWithFetch()
+          .then(() => {
+            console.log("✅ Config loaded with fetch method");
+            initializeTool();
+          })
+          .catch((error) => {
+            console.log("❌ Fetch method failed:", error);
+            loadWithIframe();
+          });
+      }
+
+      async function loadWithFetch() {
+        try {
+          console.log("🔄 Trying fetch method...");
+          const response = await fetch("./items-config.js");
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const scriptText = await response.text();
+
+          // Create a safe evaluation context
+          const iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          document.body.appendChild(iframe);
+
+          const iframeWindow = iframe.contentWindow;
+
+          // Execute the script in the iframe context
+          iframeWindow.eval(scriptText);
+
+          // Copy the variables from iframe to main window
+          if (iframeWindow.ITEMS_CONFIG && iframeWindow.ITEMS_UTILS) {
+            window.ITEMS_CONFIG = iframeWindow.ITEMS_CONFIG;
+            window.ITEMS_UTILS = iframeWindow.ITEMS_UTILS;
+            ITEMS_CONFIG = window.ITEMS_CONFIG;
+            ITEMS_UTILS = window.ITEMS_UTILS;
+
+            console.log("📦 Items found:", ITEMS_CONFIG.items.length);
+            console.log(
+              "📍 Locations found:",
+              Object.keys(ITEMS_CONFIG.locations)
+            );
+
+            // Clean up
+            document.body.removeChild(iframe);
+            return true;
+          } else {
+            throw new Error("Variables not found in iframe context");
+          }
+        } catch (error) {
+          console.log("❌ Fetch method error:", error);
+          throw error;
+        }
+      }
+
+      function loadWithIframe() {
+        console.log("🔄 Trying iframe method...");
+
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = "about:blank";
+
+        iframe.onload = function () {
+          const iframeDoc =
+            iframe.contentDocument || iframe.contentWindow.document;
+
+          const script = iframeDoc.createElement("script");
+          script.src = "./items-config.js";
+
+          script.onload = function () {
+            console.log("📄 Script loaded in iframe");
+
+            setTimeout(() => {
+              const iframeWindow = iframe.contentWindow;
+
+              if (iframeWindow.ITEMS_CONFIG && iframeWindow.ITEMS_UTILS) {
+                window.ITEMS_CONFIG = iframeWindow.ITEMS_CONFIG;
+                window.ITEMS_UTILS = iframeWindow.ITEMS_UTILS;
+                ITEMS_CONFIG = window.ITEMS_CONFIG;
+                ITEMS_UTILS = window.ITEMS_UTILS;
+
+                console.log("✅ Config loaded via iframe");
+                console.log("📦 Items found:", ITEMS_CONFIG.items.length);
+                console.log(
+                  "📍 Locations found:",
+                  Object.keys(ITEMS_CONFIG.locations)
+                );
+
+                document.body.removeChild(iframe);
+                initializeTool();
+              } else {
+                document.body.removeChild(iframe);
+                loadWithDirectScript();
+              }
+            }, 200);
+          };
+
+          script.onerror = function () {
+            console.log("❌ Script failed to load in iframe");
+            document.body.removeChild(iframe);
+            loadWithDirectScript();
+          };
+
+          iframeDoc.head.appendChild(script);
+        };
+
+        document.body.appendChild(iframe);
+      }
+
+      function loadWithDirectScript() {
+        console.log("🔄 Trying direct script method (last resort)...");
+
+        // Clear any existing variables that might cause conflicts
+        try {
+          delete window.ITEMS_CONFIG;
+          delete window.ITEMS_UTILS;
+        } catch (e) {
+          // Ignore errors if variables can't be deleted
+        }
+
+        // Remove any existing scripts
+        document
+          .querySelectorAll('script[src*="items-config.js"]')
+          .forEach((s) => s.remove());
+
+        const script = document.createElement("script");
+        script.src = `./items-config.js?t=${Date.now()}`;
+
+        script.onload = function () {
+          console.log("📄 Direct script loaded");
+
+          setTimeout(() => {
+            if (window.ITEMS_CONFIG && window.ITEMS_UTILS) {
+              ITEMS_CONFIG = window.ITEMS_CONFIG;
+              ITEMS_UTILS = window.ITEMS_UTILS;
+              console.log("✅ Config loaded via direct script");
+              console.log("📦 Items found:", ITEMS_CONFIG.items.length);
+              console.log(
+                "📍 Locations found:",
+                Object.keys(ITEMS_CONFIG.locations)
+              );
+              initializeTool();
+            } else {
+              showConfigError(
+                "All loading methods failed. The items-config.js file may have syntax errors or may not be accessible. Check the browser console for more details."
+              );
+            }
+          }, 300);
+        };
+
+        script.onerror = function () {
+          showConfigError(
+            "Failed to load ./items-config.js - make sure the file is in the same directory as this tool and is accessible"
+          );
+        };
+
+        document.head.appendChild(script);
+      }
+
+      function showConfigError(message) {
+        updateStatus("Configuration Error", "error");
+        console.error("❌ Config loading failed:", message);
+
+        const container = document.querySelector(".tool-container");
+        container.innerHTML = `
+          <div style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              background: linear-gradient(135deg, #1a1a2e, #16213e);
+              color: #e0e0e0;
+              font-family: 'Courier New', monospace;
+              text-align: center;
+              padding: 40px;
+          ">
+              <div style="
+                  background: rgba(220, 53, 69, 0.1);
+                  border: 2px solid #dc3545;
+                  border-radius: 15px;
+                  padding: 40px;
+                  max-width: 600px;
+              ">
+                  <h1 style="color: #dc3545; margin-bottom: 20px; font-size: 2em;">
+                      ❌ Configuration Error
+                  </h1>
+                  <p style="margin-bottom: 20px; font-size: 1.2em;">
+                      ${message}
+                  </p>
+                  <div style="
+                      background: rgba(0, 0, 0, 0.7);
+                      padding: 20px;
+                      border-radius: 8px;
+                      text-align: left;
+                      margin-top: 20px;
+                  ">
+                      <h3 style="color: #d4af37; margin-bottom: 15px;">To fix this:</h3>
+                      <ul style="line-height: 1.6;">
+                          <li>Make sure <strong>items-config.js</strong> is in the same directory as this tool</li>
+                          <li>Ensure the file exports <strong>ITEMS_CONFIG</strong> and <strong>ITEMS_UTILS</strong> to window</li>
+                          <li>Check browser console for more detailed error messages</li>
+                          <li>Verify the file is accessible (not blocked by CORS)</li>
+                      </ul>
+                  </div>
+                  <button onclick="location.reload()" style="
+                      background: linear-gradient(145deg, #28a745, #218838);
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      padding: 12px 24px;
+                      cursor: pointer;
+                      font-size: 1em;
+                      font-family: 'Courier New', monospace;
+                      margin-top: 20px;
+                  ">
+                      🔄 Retry Loading
+                  </button>
+              </div>
+          </div>
+        `;
+      }
+
       function initializeTool() {
+        if (!ITEMS_CONFIG || !ITEMS_UTILS) {
+          showConfigError("ITEMS_CONFIG or ITEMS_UTILS is null after loading");
+          return;
+        }
+
+        // Validate the config structure
+        if (!ITEMS_CONFIG.items || !Array.isArray(ITEMS_CONFIG.items)) {
+          showConfigError("ITEMS_CONFIG.items is not a valid array");
+          return;
+        }
+
+        if (
+          !ITEMS_CONFIG.locations ||
+          typeof ITEMS_CONFIG.locations !== "object"
+        ) {
+          showConfigError("ITEMS_CONFIG.locations is not a valid object");
+          return;
+        }
+
+        console.log("📦 Items loaded:", ITEMS_CONFIG.items.length);
+        console.log(
+          "📍 Locations loaded:",
+          Object.keys(ITEMS_CONFIG.locations)
+        );
+
+        updateStatus("Tool initialized successfully!", "success");
+
         setupLocationSelector();
-        loadLocation(currentLocation);
+        // Load the first location by default
+        const firstLocation = Object.keys(ITEMS_CONFIG.locations)[0];
+        switchLocation(firstLocation);
         setupEventListeners();
+
         console.log("📐 Item Positioning Tool initialized");
       }
 
       function setupLocationSelector() {
-        const locationBtns = document.querySelectorAll(".location-btn");
-        locationBtns.forEach((btn) => {
+        const locationSelector = document.getElementById("location-selector");
+        locationSelector.innerHTML = "";
+
+        Object.keys(ITEMS_CONFIG.locations).forEach((locationKey) => {
+          const location = ITEMS_CONFIG.locations[locationKey];
+          const btn = document.createElement("button");
+          btn.className = "location-btn";
+          btn.dataset.location = locationKey;
+          btn.textContent = location.name;
           btn.addEventListener("click", function () {
-            const location = this.dataset.location;
-            if (location !== currentLocation) {
-              switchLocation(location);
-            }
+            switchLocation(locationKey);
           });
+          locationSelector.appendChild(btn);
         });
       }
 
@@ -797,12 +803,15 @@
         itemElement.dataset.itemId = item.id;
         itemElement.dataset.positionIndex = index;
 
-        // Set position and scale
+        // Convert viewport percentages to pixels for positioning
         const containerRect = document
           .getElementById("items-container")
           .getBoundingClientRect();
-        itemElement.style.left = `${position.x}%`;
-        itemElement.style.top = `${position.y}%`;
+        const x = (position.x / 100) * containerRect.width;
+        const y = (position.y / 100) * containerRect.height;
+
+        itemElement.style.left = `${x}px`;
+        itemElement.style.top = `${y}px`;
         itemElement.style.transform = `scale(${position.scale})`;
 
         // Calculate size based on scale
@@ -816,9 +825,6 @@
           itemElement.style.backgroundImage = `url('${item.image}')`;
         } else {
           itemElement.innerHTML = item.symbol || "?";
-          itemElement.style.display = "flex";
-          itemElement.style.alignItems = "center";
-          itemElement.style.justifyContent = "center";
           itemElement.style.fontSize = `${size * 0.6}px`;
         }
 
@@ -918,11 +924,7 @@
         isDragging = true;
         selectedItem = item;
 
-        const container = document.getElementById("items-container");
-        const containerRect = container.getBoundingClientRect();
         const itemRect = item.getBoundingClientRect();
-
-        // Calculate offset from mouse to item's top-left corner (same calculation for both X and Y)
         dragOffset.x = clientX - itemRect.left;
         dragOffset.y = clientY - itemRect.top;
 
@@ -936,27 +938,23 @@
         const container = document.getElementById("items-container");
         const containerRect = container.getBoundingClientRect();
 
-        // Calculate where the item's top-left corner should be
-        const newItemLeft = clientX - dragOffset.x;
-        const newItemTop = clientY - dragOffset.y;
+        // Calculate new position
+        const newX = clientX - dragOffset.x - containerRect.left;
+        const newY = clientY - dragOffset.y - containerRect.top;
 
-        // Convert to percentage relative to container
-        const x =
-          ((newItemLeft - containerRect.left) / containerRect.width) * 100;
-        const y =
-          ((newItemTop - containerRect.top) / containerRect.height) * 100;
+        // Convert to percentages
+        const xPercent = (newX / containerRect.width) * 100;
+        const yPercent = (newY / containerRect.height) * 100;
 
-        // Clamp to container bounds
-        const clampedX = Math.max(0, Math.min(95, x));
-        const clampedY = Math.max(0, Math.min(95, y));
+        // Clamp to reasonable bounds
+        const clampedX = Math.max(0, Math.min(95, xPercent));
+        const clampedY = Math.max(0, Math.min(95, yPercent));
 
-        // ONLY update position properties, leave all other styles intact
-        selectedItem.style.setProperty("left", `${clampedX}%`, "important");
-        selectedItem.style.setProperty("top", `${clampedY}%`, "important");
+        // Update visual position
+        selectedItem.style.left = `${(clampedX / 100) * containerRect.width}px`;
+        selectedItem.style.top = `${(clampedY / 100) * containerRect.height}px`;
 
-        // Force reflow to ensure the positioning takes effect
-        selectedItem.offsetHeight;
-
+        // Update data
         updateItemPosition(selectedItem, clampedX, clampedY);
         updateSelectedItemInfo();
       }
@@ -972,16 +970,12 @@
         isResizing = true;
         selectedItem = item;
 
-        const rect = item.getBoundingClientRect();
         const currentScale = getCurrentScale(item);
-
         resizeStartData = {
           corner,
           startX: clientX,
           startY: clientY,
           startScale: currentScale,
-          startWidth: rect.width,
-          startHeight: rect.height,
         };
 
         selectItem(item);
@@ -997,10 +991,10 @@
         const diagonal = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         const direction = deltaX + deltaY > 0 ? 1 : -1;
 
-        const scaleChange = (diagonal * direction) / 200; // Adjust sensitivity
+        const scaleChange = (diagonal * direction) / 200;
         let newScale = resizeStartData.startScale + scaleChange;
 
-        // Clamp scale
+        // Clamp scale to reasonable bounds
         newScale = Math.max(0.2, Math.min(3.0, newScale));
 
         // Apply scale
@@ -1008,14 +1002,9 @@
 
         // Update size
         const baseSize = 40;
-        const newSize = baseSize * newScale;
-        selectedItem.style.width = `${newSize}px`;
-        selectedItem.style.height = `${newSize}px`;
-
-        // Update font size if using symbol
-        if (!selectedItem.style.backgroundImage) {
-          selectedItem.style.fontSize = `${newSize * 0.6}px`;
-        }
+        const size = baseSize * newScale;
+        selectedItem.style.width = `${size}px`;
+        selectedItem.style.height = `${size}px`;
 
         updateItemScale(selectedItem, newScale);
         updateSelectedItemInfo();
@@ -1055,13 +1044,15 @@
         const scaleEl = document.getElementById("selected-scale");
         const visibleEl = document.getElementById("selected-visible");
 
-        if (!selectedItem) {
-          infoPanel.classList.add("no-selection");
-          nameEl.textContent = "None selected";
-          xEl.textContent = "-";
-          yEl.textContent = "-";
-          scaleEl.textContent = "-";
-          visibleEl.textContent = "-";
+        if (!selectedItem || !infoPanel) {
+          if (infoPanel) {
+            infoPanel.classList.add("no-selection");
+          }
+          if (nameEl) nameEl.textContent = "None selected";
+          if (xEl) xEl.textContent = "-";
+          if (yEl) yEl.textContent = "-";
+          if (scaleEl) scaleEl.textContent = "-";
+          if (visibleEl) visibleEl.textContent = "-";
           return;
         }
 
@@ -1071,11 +1062,17 @@
         const item = ITEMS_CONFIG.items.find((item) => item.id === itemId);
         const position = getCurrentItemPosition(selectedItem);
 
-        nameEl.textContent = item.name;
-        xEl.textContent = `${position.x.toFixed(1)}%`;
-        yEl.textContent = `${position.y.toFixed(1)}%`;
-        scaleEl.textContent = position.scale.toFixed(2);
-        visibleEl.textContent = position.initiallyVisible ? "Yes" : "No";
+        if (nameEl) nameEl.textContent = item ? item.name : "Unknown";
+        if (xEl) xEl.textContent = position ? `${position.x.toFixed(1)}%` : "-";
+        if (yEl) yEl.textContent = position ? `${position.y.toFixed(1)}%` : "-";
+        if (scaleEl)
+          scaleEl.textContent = position ? position.scale.toFixed(2) : "-";
+        if (visibleEl)
+          visibleEl.textContent = position
+            ? position.initiallyVisible
+              ? "Yes"
+              : "No"
+            : "-";
       }
 
       function getCurrentItemPosition(itemElement) {
@@ -1112,14 +1109,12 @@
             `Reset all items in ${ITEMS_CONFIG.locations[currentLocation].name} to default positions?`
           )
         ) {
-          // This would reset to original positions - for now just reload
           location.reload();
         }
       }
 
-      function exportItemPositions() {
+      function exportCurrentLocation() {
         const positions = ITEMS_CONFIG.locations[currentLocation].itemPositions;
-
         const output = positions
           .map((pos) => {
             return `        { itemId: ${pos.itemId}, x: ${pos.x.toFixed(
@@ -1130,20 +1125,54 @@
           })
           .join(",\n");
 
-        const fullOutput = `[\n${output}\n      ]`;
+        const fullOutput = `// ${ITEMS_CONFIG.locations[currentLocation].name} item positions:\n[\n${output}\n]`;
 
         const exportOutput = document.getElementById("export-output");
         exportOutput.textContent = fullOutput;
 
-        // Copy to clipboard
+        copyToClipboard(fullOutput);
+      }
+
+      function exportAllLocations() {
+        let output = "// All location item positions:\n\n";
+
+        Object.keys(ITEMS_CONFIG.locations).forEach((locationKey) => {
+          const location = ITEMS_CONFIG.locations[locationKey];
+          const positions = location.itemPositions;
+
+          output += `${locationKey}: {\n`;
+          output += `  // ${location.name}\n`;
+          output += `  itemPositions: [\n`;
+
+          positions.forEach((pos, index) => {
+            output += `    { itemId: ${pos.itemId}, x: ${pos.x.toFixed(
+              1
+            )}, y: ${pos.y.toFixed(1)}, scale: ${pos.scale.toFixed(
+              2
+            )}, initiallyVisible: ${pos.initiallyVisible} }`;
+            if (index < positions.length - 1) output += ",";
+            output += "\n";
+          });
+
+          output += `  ]\n},\n\n`;
+        });
+
+        const exportOutput = document.getElementById("export-output");
+        exportOutput.textContent = output;
+
+        copyToClipboard(output);
+      }
+
+      function copyToClipboard(text) {
         navigator.clipboard
-          .writeText(fullOutput)
+          .writeText(text)
           .then(() => {
-            console.log("✅ Item positions copied to clipboard");
-            alert("Item positions copied to clipboard!");
+            console.log("✅ Positions copied to clipboard");
+            updateStatus("Copied to clipboard!", "success");
           })
           .catch((err) => {
             console.error("Failed to copy to clipboard:", err);
+            updateStatus("Failed to copy to clipboard", "error");
           });
       }
 
@@ -1161,8 +1190,6 @@
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
           clearSelection();
-        } else if (e.key === "Delete" && selectedItem) {
-          // Could add delete functionality here
         }
       });
     </script>
