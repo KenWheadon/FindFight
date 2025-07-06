@@ -15,6 +15,8 @@ class StorySegmentScreen extends Screen {
     this.particleSystem = null;
     this.ambientSounds = [];
     this.textAnimationComplete = false; // Track when text animation is done
+    this.currentTypewriterInterval = null; // Track current typewriter animation
+    this.isTyping = false; // Track if currently typing
 
     console.log("📖 StorySegmentScreen instance created");
   }
@@ -30,6 +32,8 @@ class StorySegmentScreen extends Screen {
     this.clickToAdvance = true;
     this.isAdvancing = false;
     this.textAnimationComplete = false;
+    this.currentTypewriterInterval = null;
+    this.isTyping = false;
 
     console.log("📖 Story segment initialized:", segmentData.name);
   }
@@ -151,13 +155,16 @@ class StorySegmentScreen extends Screen {
         return;
       }
 
-      if (
-        this.clickToAdvance &&
-        !this.isAdvancing &&
-        this.textAnimationComplete
-      ) {
+      if (this.clickToAdvance && !this.isAdvancing) {
         this.createClickEffect(e.clientX, e.clientY);
-        this.advanceFrame();
+
+        // If currently typing, complete the text animation first
+        if (this.isTyping) {
+          this.completeCurrentTextAnimation();
+        } else {
+          // Otherwise advance to next frame
+          this.advanceFrame();
+        }
       }
     });
 
@@ -179,12 +186,14 @@ class StorySegmentScreen extends Screen {
           if (this.segmentComplete) {
             this.createScreenFlash();
             this.exitStorySegment();
-          } else if (
-            this.clickToAdvance &&
-            !this.isAdvancing &&
-            this.textAnimationComplete
-          ) {
-            this.advanceFrame();
+          } else if (this.clickToAdvance && !this.isAdvancing) {
+            // If currently typing, complete the text animation first
+            if (this.isTyping) {
+              this.completeCurrentTextAnimation();
+            } else {
+              // Otherwise advance to next frame
+              this.advanceFrame();
+            }
           }
         }
       }
@@ -255,6 +264,13 @@ class StorySegmentScreen extends Screen {
     this.currentFrame = frameIndex;
     this.isAdvancing = true;
     this.textAnimationComplete = false;
+    this.isTyping = false;
+
+    // Clear any existing typewriter animation
+    if (this.currentTypewriterInterval) {
+      clearInterval(this.currentTypewriterInterval);
+      this.currentTypewriterInterval = null;
+    }
 
     console.log(`📖 Showing frame ${frameIndex + 1}/${this.frames.length}`);
 
@@ -447,6 +463,7 @@ class StorySegmentScreen extends Screen {
       textBox.style.opacity = "0";
       textBox.style.transform = "translateY(50px)";
       this.textAnimationComplete = true;
+      this.isTyping = false;
       return;
     }
 
@@ -501,6 +518,7 @@ class StorySegmentScreen extends Screen {
     } else {
       // If no text, mark as complete immediately
       this.textAnimationComplete = true;
+      this.isTyping = false;
       // Show click indicator if not the last frame
       if (this.currentFrame < this.frames.length - 1) {
         this.setManagedTimeout(() => {
@@ -515,8 +533,9 @@ class StorySegmentScreen extends Screen {
     let index = 0;
     const words = text.split(" ");
     let currentWord = 0;
+    this.isTyping = true;
 
-    const typeInterval = setInterval(() => {
+    this.currentTypewriterInterval = setInterval(() => {
       if (index < text.length) {
         element.innerHTML += text.charAt(index);
 
@@ -544,29 +563,69 @@ class StorySegmentScreen extends Screen {
           this.audioManager.playSound("typewriter_click", false, 0.1);
         }
       } else {
-        clearInterval(typeInterval);
-
-        // Complete progress bar
-        if (progressBar) {
-          const fill = progressBar.querySelector(".progress-fill");
-          if (fill) {
-            fill.style.width = "100%";
-          }
-        }
-
-        // Mark text animation as complete
-        this.textAnimationComplete = true;
-
-        // Show click indicator if not the last frame
-        if (this.currentFrame < this.frames.length - 1) {
-          this.setManagedTimeout(() => {
-            this.updateClickIndicator(true);
-          }, 500);
-        }
+        this.finishTextAnimation(progressBar);
       }
     }, 40);
 
-    this.intervals.push(typeInterval);
+    this.intervals.push(this.currentTypewriterInterval);
+  }
+
+  // New method to complete text animation instantly
+  completeCurrentTextAnimation() {
+    if (!this.isTyping || !this.currentTypewriterInterval) return;
+
+    // Clear the interval
+    clearInterval(this.currentTypewriterInterval);
+    this.currentTypewriterInterval = null;
+
+    // Get the current frame's text
+    const frame = this.frames[this.currentFrame];
+    if (!frame || !frame.text) return;
+
+    let text = "";
+    if (typeof frame.text === "string") {
+      text = frame.text;
+    } else {
+      text = frame.text.text || "";
+    }
+
+    // Complete the text immediately
+    const textElement = document.querySelector(".story-text");
+    if (textElement && text) {
+      textElement.innerHTML = text;
+    }
+
+    // Complete progress bar
+    const progressBar = document.getElementById("textProgressBar");
+    this.finishTextAnimation(progressBar);
+  }
+
+  // Helper method to finish text animation
+  finishTextAnimation(progressBar) {
+    // Clear the interval
+    if (this.currentTypewriterInterval) {
+      clearInterval(this.currentTypewriterInterval);
+      this.currentTypewriterInterval = null;
+    }
+
+    // Complete progress bar
+    if (progressBar) {
+      const fill = progressBar.querySelector(".progress-fill");
+      if (fill) {
+        fill.style.width = "100%";
+      }
+    }
+
+    // Mark text animation as complete
+    this.textAnimationComplete = true;
+    this.isTyping = false;
+
+    // Show click indicator if not the last frame
+    if (this.currentFrame < this.frames.length - 1) {
+      this.setManagedTimeout(() => {
+        this.updateClickIndicator(true);
+      }, 500);
+    }
   }
 
   updateAtmosphere(frame) {
@@ -627,6 +686,13 @@ class StorySegmentScreen extends Screen {
 
     this.segmentComplete = true;
     this.clickToAdvance = false;
+    this.isTyping = false;
+
+    // Clear any existing typewriter animation
+    if (this.currentTypewriterInterval) {
+      clearInterval(this.currentTypewriterInterval);
+      this.currentTypewriterInterval = null;
+    }
 
     // Hide click indicator
     this.updateClickIndicator(false);
@@ -726,12 +792,14 @@ class StorySegmentScreen extends Screen {
       e.preventDefault();
       if (this.segmentComplete) {
         this.exitStorySegment();
-      } else if (
-        this.clickToAdvance &&
-        !this.isAdvancing &&
-        this.textAnimationComplete
-      ) {
-        this.advanceFrame();
+      } else if (this.clickToAdvance && !this.isAdvancing) {
+        // If currently typing, complete the text animation first
+        if (this.isTyping) {
+          this.completeCurrentTextAnimation();
+        } else {
+          // Otherwise advance to next frame
+          this.advanceFrame();
+        }
       }
     }
 
@@ -770,6 +838,7 @@ class StorySegmentScreen extends Screen {
       clickToAdvance: this.clickToAdvance,
       isAdvancing: this.isAdvancing,
       textAnimationComplete: this.textAnimationComplete,
+      isTyping: this.isTyping,
       nextScreen: this.nextScreen,
       currentSegment: this.currentSegment?.name,
     });
@@ -781,6 +850,12 @@ class StorySegmentScreen extends Screen {
     if (this.audioManager) {
       this.audioManager.stopSound("story_music");
       this.audioManager.stopSound("ambient_atmosphere");
+    }
+
+    // Clear any existing typewriter animation
+    if (this.currentTypewriterInterval) {
+      clearInterval(this.currentTypewriterInterval);
+      this.currentTypewriterInterval = null;
     }
 
     // Clean up particle system
@@ -798,6 +873,8 @@ class StorySegmentScreen extends Screen {
     this.segmentComplete = false;
     this.clickToAdvance = true;
     this.textAnimationComplete = false;
+    this.isTyping = false;
+    this.currentTypewriterInterval = null;
     this.ambientSounds = [];
 
     // Call parent destroy
