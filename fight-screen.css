@@ -120,8 +120,8 @@
 /* Tree Symbols - positioned on left and right of tree */
 .tree-symbol {
   font-size: 4em;
-  width: 100%;
-  height: 65%;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,6 +142,13 @@
   border-color: #4ecdc4;
   box-shadow: 0 0 25px rgba(78, 205, 196, 0.4);
   background: rgba(78, 205, 196, 0.1);
+}
+
+.tree-symbol .symbol-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
 /* Tree Dialogue */
@@ -256,6 +263,7 @@
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .card-item:hover {
@@ -336,6 +344,7 @@
   justify-content: space-between;
   width: 100%;
   font-size: 0.9em;
+  margin-bottom: 5px;
 }
 
 .card-damage {
@@ -346,6 +355,47 @@
 .card-restore {
   color: #4ecdc4;
   font-weight: bold;
+}
+
+.card-type {
+  font-size: 0.8em;
+  color: #d4af37;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Card Tooltip */
+.card-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.95);
+  color: #e0e0e0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 200px;
+  z-index: 1001;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  text-align: center;
+  font-family: "Courier New", monospace;
+}
+
+.card-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.95);
 }
 
 /* Combat Instructions */
@@ -508,6 +558,22 @@
   }
 }
 
+/* Card slide in animation */
+.card-slide-in {
+  animation: cardSlideIn 0.5s ease-out;
+}
+
+@keyframes cardSlideIn {
+  0% {
+    transform: translateY(200px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .tree-visual-container {
@@ -525,9 +591,19 @@
     font-size: 3em;
   }
 
+  .tree-symbol .symbol-image {
+    width: 50px;
+    height: 50px;
+  }
+
   .card-content {
     width: 120px;
     height: 160px;
+  }
+
+  .card-tooltip {
+    max-width: 180px;
+    font-size: 0.85em;
   }
 }
 
@@ -549,6 +625,11 @@
     width: 60px;
     height: 60px;
     font-size: 2.5em;
+  }
+
+  .tree-symbol .symbol-image {
+    width: 40px;
+    height: 40px;
   }
 
   .tree-health-bar {
@@ -576,6 +657,16 @@
 
   .card-stats {
     font-size: 0.8em;
+  }
+
+  .card-type {
+    font-size: 0.7em;
+  }
+
+  .card-tooltip {
+    max-width: 160px;
+    font-size: 0.8em;
+    padding: 10px 12px;
   }
 
   .player-stats {
@@ -616,10 +707,21 @@
     font-size: 2em;
   }
 
+  .tree-symbol .symbol-image {
+    width: 30px;
+    height: 30px;
+  }
+
   .card-content {
     width: 90px;
     height: 120px;
     padding: 10px;
+  }
+
+  .card-tooltip {
+    max-width: 140px;
+    font-size: 0.75em;
+    padding: 8px 10px;
   }
 }
 
@@ -641,6 +743,10 @@
   .flying-card {
     animation: none;
   }
+
+  .card-slide-in {
+    animation: none;
+  }
 }
 
 /* High contrast mode */
@@ -657,6 +763,10 @@
   .stamina-bar-bg {
     border-width: 4px;
   }
+
+  .card-tooltip {
+    border-width: 3px;
+  }
 }
 
 /* Print styles */
@@ -669,6 +779,10 @@
   .stars-layer,
   .asteroids-layer,
   .particles-layer {
+    display: none;
+  }
+
+  .card-tooltip {
     display: none;
   }
 }

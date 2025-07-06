@@ -30,6 +30,9 @@ class FightScreen extends Screen {
     this.messageQueue = [];
     this.isProcessingMessages = false;
 
+    // Tooltip system
+    this.tooltip = null;
+
     console.log("⚔️ FightScreen instance created");
   }
 
@@ -123,6 +126,7 @@ class FightScreen extends Screen {
       id: "pebble_" + Date.now() + Math.random(),
       name: "Pebble",
       symbol: "🪨",
+      image: "images/pebble.png", // Updated to use pebble.png
       damage: 1,
       restore: 1,
       type: "weakness",
@@ -226,17 +230,63 @@ class FightScreen extends Screen {
         
         <!-- Feedback overlay -->
         <div class="combat-feedback" id="combatFeedback"></div>
+        
+        <!-- Tooltip -->
+        <div class="card-tooltip" id="cardTooltip"></div>
       </div>
     `;
 
     // Update UI elements
     this.updateUI();
     this.renderHand();
+    this.setupTooltip();
   }
 
   setupEventListeners() {
     super.setupEventListeners();
-    // No combat control buttons needed anymore - cards auto-play when selected
+  }
+
+  setupTooltip() {
+    this.tooltip = document.getElementById("cardTooltip");
+    if (!this.tooltip) return;
+
+    // Hide tooltip initially
+    this.tooltip.style.display = "none";
+  }
+
+  showTooltip(card, event) {
+    if (!this.tooltip) return;
+
+    const textIndex = Math.min(this.currentPhase - 1, card.text.length - 1);
+    const tooltipText = card.text[textIndex];
+
+    this.tooltip.textContent = `"${tooltipText}"`;
+    this.tooltip.style.display = "block";
+
+    // Position tooltip above the card
+    const rect = event.currentTarget.getBoundingClientRect();
+    const tooltipRect = this.tooltip.getBoundingClientRect();
+
+    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+    let top = rect.top - tooltipRect.height - 10;
+
+    // Keep tooltip within screen bounds
+    if (left < 10) left = 10;
+    if (left + tooltipRect.width > window.innerWidth - 10) {
+      left = window.innerWidth - tooltipRect.width - 10;
+    }
+    if (top < 10) {
+      top = rect.bottom + 10; // Show below if no room above
+    }
+
+    this.tooltip.style.left = left + "px";
+    this.tooltip.style.top = top + "px";
+  }
+
+  hideTooltip() {
+    if (this.tooltip) {
+      this.tooltip.style.display = "none";
+    }
   }
 
   init() {
@@ -321,7 +371,7 @@ class FightScreen extends Screen {
 
       if (card) {
         await this.animateCardThrow(cardId, card);
-        await this.delay(200); // Brief pause between cards
+        await this.delay(1000); // Brief pause between cards
       }
     }
 
@@ -490,9 +540,7 @@ class FightScreen extends Screen {
       this.queueCombatMessage(`💚 Restored ${stamina} stamina`, "heal");
     }
 
-    // Show card dialogue
-    const dialogue = card.text[Math.floor(Math.random() * card.text.length)];
-    this.queueCombatMessage(`"${dialogue}"`, "dialogue");
+    // No longer show card dialogue in combat messages - it's in the tooltip now
 
     this.updateUI();
   }
@@ -519,7 +567,7 @@ class FightScreen extends Screen {
     // Process next message after delay
     setTimeout(() => {
       this.processMessageQueue();
-    }, 2000);
+    }, 1200);
   }
 
   showCombatFeedback(message, type) {
@@ -682,7 +730,7 @@ class FightScreen extends Screen {
 
       // Use item image if available, otherwise use symbol
       let cardVisual = "";
-      if (card.image && !card.isPebble) {
+      if (card.image) {
         cardVisual = `<img src="${card.image}" alt="${card.name}" class="card-image" />`;
       } else {
         cardVisual = `<div class="card-symbol">${this.getCardSymbol(
@@ -690,10 +738,10 @@ class FightScreen extends Screen {
         )}</div>`;
       }
 
-      // Show stats based on usage
+      // Show stats based on usage - but always show type now
       const hasBeenUsed = ITEMS_UTILS.hasItemBeenUsed(card.id) || card.isPebble;
       const damageDisplay = hasBeenUsed ? `DMG: ${card.damage || 0}` : "DMG: ?";
-      const typeDisplay = hasBeenUsed ? `${card.type}` : "?";
+      const typeDisplay = this.getTypeDisplayName(card.type); // Always show type
 
       cardElement.innerHTML = `
         <div class="card-content ${isSelected ? "selected" : ""}">
@@ -719,10 +767,27 @@ class FightScreen extends Screen {
         }, index * 100);
       }
 
+      // Add event listeners for click, hover, and tooltip
       cardElement.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         this.handleCardClick(cardElement);
+      });
+
+      // Tooltip event listeners
+      cardElement.addEventListener("mouseenter", (e) => {
+        this.showTooltip(card, e);
+      });
+
+      cardElement.addEventListener("mouseleave", () => {
+        this.hideTooltip();
+      });
+
+      // Update tooltip position on mouse move
+      cardElement.addEventListener("mousemove", (e) => {
+        if (this.tooltip && this.tooltip.style.display !== "none") {
+          this.showTooltip(card, e);
+        }
       });
 
       handContainer.appendChild(cardElement);
@@ -743,6 +808,16 @@ class FightScreen extends Screen {
       mental: "💭",
     };
     return typeSymbolMap[card.type] || card.symbol;
+  }
+
+  getTypeDisplayName(type) {
+    const typeNames = {
+      detection: "Detection",
+      weakness: "Weakness",
+      emotional: "Emotional",
+      mental: "Mental",
+    };
+    return typeNames[type] || type;
   }
 
   updateUI() {
@@ -827,19 +902,7 @@ class FightScreen extends Screen {
     }
   }
 
-  handleEscape() {
-    console.log("🔙 Escape pressed on Fight Screen");
-
-    // In combat, show pause menu or confirmation
-    if (this.combatInProgress || this.cardAnimationInProgress) {
-      this.showTemporaryMessage(
-        "Combat in progress! Cannot exit now.",
-        "warning"
-      );
-    } else {
-      this.showTemporaryMessage("Press ESC again to forfeit combat", "warning");
-    }
-  }
+  handleEscape() {}
 
   // Debug method override
   debug() {
@@ -868,6 +931,9 @@ class FightScreen extends Screen {
 
   // Clean up when screen is destroyed
   destroy() {
+    // Hide tooltip
+    this.hideTooltip();
+
     // Clear message queue and timers
     this.messageQueue = [];
     this.isProcessingMessages = false;
@@ -893,7 +959,7 @@ class FightScreen extends Screen {
     this.playerHand = [];
     this.availableItems = [];
     this.usedItems = [];
-    this.firstTimeUse.clear();
+    this.tooltip = null;
 
     // Call parent destroy
     super.destroy();
