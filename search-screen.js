@@ -56,35 +56,79 @@ class SearchScreen extends Screen {
 
     this.container.innerHTML = `
       <div class="search-screen">
-        <!-- Location Background -->
-        <div class="search-location" style="background-image: url('${location.backgroundImage}')"></div>
-        
-        <!-- Search UI Overlay -->
-        <div class="search-ui">
-          <!-- Stats Bar (no timer) -->
-          <div class="search-stats">
-            <div class="search-collections" id="search-collections">
-              <div class="collections-icon">🎒</div>
-              <span class="collections-count" id="collections-count">0</span>
+        <div class="search-container">
+          <!-- Left Control Panel -->
+          <div class="search-control-panel">
+            <div class="search-control-section">
+              <h3>🔍 Search Progress</h3>
+              <div class="search-stats-panel">
+                <div class="search-collections" id="search-collections">
+                  <div class="collections-icon">🎒</div>
+                  <span class="collections-count" id="collections-count">0</span>
+                  <span class="collections-label">Items Found</span>
+                </div>
+                
+                <div class="search-stamina-panel">
+                  <div class="search-stamina-label">
+                    <span>Stamina: <span id="search-stamina-value">100</span></span>
+                  </div>
+                  <div class="search-stamina-bar">
+                    <div class="search-stamina-fill" id="search-stamina-fill"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div class="search-stamina">
-              <span class="search-stamina-text">Stamina: <span id="search-stamina-value">100</span></span>
-              <div class="search-stamina-bar">
-                <div class="search-stamina-fill" id="search-stamina-fill"></div>
+
+            <div class="search-control-section">
+              <h3>🎯 Location</h3>
+              <div class="search-location-info">
+                <div class="location-name">${location.name}</div>
+                <div class="location-details">
+                  <div class="location-stat">
+                    <span class="stat-label">Total Items:</span>
+                    <span class="stat-value">${this.searchState.items.length}</span>
+                  </div>
+                  <div class="location-stat">
+                    <span class="stat-label">Drain Rate:</span>
+                    <span class="stat-value">${this.searchState.staminaDrainRate}/sec</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="search-control-section">
+              <h3>⚡ Controls</h3>
+              <div class="search-controls">
+                <button class="search-control-btn" id="search-pause-btn">
+                  <span class="btn-icon">⏸️</span>
+                  <span class="btn-text">Pause</span>
+                </button>
+                <button class="search-control-btn primary" id="search-finish-btn">
+                  <span class="btn-icon">✅</span>
+                  <span class="btn-text">Finish Search</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="search-control-section">
+              <h3>💡 Tips</h3>
+              <div class="search-tips">
+                <ul>
+                  <li>Click objects to collect them</li>
+                  <li>Watch your stamina level</li>
+                  <li>Items appear over time</li>
+                  <li>Look for hidden details</li>
+                </ul>
               </div>
             </div>
           </div>
-          
-          <!-- Items Container -->
-          <div class="search-items-container" id="search-items-container">
-            <!-- Items will be populated here -->
-          </div>
-          
-          <!-- Controls -->
-          <div class="search-controls">
-            <button class="search-control-btn" id="search-pause-btn">Pause</button>
-            <button class="search-control-btn primary" id="search-finish-btn">Finish Search</button>
+
+          <!-- Right Search Area -->
+          <div class="search-area">
+            <div class="search-location-bg" style="background-image: url('${location.backgroundImage}')"></div>
+            <div class="search-items-container" id="search-items-container">
+              <!-- Items will be populated here -->
+            </div>
           </div>
         </div>
         
@@ -93,15 +137,18 @@ class SearchScreen extends Screen {
           <div class="pause-content">
             <img src="images/logo.png" alt="Rusty vs. The Evil Tree" class="pause-logo">
             <div class="pause-tips">
-              <h3>How to Search</h3>
-              <ul>
-                <li>Click on objects to collect them</li>
-                <li>Watch your stamina - searching drains energy</li>
-                <li>Some items may be cursed - be careful!</li>
-                <li>Use your detective instincts to find hidden clues</li>
-                <li>Items are hidden naturally in the scene</li>
-                <li>More items will appear over time</li>
-              </ul>
+              <h3>Search Paused</h3>
+              <p>Take a break and plan your next moves!</p>
+              <div class="pause-stats">
+                <div class="pause-stat">
+                  <span>Items Found:</span>
+                  <span id="pause-items-found">0</span>
+                </div>
+                <div class="pause-stat">
+                  <span>Stamina:</span>
+                  <span id="pause-stamina">100</span>
+                </div>
+              </div>
             </div>
             <button class="game-button primary" id="resume-btn">Resume Search</button>
           </div>
@@ -129,13 +176,20 @@ class SearchScreen extends Screen {
       const itemElement = document.createElement("div");
       itemElement.className = "search-item";
 
-      // Use responsive positioning with viewport units
-      itemElement.style.left = `${item.x}vw`;
-      itemElement.style.top = `${item.y}vh`;
+      // Use percentage-based positioning like the tool does
+      // Convert the x,y percentages to CSS percentage values
+      itemElement.style.left = `${item.x}%`;
+      itemElement.style.top = `${item.y}%`;
 
       // Apply scale from item data
       const scale = item.scale || 1.0;
       itemElement.style.transform = `scale(${scale})`;
+
+      // Set base size (matching the tool's base size of 40px)
+      const baseSize = 40;
+      const size = baseSize * scale;
+      itemElement.style.width = `${baseSize}px`;
+      itemElement.style.height = `${baseSize}px`;
 
       itemElement.dataset.itemIndex = index;
 
@@ -145,8 +199,10 @@ class SearchScreen extends Screen {
         itemElement.innerHTML = ""; // Clear any text content
       } else if (item.symbol) {
         itemElement.innerHTML = item.symbol;
+        itemElement.style.fontSize = `${size * 0.6}px`;
       } else {
         itemElement.innerHTML = "?";
+        itemElement.style.fontSize = `${size * 0.6}px`;
       }
 
       // Set initial visibility
@@ -341,11 +397,17 @@ class SearchScreen extends Screen {
 
   togglePause() {
     const pauseOverlay = this.container.querySelector("#pause-overlay");
+    const pauseBtn = this.container.querySelector(
+      "#search-pause-btn .btn-text"
+    );
 
     if (this.searchState.isPaused) {
       this.searchState.isPaused = false;
       if (pauseOverlay) {
         pauseOverlay.classList.remove("active");
+      }
+      if (pauseBtn) {
+        pauseBtn.textContent = "Pause";
       }
       console.log("▶️ Search resumed");
     } else {
@@ -353,7 +415,24 @@ class SearchScreen extends Screen {
       if (pauseOverlay) {
         pauseOverlay.classList.add("active");
       }
+      if (pauseBtn) {
+        pauseBtn.textContent = "Resume";
+      }
+      // Update pause screen stats
+      this.updatePauseStats();
       console.log("⏸️ Search paused");
+    }
+  }
+
+  updatePauseStats() {
+    const pauseItemsFound = this.container.querySelector("#pause-items-found");
+    const pauseStamina = this.container.querySelector("#pause-stamina");
+
+    if (pauseItemsFound) {
+      pauseItemsFound.textContent = this.searchState.foundItems.length;
+    }
+    if (pauseStamina) {
+      pauseStamina.textContent = Math.floor(this.searchState.stamina);
     }
   }
 
