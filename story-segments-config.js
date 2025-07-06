@@ -295,16 +295,16 @@ const STORY_SEGMENTS = {
           },
           {
             image: "images/sword.png",
-            x: 25,
-            y: 60,
-            scale: 2,
+            x: 15,
+            y: 70,
+            scale: 0.35,
             animation: "glow",
             animateFrom: { x: 25, y: 65, scale: 1, opacity: 0 },
           },
         ],
         text: {
           speaker: "Rusty",
-          text: "I jsut need to gather my last bit of evidence. Then it's time to end this once and for all.",
+          text: "I just need to gather my last bit of evidence. Then it's time to end this once and for all.",
           style: "emphasis",
         },
       },
@@ -317,8 +317,8 @@ const STORY_SEGMENTS = {
         items: [
           {
             image: "images/rusty-sad.png",
-            x: 30,
-            y: 60,
+            x: 25,
+            y: 65,
             scale: 3,
             animation: "pulse",
           },
@@ -346,8 +346,8 @@ const STORY_SEGMENTS = {
         items: [
           {
             image: "images/rusty-angry.png",
-            x: 30,
-            y: 60,
+            x: 25,
+            y: 65,
             scale: 3,
             animation: "glow",
           },
