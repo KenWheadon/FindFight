@@ -62,10 +62,7 @@ class Screen {
     }
   }
 
-  handleEscape() {
-    // Generic escape handling - can be overridden
-    console.log(`Escape pressed on ${this.screenName} screen`);
-  }
+  handleEscape() {}
 
   startAnimations() {
     this.createStars();

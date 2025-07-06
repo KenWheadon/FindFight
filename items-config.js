@@ -350,8 +350,8 @@ const ITEMS_CONFIG = {
       backgroundImage: "images/park-bg.png",
       startingStamina: 100,
       maxStamina: 100,
-      staminaDrainRate: 0.5,
-      revealDuration: 60, // 60 seconds for items to fade in
+      staminaDrainRate: 1,
+      revealDuration: 90, // 60 seconds for items to fade in
       itemPositions: [
         { itemId: 1, x: 18.7, y: 76.5, scale: 4.37, initiallyVisible: true },
         { itemId: 2, x: 26.9, y: 86.2, scale: 1.49, initiallyVisible: true },
@@ -381,7 +381,7 @@ const ITEMS_CONFIG = {
       backgroundImage: "images/woods-bg.png",
       startingStamina: 80,
       maxStamina: 100,
-      staminaDrainRate: 0.7,
+      staminaDrainRate: 2,
       revealDuration: 60,
       itemPositions: [
         { itemId: 1, x: 21.0, y: 83.1, scale: 3.42, initiallyVisible: true },
@@ -412,8 +412,8 @@ const ITEMS_CONFIG = {
       backgroundImage: "images/catacomb-bg.png",
       startingStamina: 60,
       maxStamina: 100,
-      staminaDrainRate: 1.0,
-      revealDuration: 60,
+      staminaDrainRate: 3,
+      revealDuration: 40,
       itemPositions: [
         { itemId: 1, x: 2.2, y: 91.3, scale: 5.91, initiallyVisible: true },
         { itemId: 2, x: 27.7, y: 30.2, scale: 1.2, initiallyVisible: true },

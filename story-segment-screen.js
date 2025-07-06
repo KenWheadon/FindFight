@@ -817,16 +817,7 @@ class StorySegmentScreen extends Screen {
     }
   }
 
-  handleEscape() {
-    console.log("🔙 Escape pressed on Story Segment Screen");
-
-    if (this.segmentComplete) {
-      this.exitStorySegment();
-    } else {
-      // Show skip dialog or skip to end
-      this.showFrame(this.frames.length);
-    }
-  }
+  handleEscape() {}
 
   // Debug method override
   debug() {

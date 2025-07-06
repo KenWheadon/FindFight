@@ -480,13 +480,7 @@ class VictoryScreen extends Screen {
     }
   }
 
-  handleEscape() {
-    console.log("🔙 Escape pressed on Victory Screen");
-
-    if (this.fadeInComplete && this.buttonsEnabled) {
-      this.returnToMenu();
-    }
-  }
+  handleEscape() {}
 
   // Override particle system to create golden victory particles
   startParticleSystem() {

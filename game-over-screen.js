@@ -239,15 +239,6 @@ class GameOverScreen extends Screen {
     if (this.currentRevealedCount >= this.storySegments.length) {
       this.onAllSegmentsRevealed();
     }
-
-    // Show success message
-    this.showTemporaryMessage(
-      `📖 ${segment.title
-        .replace("Click to ", "")
-        .replace("...", "")} revealed!`,
-      "info",
-      2000
-    );
   }
 
   onAllSegmentsRevealed() {
@@ -289,13 +280,6 @@ class GameOverScreen extends Screen {
         buttonText.textContent = "Save the World";
       }
     }
-
-    // Show completion message
-    this.showTemporaryMessage(
-      "💀 The full horror is revealed. The world needs a hero!",
-      "warning",
-      3000
-    );
   }
 
   createFinalRevealEffect() {
@@ -335,19 +319,6 @@ class GameOverScreen extends Screen {
 
     // Right column starts invisible (handled by CSS)
     this.rightColumnVisible = false;
-
-    // Initialize progress dots
-    this.updateProgressDots();
-  }
-
-  updateProgressDots() {
-    const dots = this.container.querySelectorAll(".progress-dot");
-    dots.forEach((dot, index) => {
-      const segment = this.storySegments[index];
-
-      dot.classList.toggle("available", segment.unlocked);
-      dot.classList.toggle("completed", segment.revealed);
-    });
   }
 
   setupEventListeners() {
@@ -423,13 +394,6 @@ class GameOverScreen extends Screen {
       this.audioManager.playSound("button_click", false, 0.7);
     }
 
-    // Show restarting message
-    this.showTemporaryMessage(
-      "A new detective takes the case...",
-      "success",
-      2000
-    );
-
     // Fade out the screen
     const gameOverContent = this.container.querySelector(".game-over-content");
     if (gameOverContent) {
@@ -456,9 +420,6 @@ class GameOverScreen extends Screen {
     if (this.audioManager) {
       this.audioManager.playSound("button_click", false, 0.7);
     }
-
-    // Show menu message
-    this.showTemporaryMessage("Returning to main menu...", "info", 2000);
 
     // Fade out the screen
     const gameOverContent = this.container.querySelector(".game-over-content");
@@ -508,13 +469,7 @@ class GameOverScreen extends Screen {
     }
   }
 
-  handleEscape() {
-    console.log("🔙 Escape pressed on Game Over Screen");
-
-    if (this.fadeInComplete && this.buttonsEnabled && this.rightColumnVisible) {
-      this.restartGame();
-    }
-  }
+  handleEscape() {}
 
   // Debug method override
   debug() {

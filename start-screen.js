@@ -348,15 +348,7 @@ class StartScreen extends Screen {
     }
   }
 
-  handleEscape() {
-    console.log("🔙 Escape pressed on Start Screen");
-
-    if (this.creditsOpen) {
-      this.hideCredits();
-    } else {
-      this.showTemporaryMessage("Press F5 to refresh the game", "info", 3000);
-    }
-  }
+  handleEscape() {}
 
   // Debug method override
   debug() {
