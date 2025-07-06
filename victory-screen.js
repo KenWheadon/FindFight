@@ -18,19 +18,19 @@ class VictoryScreen extends Screen {
       {
         id: "revelation",
         title: "Click to reveal the aftermath...",
-        text: "The tree's ancient whispers fade to silence. Its gnarled branches crumble to dust, and the cursed box begins to crack like an eggshell around me.",
+        text: "The weeks following the cursed box case were blissfully quiet. The disappearances stopped completely—no more missing persons reports, no more strange vanishings in the night. The city felt normal again, like it could finally breathe.",
         revealed: false,
       },
       {
         id: "escape",
-        title: "Click to discover your escape...",
-        text: "Light pours through the fractures—real light, not the sickly glow of this prison. I can smell the outside world: rain, exhaust, the city I know.",
+        title: "Click to discover the whispers...",
+        text: "Then the whispers started again. Bar talk, street corner rumors, hushed conversations in coffee shops. But this time it was about a storm cellar that appeared in different neighborhoods - one that you could enter but never leave.",
         revealed: false,
       },
       {
         id: "reflection",
-        title: "Click to hear Rusty's final words...",
-        text: '"Case closed," I mutter, straightening my trench coat. "Another case closed. The detective\'s work is never truly done, but tonight, justice has roots deeper than evil. Some mysteries are meant to be solved... and some boxes are meant to stay shut forever."',
+        title: "Click to hear Rusty's resolve...",
+        text: "He didn't wait for the newspaper clipping to start piling up, or for the line up of missing person requests that would soon be at his door - he just bunch on his trench coat and hit the road. He knew the job was never really done, that there's always another mystery waiting in the shadows.",
         revealed: false,
       },
     ];

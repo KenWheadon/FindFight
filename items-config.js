@@ -430,7 +430,7 @@ const ITEMS_CONFIG = {
         { itemId: 13, x: 20.4, y: 70.3, scale: 0.94, initiallyVisible: true },
         { itemId: 14, x: 15.2, y: 25.1, scale: 1.06, initiallyVisible: true },
         { itemId: 15, x: 49.5, y: 63.7, scale: 1.0, initiallyVisible: true },
-        { itemId: 16, x: 18.4, y: 56.5, scale: 2.15, initiallyVisible: true },
+        { itemId: 16, x: 82.2, y: 65.5, scale: 7.32, initiallyVisible: true },
         { itemId: 17, x: 44.3, y: 64.0, scale: 2.96, initiallyVisible: true },
         { itemId: 18, x: 27.6, y: 69.3, scale: 2.52, initiallyVisible: true },
         { itemId: 19, x: 8.8, y: 77.3, scale: 1.35, initiallyVisible: true },
