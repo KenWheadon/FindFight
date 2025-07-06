@@ -84,7 +84,7 @@ const STORY_SEGMENTS = {
             image: "images/rusty-angry.png",
             x: 30,
             y: 60,
-            scale: 3,
+            scale: 4.5,
             animation: "float",
           },
           {

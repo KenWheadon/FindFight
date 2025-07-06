@@ -178,7 +178,6 @@
 .story-segment.revealed .story-text {
   opacity: 1;
   max-height: 200px;
-  margin-top: 10px;
 }
 
 .story-click-hint {
