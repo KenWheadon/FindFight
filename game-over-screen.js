@@ -8,34 +8,21 @@ class GameOverScreen extends Screen {
     this.gameOverMessage = "";
     this.buttonsEnabled = true;
     this.fadeInComplete = false;
+    this.rightColumnVisible = false;
 
     // Interactive story state
     this.storySegments = [
       {
-        id: "immediate",
-        title: "Click to see what happens immediately after...",
-        text: "The box seals itself with a satisfied whisper. Another detective consumed, another mind absorbed into its endless hunger. The tree's roots pulse with renewed vigor.",
+        id: "immediate_spreading",
+        title: "Click to see what happens next...",
+        text: "The box seals itself with a satisfied whisper. Another detective consumed, another mind absorbed into its endless hunger. The tree's roots pulse with renewed vigor. Over the following months, more mysterious disappearances plague the city. The box appears in different locations, always finding its way to the curious, the brave, the foolish.",
         revealed: false,
         unlocked: true,
       },
       {
-        id: "spreading",
-        title: "Click to discover the spreading darkness...",
-        text: "Over the following months, more mysterious disappearances plague the city. The box appears in different locations, always finding its way to the curious, the brave, the foolish.",
-        revealed: false,
-        unlocked: false,
-      },
-      {
-        id: "consequences",
+        id: "consequences_hope",
         title: "Click to witness the world's fate...",
-        text: "Years pass. The tree's influence seeps beyond the box, poisoning dreams, twisting reality. Street lamps flicker with unnatural shadows. Children speak of voices in the wind.",
-        revealed: false,
-        unlocked: false,
-      },
-      {
-        id: "hope",
-        title: "Click to find the glimmer of hope...",
-        text: "But somewhere, another detective picks up the trail. Someone who might succeed where others failed. Someone who might finally close this case for good. Will you be that detective?",
+        text: "Years pass. The tree's influence seeps beyond the box, poisoning dreams, twisting reality. Street lamps flicker with unnatural shadows. Children speak of voices in the wind. But somewhere, another detective picks up the trail.",
         revealed: false,
         unlocked: false,
       },
@@ -59,10 +46,11 @@ class GameOverScreen extends Screen {
     // Reset story state
     this.storySegments.forEach((segment) => {
       segment.revealed = false;
-      segment.unlocked = segment.id === "immediate";
+      segment.unlocked = segment.id === "immediate_spreading";
     });
     this.currentRevealedCount = 0;
     this.allSegmentsRevealed = false;
+    this.rightColumnVisible = false;
 
     console.log(
       `💀 Game Over initialized - Type: ${type}, Message: ${message}`
@@ -73,71 +61,76 @@ class GameOverScreen extends Screen {
     // Determine content based on game over type
     const content = this.getGameOverContent();
 
-    // Inject HTML content into the container
+    // Inject HTML content into the container with two-column layout
     this.container.innerHTML = `
       <div class="game-over-content">
-        <div class="game-over-story">
-          <div class="rusty-portrait">
-            <div class="rusty-image">🦝</div>
-          </div>
-          <div class="game-over-narrative">
-            <p class="game-over-main-text">${content.mainText}</p>
-            <p class="game-over-sub-text">${content.subText}</p>
+        <!-- Left Column - Aftermath -->
+        <div class="game-over-left-column" id="leftColumn">
+          <div class="aftermath-section">
+            <h2 class="aftermath-title">The Aftermath</h2>
+            <p class="aftermath-intro">The story doesn't end with your defeat. Click to discover what happens next...</p>
+
+            <div class="story-segments">
+              ${this.storySegments
+                .map(
+                  (segment, index) => `
+                <div class="story-segment ${
+                  segment.unlocked ? "unlocked" : "locked"
+                }" 
+                     data-segment="${index}" 
+                     id="story-segment-${index}">
+                  <div class="story-title">${segment.title}</div>
+                  <div class="story-text">${segment.text}</div>
+                  <div class="story-click-hint">👆</div>
+                </div>
+              `
+                )
+                .join("")}
+            </div>
+
+            <div class="motivation-message" style="opacity: 0;">
+              <p class="motivation-text">
+                <strong>The world grows darker with each failure.</strong><br>
+                But every detective who falls brings us closer to understanding the truth.<br>
+                <em>Will you be the one to finally stop the Evil Tree?</em>
+              </p>
+            </div>
           </div>
         </div>
 
-        <div class="aftermath-section">
-          <h2 class="aftermath-title">The Aftermath</h2>
-          <p class="aftermath-intro">The story doesn't end with your defeat. Click to discover what happens next...</p>
-          
-          <div class="story-segments">
-            ${this.storySegments
-              .map(
-                (segment, index) => `
-              <div class="story-segment ${
-                segment.unlocked ? "unlocked" : "locked"
-              }" 
-                   data-segment="${index}" 
-                   id="story-segment-${index}">
-                <div class="story-title">${segment.title}</div>
-                <div class="story-text">${segment.text}</div>
-                <div class="story-click-hint">👆</div>
+        <!-- Right Column - Character and Controls -->
+        <div class="game-over-right-column" id="rightColumn">
+          <div class="character-section">
+            <div class="game-over-story">
+              <div class="rusty-portrait">
+                <div class="rusty-image">
+                  <img src="images/seed.png" alt="Cursed Seed" />
+                </div>
               </div>
-            `
-              )
-              .join("")}
-          </div>
-
-          <div class="motivation-message" style="opacity: 0;">
-            <p class="motivation-text">
-              <strong>The world grows darker with each failure.</strong><br>
-              But every detective who falls brings us closer to understanding the truth.<br>
-              <em>Will you be the one to finally stop the Evil Tree?</em>
-            </p>
-          </div>
-        </div>
-
-        <div class="game-over-controls">
-          <div class="game-over-stats">
-            <div class="stat-item">
-              <span class="stat-label">Investigation Status:</span>
-              <span class="stat-value">${content.status}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Stamina Remaining:</span>
-              <span class="stat-value">0%</span>
+              <div class="game-over-narrative">
+                <p class="game-over-main-text">${content.mainText}</p>
+              </div>
             </div>
           </div>
-          
-          <div class="game-over-buttons">
-            <button class="game-button primary pulse" id="restartBtn">
-              <span class="button-icon">🔄</span>
-              <span class="button-text">Try Again</span>
-            </button>
-            <button class="game-button secondary" id="menuBtn">
-              <span class="button-icon">🏠</span>
-              <span class="button-text">Main Menu</span>
-            </button>
+
+          <div class="game-over-controls">
+            <div class="game-over-stats">
+              <div class="stat-item">
+                <span class="stat-label">Investigation Status:</span>
+                <span class="stat-value">${content.status}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Stamina Remaining:</span>
+                <span class="stat-value">0%</span>
+              </div>
+            </div>
+            
+            <div class="game-over-buttons">
+              <button class="game-button primary pulse" id="restartBtn">
+                <span class="button-icon">🔄</span>
+                <span class="button-text">Save the World</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -162,22 +155,14 @@ class GameOverScreen extends Screen {
 
     if (this.gameOverType === "tree") {
       return {
-        icon: "🌲",
-        title: "The Tree Claims Victory",
         mainText:
-          "As rusty's bones shimmer and fuse into a strange seed, a deep sense of dread could be felt for miles around the box in every direction.",
-        subText:
-          "Sometimes even the best detective runs out of steam. Good thing they can always turn into seeds!",
+          "Rusty's soul was consumed and his bones made into a seed that would soon sprout another evil tree.",
         status: "Defeated by Evil Tree",
       };
     } else {
       return {
-        icon: "🔍",
-        title: "The Tree Claims Victory",
         mainText:
-          "As rusty's bones shimmer and fuse into a strange seed, a deep sense of dread could be felt for miles around the box in every direction.",
-        subText:
-          "Sometimes even the best detective runs out of steam. Good thing they can always turn into seeds!",
+          "Rusty's soul was consumed and his bones made into a seed that would soon sprout another evil tree.",
         status: "Search Exhaustion",
       };
     }
@@ -278,6 +263,21 @@ class GameOverScreen extends Screen {
       motivationMessage.style.opacity = "1";
     }
 
+    // Update left column positioning
+    const leftColumn = document.getElementById("leftColumn");
+    if (leftColumn) {
+      leftColumn.classList.add("aftermath-complete");
+    }
+
+    // Show the right column with fade-in animation
+    const rightColumn = document.getElementById("rightColumn");
+    if (rightColumn) {
+      this.setManagedTimeout(() => {
+        rightColumn.classList.add("visible");
+        this.rightColumnVisible = true;
+      }, 800);
+    }
+
     // Create dramatic effect
     this.createFinalRevealEffect();
 
@@ -324,21 +324,17 @@ class GameOverScreen extends Screen {
     }
 
     // Set up individual sections for staggered animation
-    const sections = [
-      ".game-over-header",
-      ".game-over-story",
-      ".aftermath-section",
-      ".game-over-controls",
-    ];
+    const leftColumn = document.getElementById("leftColumn");
+    const rightColumn = document.getElementById("rightColumn");
 
-    sections.forEach((selector, index) => {
-      const element = this.container.querySelector(selector);
-      if (element) {
-        element.style.opacity = "0";
-        element.style.transform = "translateY(20px)";
-        element.style.transition = `all 0.8s ease-out ${index * 0.3}s`;
-      }
-    });
+    if (leftColumn) {
+      leftColumn.style.opacity = "0";
+      leftColumn.style.transform = "translateX(-30px)";
+      leftColumn.style.transition = "all 0.8s ease-out";
+    }
+
+    // Right column starts invisible (handled by CSS)
+    this.rightColumnVisible = false;
 
     // Initialize progress dots
     this.updateProgressDots();
@@ -360,21 +356,12 @@ class GameOverScreen extends Screen {
 
     // Get DOM elements
     const restartBtn = document.getElementById("restartBtn");
-    const menuBtn = document.getElementById("menuBtn");
 
     // Restart button
     if (restartBtn) {
       restartBtn.addEventListener("click", (e) => {
         this.createRippleEffect(restartBtn, e);
         this.restartGame();
-      });
-    }
-
-    // Menu button
-    if (menuBtn) {
-      menuBtn.addEventListener("click", (e) => {
-        this.createRippleEffect(menuBtn, e);
-        this.returnToMenu();
       });
     }
   }
@@ -408,23 +395,14 @@ class GameOverScreen extends Screen {
       gameOverContent.style.transform = "translateY(0)";
     }
 
-    // Animate individual sections
-    const sections = [
-      ".game-over-header",
-      ".game-over-story",
-      ".aftermath-section",
-      ".game-over-controls",
-    ];
-
-    sections.forEach((selector, index) => {
-      const element = this.container.querySelector(selector);
-      if (element) {
-        this.setManagedTimeout(() => {
-          element.style.opacity = "1";
-          element.style.transform = "translateY(0)";
-        }, 300 + index * 300);
-      }
-    });
+    // Animate left column
+    const leftColumn = document.getElementById("leftColumn");
+    if (leftColumn) {
+      this.setManagedTimeout(() => {
+        leftColumn.style.opacity = "1";
+        leftColumn.style.transform = "translateX(0)";
+      }, 300);
+    }
 
     // Enable buttons after animation
     this.setManagedTimeout(() => {
@@ -504,11 +482,9 @@ class GameOverScreen extends Screen {
     // Game over screen specific keyboard shortcuts
     if (this.fadeInComplete && this.buttonsEnabled) {
       if (e.code === "Enter" || e.code === "Space") {
-        this.restartGame();
-      }
-
-      if (e.code === "KeyM") {
-        this.returnToMenu();
+        if (this.rightColumnVisible) {
+          this.restartGame();
+        }
       }
     }
 
@@ -525,18 +501,6 @@ class GameOverScreen extends Screen {
         clientY: window.innerHeight / 2,
       });
     }
-    if (e.code === "Digit3" || e.code === "Numpad3") {
-      this.revealStorySegment(2, {
-        clientX: window.innerWidth / 2,
-        clientY: window.innerHeight / 2,
-      });
-    }
-    if (e.code === "Digit4" || e.code === "Numpad4") {
-      this.revealStorySegment(3, {
-        clientX: window.innerWidth / 2,
-        clientY: window.innerHeight / 2,
-      });
-    }
 
     // Debug shortcut
     if (e.code === "KeyD" && e.ctrlKey) {
@@ -547,8 +511,8 @@ class GameOverScreen extends Screen {
   handleEscape() {
     console.log("🔙 Escape pressed on Game Over Screen");
 
-    if (this.fadeInComplete && this.buttonsEnabled) {
-      this.returnToMenu();
+    if (this.fadeInComplete && this.buttonsEnabled && this.rightColumnVisible) {
+      this.restartGame();
     }
   }
 
@@ -560,6 +524,7 @@ class GameOverScreen extends Screen {
       gameOverMessage: this.gameOverMessage,
       fadeInComplete: this.fadeInComplete,
       buttonsEnabled: this.buttonsEnabled,
+      rightColumnVisible: this.rightColumnVisible,
       currentRevealedCount: this.currentRevealedCount,
       allSegmentsRevealed: this.allSegmentsRevealed,
       storySegments: this.storySegments,
@@ -576,6 +541,7 @@ class GameOverScreen extends Screen {
     // Reset state
     this.fadeInComplete = false;
     this.buttonsEnabled = true;
+    this.rightColumnVisible = false;
     this.gameOverType = "search";
     this.gameOverMessage = "";
     this.currentRevealedCount = 0;
@@ -584,7 +550,7 @@ class GameOverScreen extends Screen {
     // Reset story segments
     this.storySegments.forEach((segment) => {
       segment.revealed = false;
-      segment.unlocked = segment.id === "immediate";
+      segment.unlocked = segment.id === "immediate_spreading";
     });
 
     // Call parent destroy

@@ -528,7 +528,7 @@ const STORY_SEGMENTS = {
           {
             image: "images/tree-stronger.png",
             x: 70,
-            y: 45,
+            y: 55,
             scale: 5,
             animation: "glow",
             tint: "#ff0000",
@@ -558,7 +558,7 @@ const STORY_SEGMENTS = {
           {
             image: "images/tree-won.png",
             x: 70,
-            y: 45,
+            y: 55,
             scale: 6,
             animation: "glow",
             tint: "#ff0000",
@@ -580,15 +580,15 @@ const STORY_SEGMENTS = {
           {
             image: "images/skull.png",
             x: 25,
-            y: 55,
+            y: 40,
             scale: 2,
             animation: "pulse",
-            animateFrom: { x: 25, y: 25, scale: 1, opacity: 0 },
+            animateFrom: { x: 25, y: 55, scale: 1, opacity: 0 },
           },
           {
             image: "images/tree-won.png",
             x: 70,
-            y: 45,
+            y: 55,
             scale: 7,
             animation: "glow",
             tint: "#ff0000",
@@ -596,7 +596,7 @@ const STORY_SEGMENTS = {
         ],
         text: {
           speaker: "The Evil Tree",
-          text: "You shall become a seed which grows another tree just like myself, and then you will be tasked with collected even more souls for the great ones.",
+          text: "You shall become a seed which grows another tree just like myself, and then you will be tasked with collecting even more souls for the great one.",
           style: "whisper",
         },
       },
