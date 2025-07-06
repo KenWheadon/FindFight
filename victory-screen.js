@@ -57,7 +57,7 @@ class VictoryScreen extends Screen {
         <div class="victory-main">
                 <div class="rusty-celebration">
               <div class="rusty-image">
-                <img src="images/rusty.png" alt="Rusty the Raccoon Detective" />
+                <img src="images/rusty-happy.png" alt="Rusty the Raccoon Detective" />
               </div>
               <div class="detective-badge">
                 <img src="images/magnifying-glass.png" alt="Detective Badge" />

@@ -280,12 +280,12 @@ class StorySegmentScreen extends Screen {
 
     const segmentName = this.currentSegment.name;
 
-    // Play appropriate atmospheric sound for dramatic segments
-    if (segmentName === "Victory Setup") {
-      this.audioManager.playSound("victory-fanfare", false, 0.4);
-    } else if (segmentName === "Defeat Setup") {
-      this.audioManager.playSound("defeat-sting", false, 0.4);
-    }
+    // // Play appropriate atmospheric sound for dramatic segments
+    // if (segmentName === "Victory Setup") {
+    //   this.audioManager.playSound("victory-fanfare", false, 0.4);
+    // } else if (segmentName === "Defeat Setup") {
+    //   this.audioManager.playSound("defeat-sting", false, 0.4);
+    // }
   }
 
   showFrame(frameIndex) {

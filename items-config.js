@@ -351,7 +351,7 @@ const ITEMS_CONFIG = {
       startingStamina: 100,
       maxStamina: 100,
       staminaDrainRate: 1,
-      revealDuration: 90,
+      revealDuration: 80,
       itemPositions: [
         { itemId: 1, x: 18.7, y: 76.5, scale: 4.37, initiallyVisible: true },
         { itemId: 2, x: 26.9, y: 86.2, scale: 1.49, initiallyVisible: true },
@@ -381,8 +381,8 @@ const ITEMS_CONFIG = {
       backgroundImage: "images/woods-bg.png",
       startingStamina: 80,
       maxStamina: 100,
-      staminaDrainRate: 2,
-      revealDuration: 50,
+      staminaDrainRate: 1,
+      revealDuration: 30,
       itemPositions: [
         { itemId: 1, x: 21.0, y: 83.1, scale: 3.42, initiallyVisible: false },
         { itemId: 2, x: 2.3, y: 7.8, scale: 1.2, initiallyVisible: true },
@@ -412,8 +412,8 @@ const ITEMS_CONFIG = {
       backgroundImage: "images/catacomb-bg.png",
       startingStamina: 60,
       maxStamina: 100,
-      staminaDrainRate: 3,
-      revealDuration: 35,
+      staminaDrainRate: 2,
+      revealDuration: 25,
       itemPositions: [
         { itemId: 1, x: 2.2, y: 91.3, scale: 5.91, initiallyVisible: false },
         { itemId: 2, x: 27.7, y: 30.2, scale: 1.2, initiallyVisible: false },

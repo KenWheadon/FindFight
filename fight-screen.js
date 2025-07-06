@@ -25,6 +25,7 @@ class FightScreen extends Screen {
     this.treeAttackDamage = 5;
     this.phaseDialogue = "";
     this.symbols = ["detection", "weakness", "emotional", "mental"];
+    this.treeDefeated = false; // Add flag to track if tree is defeated
 
     // Message queue system for staggered feedback
     this.messageQueue = [];
@@ -47,9 +48,18 @@ class FightScreen extends Screen {
       `Starting stamina: ${startingStamina}`
     );
 
+    // Debug: Check for duplicate items
+    const itemNames = foundItems.map((item) => item.name);
+    const uniqueNames = [...new Set(itemNames)];
+    if (itemNames.length !== uniqueNames.length) {
+      console.warn("🚨 Duplicate items detected in foundItems:", itemNames);
+      console.warn("🚨 Unique items would be:", uniqueNames);
+    }
+
     this.currentPhase = phase;
     this.availableItems = [...foundItems];
     this.usedItems = [];
+    this.treeDefeated = false; // Reset defeat flag
 
     // Set starting stamina from search screen
     this.playerStamina = startingStamina;
@@ -57,6 +67,14 @@ class FightScreen extends Screen {
 
     // Reset audio state
     this.lowStaminaWarningPlayed = false;
+
+    // Reset combat state
+    this.selectedCards = [];
+    this.isPlayerTurn = true;
+    this.combatInProgress = false;
+    this.cardAnimationInProgress = false;
+    this.currentTurn = 1;
+    this.cardsUsedThisTurn = 0;
 
     // Set phase-specific values
     this.setPhaseParameters();
@@ -70,24 +88,27 @@ class FightScreen extends Screen {
     console.log(
       `⚔️ Fight initialized - Phase ${this.currentPhase}, Tree HP: ${this.treeHP}, Starting Stamina: ${this.playerStamina}`
     );
+    console.log(
+      `🃏 Available items: ${this.availableItems.length}, Hand size: ${this.playerHand.length}`
+    );
   }
 
   setPhaseParameters() {
     switch (this.currentPhase) {
       case 1:
         this.treeHP = this.maxTreeHP = 20;
-        this.treeAttackDamage = 5;
+        this.treeAttackDamage = 4;
         this.phaseDialogue = "You don't belong here, little detective...";
         break;
       case 2:
         this.treeHP = this.maxTreeHP = 30;
-        this.treeAttackDamage = 10;
+        this.treeAttackDamage = 8;
         this.phaseDialogue =
           "Ask yourself why you really couldn't resist the box....";
         break;
       case 3:
-        this.treeHP = this.maxTreeHP = 50;
-        this.treeAttackDamage = 15;
+        this.treeHP = this.maxTreeHP = 40;
+        this.treeAttackDamage = 12;
         this.phaseDialogue = "You opened the box. You *are* the next seed.";
         break;
     }
@@ -145,7 +166,10 @@ class FightScreen extends Screen {
 
       // Ensure the item has an id property - use the item's original id
       if (!item.id) {
-        item.id = item.id || `item_${Date.now()}_${Math.random()}`;
+        item.id = `item_${Date.now()}_${Math.random()}`;
+        console.log("🆔 Generated new ID for item:", item.name, "->", item.id);
+      } else {
+        console.log("🆔 Using existing ID for item:", item.name, "->", item.id);
       }
 
       return item;
@@ -334,16 +358,29 @@ class FightScreen extends Screen {
     this.messageQueue = [];
     this.isProcessingMessages = false;
     this.lowStaminaWarningPlayed = false;
+    this.treeDefeated = false; // Reset defeat flag
   }
 
   handleCardClick(cardElement) {
     const cardId = cardElement.dataset.cardId;
     console.log("🃏 Card clicked:", cardId);
+    console.log("🃏 Card element:", cardElement);
+    console.log(
+      "🃏 Current state - isPlayerTurn:",
+      this.isPlayerTurn,
+      "combatInProgress:",
+      this.combatInProgress,
+      "cardAnimationInProgress:",
+      this.cardAnimationInProgress,
+      "treeDefeated:",
+      this.treeDefeated
+    );
 
     if (
       !this.isPlayerTurn ||
       this.combatInProgress ||
-      this.cardAnimationInProgress
+      this.cardAnimationInProgress ||
+      this.treeDefeated // Prevent actions if tree is defeated
     ) {
       console.log(
         "❌ Cannot select card - not player turn or combat in progress"
@@ -355,6 +392,10 @@ class FightScreen extends Screen {
 
     if (!card) {
       console.log("❌ Card not found in hand:", cardId);
+      console.log(
+        "❌ Available cards in hand:",
+        this.playerHand.map((c) => `${c.name} (ID: ${c.id})`)
+      );
       return;
     }
 
@@ -381,12 +422,19 @@ class FightScreen extends Screen {
         }
 
         console.log("✅ Card selected:", card.name);
+        console.log(
+          "🔢 Selected cards:",
+          this.selectedCards.length,
+          "of",
+          this.maxCardsPerTurn - this.cardsUsedThisTurn
+        );
 
         // Auto-play cards if we've selected the maximum
         if (
           this.selectedCards.length ===
           this.maxCardsPerTurn - this.cardsUsedThisTurn
         ) {
+          console.log("🎯 Auto-playing cards - maximum selected");
           setTimeout(() => this.playSelectedCards(), 500);
         }
       } else {
@@ -409,6 +457,13 @@ class FightScreen extends Screen {
 
       if (card) {
         await this.animateCardThrow(cardId, card);
+
+        // Check if tree is defeated after each card
+        if (this.treeDefeated) {
+          console.log("🏆 Tree defeated during card sequence, ending combat");
+          break;
+        }
+
         await this.delay(1000); // Brief pause between cards
       }
     }
@@ -435,8 +490,11 @@ class FightScreen extends Screen {
       this.combatInProgress = false;
       this.checkCombatState();
 
-      // Auto-end turn if we've used all cards
-      if (this.cardsUsedThisTurn >= this.maxCardsPerTurn) {
+      // Only end turn if tree is not defeated and we've used all cards
+      if (
+        !this.treeDefeated &&
+        this.cardsUsedThisTurn >= this.maxCardsPerTurn
+      ) {
         setTimeout(() => this.endTurn(), 250);
       }
     }, 750);
@@ -594,6 +652,12 @@ class FightScreen extends Screen {
       }
     }
 
+    // Check if tree is defeated immediately after damage
+    if (this.treeHP <= 0) {
+      this.treeDefeated = true;
+      console.log("🏆 Tree defeated!");
+    }
+
     // Handle stamina changes (positive or negative)
     if (stamina !== 0) {
       this.playerStamina = Math.max(
@@ -689,6 +753,12 @@ class FightScreen extends Screen {
   endTurn() {
     console.log("🔄 Ending player turn");
 
+    // Check if tree is defeated before allowing tree attack
+    if (this.treeDefeated) {
+      console.log("🏆 Tree already defeated, skipping tree turn");
+      return;
+    }
+
     this.isPlayerTurn = false;
     this.cardsUsedThisTurn = 0;
     this.selectedCards = [];
@@ -701,6 +771,12 @@ class FightScreen extends Screen {
 
   treeAttack() {
     console.log("🌳 Tree attacking");
+
+    // Double-check tree is not defeated before attacking
+    if (this.treeDefeated) {
+      console.log("🏆 Tree defeated, canceling attack");
+      return;
+    }
 
     // Play tree attack sound
     if (this.audioManager) {
@@ -739,6 +815,12 @@ class FightScreen extends Screen {
   startNewTurn() {
     console.log("🆕 Starting new turn");
 
+    // Check if tree is defeated before starting new turn
+    if (this.treeDefeated) {
+      console.log("🏆 Tree defeated, not starting new turn");
+      return;
+    }
+
     this.currentTurn++;
     this.isPlayerTurn = true;
     this.cardsUsedThisTurn = 0;
@@ -769,7 +851,8 @@ class FightScreen extends Screen {
   }
 
   checkCombatState() {
-    if (this.treeHP <= 0) {
+    if (this.treeHP <= 0 || this.treeDefeated) {
+      this.treeDefeated = true;
       setTimeout(() => {
         this.handleVictory();
       }, 1500);
@@ -784,6 +867,7 @@ class FightScreen extends Screen {
     console.log("🏆 Player victory!");
 
     this.combatInProgress = false;
+    this.treeDefeated = true;
 
     // Play victory sound
     if (this.audioManager) {
@@ -814,7 +898,10 @@ class FightScreen extends Screen {
 
   renderHandWithAnimations(newCards = []) {
     const handContainer = document.getElementById("playerHand");
-    if (!handContainer) return;
+    if (!handContainer) {
+      console.error("❌ Hand container not found!");
+      return;
+    }
 
     console.log(
       "🃏 Rendering hand with cards:",
@@ -827,6 +914,10 @@ class FightScreen extends Screen {
       const cardElement = document.createElement("div");
       cardElement.className = "card-item";
       cardElement.dataset.cardId = String(card.id);
+
+      console.log(
+        `🃏 Rendering card ${index}: ${card.name} with ID: ${card.id}`
+      );
 
       const isSelected = this.selectedCards.includes(String(card.id));
       const isNewCard = newCards.some(
@@ -873,6 +964,12 @@ class FightScreen extends Screen {
       cardElement.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
+        console.log(
+          "🖱️ Card click event triggered for:",
+          card.name,
+          "ID:",
+          card.id
+        );
         this.handleCardClick(cardElement);
       });
 
@@ -900,6 +997,10 @@ class FightScreen extends Screen {
     });
 
     console.log("🃏 Hand rendered with", this.playerHand.length, "cards");
+    console.log(
+      "🃏 Card elements in DOM:",
+      handContainer.querySelectorAll(".card-item").length
+    );
   }
 
   renderHand() {
@@ -1010,7 +1111,8 @@ class FightScreen extends Screen {
     if (
       !this.isPlayerTurn ||
       this.combatInProgress ||
-      this.cardAnimationInProgress
+      this.cardAnimationInProgress ||
+      this.treeDefeated // Prevent keyboard actions if tree is defeated
     )
       return;
 
@@ -1051,6 +1153,7 @@ class FightScreen extends Screen {
       messageQueueLength: this.messageQueue.length,
       isProcessingMessages: this.isProcessingMessages,
       lowStaminaWarningPlayed: this.lowStaminaWarningPlayed,
+      treeDefeated: this.treeDefeated, // Add to debug info
     });
   }
 
@@ -1081,6 +1184,7 @@ class FightScreen extends Screen {
     this.usedItems = [];
     this.tooltip = null;
     this.lowStaminaWarningPlayed = false;
+    this.treeDefeated = false; // Reset defeat flag
 
     // Call parent destroy
     super.destroy();

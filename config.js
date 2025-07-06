@@ -36,22 +36,22 @@ const GAME_CONFIG = {
   phases: [
     {
       hp: 20,
-      treeAttack: 5,
+      treeAttack: 4,
       dialogue: "You don't belong here, little detective...",
       narrative:
         "The air here hums. The box stretches wider than physics should allow. I don't know how long I've been falling, but the smell of moss and smoke tells me I'm not alone. That tree... it's watching me. Time to search for answers. Time to fight.",
     },
     {
       hp: 30,
-      treeAttack: 10,
+      treeAttack: 8,
       dialogue:
         "Have you figured it out yet detective? What I'm doing here? Why you're here?",
       narrative:
         "The deeper I go, the more it shifts. The box ain't cardboard anymore—it's memory. Each object's a clue, a memory, a whisper. The tree's not just alive—it's aware and it wants something from me.",
     },
     {
-      hp: 50,
-      treeAttack: 15,
+      hp: 40,
+      treeAttack: 12,
       dialogue: "You opened the box. You are the next seed.",
       narrative:
         "The truth's close now. I can feel it through my fur. The box is a prison, a trap made to lure minds like mine. But I'm not some rookie. I've fought lies before. Just never one with branches. Time to end this.",
@@ -64,8 +64,8 @@ const GAME_CONFIG = {
   // Player stats
   stamina: {
     max: 60,
-    searchDrainRate: 0.5,
-    treeAttackDamage: [5, 10, 15],
+    searchDrainRate: 1,
+    treeAttackDamage: [4, 8, 12],
   },
 
   // Combat settings

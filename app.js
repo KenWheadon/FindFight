@@ -460,8 +460,9 @@ class RustyGame {
     // Update game state to track progression
     this.updateGameState({ currentPhase: 2 });
 
-    // Reset item usage state for new level
+    // Reset item usage state and found items for new level
     this.resetItemUsageState();
+    this.resetFoundItemsState();
 
     const locationData = ITEMS_UTILS.generateLocationData("forestClearing");
     if (!locationData) {
@@ -480,8 +481,9 @@ class RustyGame {
     // Update game state to track progression
     this.updateGameState({ currentPhase: 3 });
 
-    // Reset item usage state for new level
+    // Reset item usage state and found items for new level
     this.resetItemUsageState();
+    this.resetFoundItemsState();
 
     const locationData = ITEMS_UTILS.generateLocationData("darkCatacombs");
     if (!locationData) {
@@ -506,6 +508,26 @@ class RustyGame {
         "ITEMS_UTILS.resetAllItemUsage method not found - items may not reset properly"
       );
     }
+  }
+
+  // Reset found items state between levels
+  resetFoundItemsState() {
+    console.log("🧹 Resetting found items state for new level");
+
+    // Clear found items from previous level
+    const previousFoundItems = this.gameState.foundItems?.length || 0;
+    const previousPlayerItems = this.gameState.playerItems?.length || 0;
+
+    // Reset the arrays
+    this.gameState.foundItems = [];
+    this.gameState.playerItems = [];
+    this.gameState.playerHand = [];
+    this.gameState.visibleItems = [];
+
+    console.log(
+      `✅ Cleared ${previousFoundItems} found items and ${previousPlayerItems} player items`
+    );
+    console.log("🆕 Starting new level with fresh item state");
   }
 
   // Game state management
@@ -582,11 +604,18 @@ class RustyGame {
     );
 
     // Update game state with found items and stamina
+    // Note: Don't accumulate playerItems - each level should start fresh
     this.updateGameState({
       foundItems: foundItems,
-      playerItems: [...this.gameState.playerItems, ...foundItems],
+      playerItems: foundItems, // Replace, don't add to existing items
       playerStamina: finalStamina, // Store the stamina from search
     });
+
+    console.log("🔍 Updated game state - Found items:", foundItems.length);
+    console.log(
+      "🎒 Player items for fight:",
+      this.gameState.playerItems.length
+    );
 
     // Transition to fight screen with the stamina value
     this.startFightScreen(foundItems, null, finalStamina);
@@ -654,6 +683,9 @@ class RustyGame {
 
     // Reset item usage state when restarting
     this.resetItemUsageState();
+
+    // Reset found items state when restarting
+    this.resetFoundItemsState();
 
     // Reset game state
     this.gameState = {
@@ -748,10 +780,34 @@ class RustyGame {
         setSfxVolume: (volume) => this.audioManager.setSfxVolume(volume),
         // Item reset debug methods
         resetItems: () => this.resetItemUsageState(),
+        resetFoundItems: () => this.resetFoundItemsState(),
         checkItemState: () => {
           console.log("Current item usage state:");
           if (ITEMS_UTILS && ITEMS_UTILS.debugItemUsage) {
             ITEMS_UTILS.debugItemUsage();
+          }
+        },
+        checkFoundItemsState: () => {
+          console.log("Current found items state:");
+          console.log("Found items:", this.gameState.foundItems);
+          console.log("Player items:", this.gameState.playerItems);
+          console.log("Player hand:", this.gameState.playerHand);
+          console.log("Current phase:", this.gameState.currentPhase);
+
+          // Check for duplicates
+          if (
+            this.gameState.foundItems &&
+            this.gameState.foundItems.length > 0
+          ) {
+            const itemNames = this.gameState.foundItems.map(
+              (item) => item.name
+            );
+            const uniqueNames = [...new Set(itemNames)];
+            if (itemNames.length !== uniqueNames.length) {
+              console.warn("🚨 Duplicate items detected in foundItems!");
+              console.warn("All items:", itemNames);
+              console.warn("Unique items:", uniqueNames);
+            }
           }
         },
         // Quick test searches using items config
@@ -828,6 +884,16 @@ class RustyGame {
           const testSegment = STORY_UTILS.createTestSegment(4);
           this.screens.storySegment.initializeStorySegment(testSegment);
           this.showScreen("storySegment");
+        },
+        // Test level progression
+        testLevelProgression: () => {
+          console.log("Testing level progression...");
+          this.completeFirstLevel();
+        },
+        testSecondLevelProgression: () => {
+          console.log("Testing second level progression...");
+          this.updateGameState({ currentPhase: 2 });
+          this.completeSecondLevel();
         },
       };
     }
