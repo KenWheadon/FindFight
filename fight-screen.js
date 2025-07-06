@@ -77,7 +77,7 @@ class FightScreen extends Screen {
         this.treeHP = this.maxTreeHP = 30;
         this.treeAttackDamage = 10;
         this.phaseDialogue =
-          "Ask the blacksmith's daughter what she found beneath the roots...";
+          "Ask yourself why you really couldn't resist the box....";
         break;
       case 3:
         this.treeHP = this.maxTreeHP = 50;
@@ -250,7 +250,7 @@ class FightScreen extends Screen {
           </div>
           
           <div class="combat-instructions">
-            <p>Select up to ${
+            <p>Select ${
               this.maxCardsPerTurn
             } cards and they will automatically be thrown at the tree</p>
           </div>

@@ -63,7 +63,7 @@ const ITEMS_CONFIG = {
         "Its paths twist when I look away. It serves the tree.",
         "Use it, and the tree grows stronger. It’s watching me.",
       ],
-      cursed: true,
+      cursed: false,
       hasUsed: false,
     },
     {
@@ -79,7 +79,7 @@ const ITEMS_CONFIG = {
         "The tree trembles at its rule, but it binds me too.",
         "Its power feeds the roots. I hear laughter in the bark.",
       ],
-      cursed: true,
+      cursed: false,
       hasUsed: false,
     },
     {
@@ -175,7 +175,7 @@ const ITEMS_CONFIG = {
         "It strengthens the tree’s roots. I shouldn’t have touched it.",
         "The box mourns through it, binding me to its will.",
       ],
-      cursed: true,
+      cursed: false,
       hasUsed: false,
     },
     {
@@ -255,7 +255,7 @@ const ITEMS_CONFIG = {
         "Its glow reveals truths, but it strengthens the tree.",
         "The light blinds me. The tree’s roots drink its power.",
       ],
-      cursed: true,
+      cursed: false,
       hasUsed: false,
     },
     {

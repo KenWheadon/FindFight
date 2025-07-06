@@ -530,7 +530,7 @@ class SearchScreen extends Screen {
     }
     message += `Remaining Stamina: ${Math.floor(this.searchState.stamina)}`;
 
-    this.showTemporaryMessage(message, "success", 5000);
+    // this.showTemporaryMessage(message, "success", 5000);
   }
 
   // Animation methods
