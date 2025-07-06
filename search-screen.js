@@ -85,7 +85,6 @@ class SearchScreen extends Screen {
           <div class="search-controls">
             <button class="search-control-btn" id="search-pause-btn">Pause</button>
             <button class="search-control-btn primary" id="search-finish-btn">Finish Search</button>
-            <button class="search-control-btn danger" id="search-exit-btn">Exit</button>
           </div>
         </div>
         
@@ -182,7 +181,6 @@ class SearchScreen extends Screen {
     // Control button handlers
     const pauseBtn = this.container.querySelector("#search-pause-btn");
     const finishBtn = this.container.querySelector("#search-finish-btn");
-    const exitBtn = this.container.querySelector("#search-exit-btn");
     const resumeBtn = this.container.querySelector("#resume-btn");
 
     if (pauseBtn) {
@@ -191,10 +189,6 @@ class SearchScreen extends Screen {
 
     if (finishBtn) {
       finishBtn.addEventListener("click", () => this.finishSearch());
-    }
-
-    if (exitBtn) {
-      exitBtn.addEventListener("click", () => this.exitSearch());
     }
 
     if (resumeBtn) {

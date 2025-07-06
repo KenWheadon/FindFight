@@ -81,7 +81,7 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
+            image: "images/rusty-angry.png",
             x: 30,
             y: 60,
             scale: 3,
@@ -90,7 +90,7 @@ const STORY_SEGMENTS = {
           {
             image: "images/box.png",
             x: 70,
-            y: 40,
+            y: 45,
             scale: 3,
             animation: "glow",
           },
@@ -109,20 +109,20 @@ const STORY_SEGMENTS = {
         },
         items: [
           {
-            image: "images/rusty.png",
-            x: 50,
+            image: "images/rusty-suprised.png",
+            x: 20,
             y: 70,
             scale: 2,
             animation: "float",
           },
           {
             image: "images/evil-tree.png",
-            x: 50,
-            y: 30,
-            scale: 4,
+            x: 80,
+            y: 60,
+            scale: 8,
             animation: "glow",
             tint: "#ff4444",
-            animateFrom: { x: 50, y: 10, scale: 1, opacity: 0 },
+            animateFrom: { x: 80, y: 120, scale: 1, opacity: 1 },
           },
         ],
         text: {
