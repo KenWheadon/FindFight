@@ -22,7 +22,7 @@ class GameOverScreen extends Screen {
       {
         id: "consequences_hope",
         title: "Click to witness the world's fate...",
-        text: "Years pass. The tree's influence seeps beyond the box, poisoning dreams, twisting reality. Street lamps flicker with unnatural shadows. Children speak of voices in the wind. But somewhere, another detective picks up the trail.",
+        text: "Years pass. The tree's influence seeps beyond the box, poisoning dreams, twisting reality. Street lamps flicker with unnatural shadows. Children speak of voices in the wind. But somewhere, another detective picks up the trail and with it, hope that this nightmare might soon come to an end.",
         revealed: false,
         unlocked: false,
       },
