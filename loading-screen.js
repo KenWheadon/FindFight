@@ -140,20 +140,106 @@ class LoadingScreen extends Screen {
   async loadAllAssets() {
     // Define assets to load
     const imagesToLoad = [
+      // Core game images
       "images/logo.png",
       "images/company-logo.png",
       "images/rusty.png",
       "images/box.png",
-      "images/tree.png",
+      "images/seed.png", // Used in game over screen
       "images/favicon.ico",
+
+      // Tree images (different phases)
+      "images/tree.png",
+      "images/tree-small.png",
+      "images/tree-stronger.png",
+
+      // Background images
+      "images/park-bg.png", // Detective office background
+      "images/woods-bg.png", // Forest clearing background
+      "images/catacomb-bg.png", // Dark catacombs background
+      "images/void-battle-1.png", // Fight background phase 1
+      "images/void-battle-2.png", // Fight background phase 2
+      "images/void-battle-3.png", // Fight background phase 3
+
+      // UI elements
+      "images/magnifying-glass.png", // Detective badge and UI
+      "images/sparkles2.png", // Sparkle effects
+      "images/pebble.png", // Pebble cards in fight
+
+      // Tree symbol images
+      "images/symbol-detection.png",
+      "images/symbol-weakness.png",
+      "images/symbol-emotional.png",
+      "images/symbol-mental.png",
+
+      // All 21 item images
+      "images/item_1.png", // Part Sign
+      "images/item_2.png", // Milkshake
+      "images/item_3.png", // Baseball Cap
+      "images/item_4.png", // Map
+      "images/item_5.png", // No Walking Sign
+      "images/item_6.png", // Horseshoe
+      "images/item_7.png", // Arrow
+      "images/item_8.png", // Acorn
+      "images/item_9.png", // Water Bottle
+      "images/item_10.png", // Pink Flower
+      "images/item_11.png", // Fallen Leaf
+      "images/item_12.png", // Pad Lock
+      "images/item_13.png", // Pinecone
+      "images/item_14.png", // Tennis Ball
+      "images/item_15.png", // Purse
+      "images/item_16.png", // Street Lamp
+      "images/item_17.png", // Message Board
+      "images/item_18.png", // Stereo
+      "images/item_19.png", // Rock
+      "images/item_20.png", // Backpack
+      "images/item_21.png", // Flying Kite
     ];
 
     const audioFiles = [
-      "audio/background.mp3",
+      // Music tracks
+      "audio/main-menu.mp3",
+      "audio/story-1.mp3",
+      "audio/story-2.mp3",
+      "audio/story-3.mp3",
+      "audio/search-park.mp3",
+      "audio/search-forest.mp3",
+      "audio/search-catacombs.mp3",
+      "audio/battle-park.mp3",
+      "audio/battle-forest.mp3",
+      "audio/battle-catacombs.mp3",
+      "audio/end-win.mp3",
+      "audio/end-lose.mp3",
+
+      // Sound effects - UI
       "audio/click.mp3",
+      "audio/button-hover.mp3",
+      "audio/screen-transition.mp3",
+      "audio/typewriter_click.mp3",
+      "audio/page-turn.mp3",
+
+      // Sound effects - Game mechanics
       "audio/success.mp3",
+      "audio/item-found.mp3",
+      "audio/item-sparkle.mp3",
+      "audio/stamina-low.mp3",
+
+      // Sound effects - Combat
+      "audio/card-select.mp3",
+      "audio/card-throw.mp3",
+      "audio/card-hit.mp3",
       "audio/damage.mp3",
       "audio/cursed.mp3",
+      "audio/tree-hurt.mp3",
+      "audio/tree-attack.mp3",
+
+      // Sound effects - Outcomes
+      "audio/victory-fanfare.mp3",
+      "audio/defeat-sting.mp3",
+
+      // Sound effects - Ambient
+      "audio/loading_ambient.mp3",
+      "audio/background.mp3", // Legacy fallback
     ];
 
     this.assetsToLoad = imagesToLoad.length + audioFiles.length;
