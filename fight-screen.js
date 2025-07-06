@@ -101,6 +101,20 @@ class FightScreen extends Screen {
     }
   }
 
+  // Get background image based on current phase
+  getBackgroundImage() {
+    switch (this.currentPhase) {
+      case 1:
+        return "images/void-battle-1.png";
+      case 2:
+        return "images/void-battle-2.png";
+      case 3:
+        return "images/void-battle-3.png";
+      default:
+        return "images/void-battle-1.png";
+    }
+  }
+
   drawHand() {
     this.playerHand = [];
 
@@ -255,6 +269,7 @@ class FightScreen extends Screen {
     this.updateUI();
     this.renderHand();
     this.setupTooltip();
+    this.updateBackground();
   }
 
   setupEventListeners() {
@@ -546,13 +561,21 @@ class FightScreen extends Screen {
       this.treeHP = Math.max(0, this.treeHP - damage);
     }
 
-    // Restore player stamina
-    if (stamina > 0) {
-      this.playerStamina = Math.min(
-        this.playerStamina + stamina,
-        this.maxPlayerStamina
+    // Handle stamina changes (positive or negative)
+    if (stamina !== 0) {
+      this.playerStamina = Math.max(
+        0,
+        Math.min(this.playerStamina + stamina, this.maxPlayerStamina)
       );
-      this.queueCombatMessage(`💚 Restored ${stamina} stamina`, "heal");
+
+      if (stamina > 0) {
+        this.queueCombatMessage(`💚 Restored ${stamina} stamina`, "heal");
+      } else {
+        this.queueCombatMessage(
+          `💔 Lost ${Math.abs(stamina)} stamina`,
+          "damage"
+        );
+      }
     }
 
     // No longer show card dialogue in combat messages - it's in the tooltip now
@@ -889,6 +912,9 @@ class FightScreen extends Screen {
       treeImage.src = this.getTreeImage();
     }
 
+    // Update background based on phase
+    this.updateBackground();
+
     // Update turn info
     const elements = {
       ".turn-text": `Turn ${this.currentTurn}`,
@@ -901,6 +927,15 @@ class FightScreen extends Screen {
         element.textContent = text;
       }
     });
+  }
+
+  // Update background image based on current phase
+  updateBackground() {
+    const fightContent = this.container.querySelector(".fight-screen-content");
+    if (fightContent) {
+      const backgroundImage = this.getBackgroundImage();
+      fightContent.style.backgroundImage = `url('${backgroundImage}'), linear-gradient(135deg, #1a1a2e, #16213e)`;
+    }
   }
 
   handleKeydown(e) {
