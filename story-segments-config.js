@@ -222,7 +222,7 @@ const STORY_SEGMENTS = {
             image: "images/tree.png",
             x: 80,
             y: 60,
-            scale: 4,
+            scale: 6,
             animation: "glow",
             tint: "#ff4444",
           },
