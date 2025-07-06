@@ -24,8 +24,11 @@ class FightScreen extends Screen {
     this.cardAnimationInProgress = false;
     this.treeAttackDamage = 5;
     this.phaseDialogue = "";
-    this.symbols = ["🔍", "🪓", "💔", "💭"];
-    this.firstTimeUse = new Set(); // Track first-time item usage
+    this.symbols = ["detection", "weakness", "emotional", "mental"];
+
+    // Message queue system for staggered feedback
+    this.messageQueue = [];
+    this.isProcessingMessages = false;
 
     console.log("⚔️ FightScreen instance created");
   }
@@ -41,11 +44,10 @@ class FightScreen extends Screen {
     this.currentPhase = phase;
     this.availableItems = [...foundItems];
     this.usedItems = [];
-    this.firstTimeUse.clear();
 
     // Set starting stamina from search screen
     this.playerStamina = startingStamina;
-    this.maxPlayerStamina = 100; // Max stamina stays at 100
+    this.maxPlayerStamina = 100;
 
     // Set phase-specific values
     this.setPhaseParameters();
@@ -131,14 +133,12 @@ class FightScreen extends Screen {
   }
 
   setTreeSymbols() {
-    // Randomly select weakness and immunity symbols
+    // Randomly select weakness and immunity types
     this.treeWeakness =
       this.symbols[Math.floor(Math.random() * this.symbols.length)];
-
-    // Ensure immunity is different from weakness
-    let immunityOptions = this.symbols.filter((s) => s !== this.treeWeakness);
-    this.treeImmunity =
-      immunityOptions[Math.floor(Math.random() * immunityOptions.length)];
+    this.treeImmunity = this.symbols.filter((s) => s !== this.treeWeakness)[
+      Math.floor(Math.random() * (this.symbols.length - 1))
+    ];
 
     console.log(
       `🎯 Tree weakness: ${this.treeWeakness}, immunity: ${this.treeImmunity}`
@@ -168,7 +168,11 @@ class FightScreen extends Screen {
           <!-- Tree visual with symbols on sides -->
           <div class="tree-visual-container">
             <!-- Weakness symbol (left) -->
-            <div class="tree-symbol weakness" id="treeWeakness">${this.treeWeakness}</div>
+            <div class="tree-symbol weakness" id="treeWeakness">
+              <img src="${ITEMS_UTILS.getTreeSymbolImage(
+                this.treeWeakness
+              )}" alt="Weakness" class="symbol-image">
+            </div>
             
             <!-- Tree image -->
             <div class="tree-visual" id="treeVisual">
@@ -176,7 +180,11 @@ class FightScreen extends Screen {
             </div>
             
             <!-- Immunity symbol (right) -->
-            <div class="tree-symbol immunity" id="treeImmunity">${this.treeImmunity}</div>
+            <div class="tree-symbol immunity" id="treeImmunity">
+              <img src="${ITEMS_UTILS.getTreeSymbolImage(
+                this.treeImmunity
+              )}" alt="Immunity" class="symbol-image">
+            </div>
           </div>
           
           <div class="tree-dialogue" id="treeDialogue">
@@ -199,7 +207,9 @@ class FightScreen extends Screen {
             
             <div class="turn-info">
               <div class="turn-text">Turn ${this.currentTurn}</div>
-              <div class="cards-used">${this.cardsUsedThisTurn}/${this.maxCardsPerTurn} cards used</div>
+              <div class="cards-used">${this.cardsUsedThisTurn}/${
+      this.maxCardsPerTurn
+    } cards used</div>
             </div>
           </div>
           
@@ -208,7 +218,9 @@ class FightScreen extends Screen {
           </div>
           
           <div class="combat-instructions">
-            <p>Select up to ${this.maxCardsPerTurn} cards and they will automatically be thrown at the tree</p>
+            <p>Select up to ${
+              this.maxCardsPerTurn
+            } cards and they will automatically be thrown at the tree</p>
           </div>
         </div>
         
@@ -238,6 +250,8 @@ class FightScreen extends Screen {
     this.combatInProgress = false;
     this.cardAnimationInProgress = false;
     this.isPlayerTurn = true;
+    this.messageQueue = [];
+    this.isProcessingMessages = false;
   }
 
   handleCardClick(cardElement) {
@@ -433,28 +447,33 @@ class FightScreen extends Screen {
   playCard(card) {
     console.log(`🃏 Playing card: ${card.name}`);
 
+    // Mark the item as used in the global config if it hasn't been used before
+    if (!card.isPebble) {
+      ITEMS_UTILS.markItemAsUsed(card.id);
+    }
+
     // Calculate damage/healing
     let damage = card.damage || 0;
     let stamina = card.restore || 0;
 
     // Apply type effectiveness
-    const cardSymbol = this.getCardSymbol(card);
+    const cardType = card.type;
 
-    if (cardSymbol === this.treeWeakness) {
-      damage = Math.floor(damage * 1.5); // 50% bonus for weakness
-      this.showCombatFeedback(`🔥 Critical hit: ${damage} DMG!`, "critical");
-    } else if (cardSymbol === this.treeImmunity) {
+    if (cardType === this.treeWeakness) {
+      damage = Math.floor(damage * 1.5);
+      this.queueCombatMessage(`🔥 Critical hit: ${damage} DMG!`, "critical");
+    } else if (cardType === this.treeImmunity) {
       damage = 0;
-      this.showCombatFeedback(`🛡️ IMMUNE!`, "immune");
+      this.queueCombatMessage(`🛡️ IMMUNE!`, "immune");
     } else {
-      this.showCombatFeedback(`⚔️ Hit: ${damage} DMG!`, "normal");
+      this.queueCombatMessage(`⚔️ Hit: ${damage} DMG!`, "normal");
     }
 
     // Handle cursed items
     if (card.cursed) {
-      damage = Math.abs(damage); // Cursed items heal the tree
+      damage = Math.abs(damage);
       this.treeHP = Math.min(this.treeHP + damage, this.maxTreeHP);
-      this.showCombatFeedback(
+      this.queueCombatMessage(
         `☠️ CURSED ITEM! Tree heals ${damage} HP!`,
         "cursed"
       );
@@ -468,29 +487,39 @@ class FightScreen extends Screen {
         this.playerStamina + stamina,
         this.maxPlayerStamina
       );
-      this.showCombatFeedback(`💚 Restored ${stamina} stamina`, "heal");
+      this.queueCombatMessage(`💚 Restored ${stamina} stamina`, "heal");
     }
 
-    // Show card dialogue (first time use)
-    if (!this.firstTimeUse.has(card.id)) {
-      this.firstTimeUse.add(card.id);
-      const dialogue = card.text[Math.floor(Math.random() * card.text.length)];
-      this.showCombatFeedback(`"${dialogue}"`, "dialogue");
-    }
+    // Show card dialogue
+    const dialogue = card.text[Math.floor(Math.random() * card.text.length)];
+    this.queueCombatMessage(`"${dialogue}"`, "dialogue");
 
     this.updateUI();
   }
 
-  getCardSymbol(card) {
-    // Map card types to symbols
-    const typeSymbolMap = {
-      detection: "🔍",
-      weakness: "🪓",
-      emotional: "💔",
-      mental: "💭",
-    };
+  // Message queue system for staggered feedback
+  queueCombatMessage(message, type) {
+    this.messageQueue.push({ message, type });
+    if (!this.isProcessingMessages) {
+      this.processMessageQueue();
+    }
+  }
 
-    return typeSymbolMap[card.type] || card.symbol;
+  processMessageQueue() {
+    if (this.messageQueue.length === 0) {
+      this.isProcessingMessages = false;
+      return;
+    }
+
+    this.isProcessingMessages = true;
+    const { message, type } = this.messageQueue.shift();
+
+    this.showCombatFeedback(message, type);
+
+    // Process next message after delay
+    setTimeout(() => {
+      this.processMessageQueue();
+    }, 1200);
   }
 
   showCombatFeedback(message, type) {
@@ -535,7 +564,7 @@ class FightScreen extends Screen {
       0,
       this.playerStamina - this.treeAttackDamage
     );
-    this.showCombatFeedback(
+    this.queueCombatMessage(
       `🌳 Tree attacks for ${this.treeAttackDamage} damage!`,
       "tree-attack"
     );
@@ -567,9 +596,11 @@ class FightScreen extends Screen {
     this.cardsUsedThisTurn = 0;
 
     // Refill hand if needed
+    const cardsToAdd = [];
     while (this.playerHand.length < this.handSize) {
       const card = this.drawCard();
       if (card) {
+        cardsToAdd.push(card);
         this.playerHand.push(card);
       } else {
         break; // No more cards available
@@ -579,7 +610,8 @@ class FightScreen extends Screen {
     // Change tree symbols
     this.setTreeSymbols();
 
-    this.renderHand();
+    // Render hand with animations for new cards
+    this.renderHandWithAnimations(cardsToAdd);
     this.updateUI();
   }
 
@@ -627,7 +659,7 @@ class FightScreen extends Screen {
     }
   }
 
-  renderHand() {
+  renderHandWithAnimations(newCards = []) {
     const handContainer = document.getElementById("playerHand");
     if (!handContainer) return;
 
@@ -635,6 +667,7 @@ class FightScreen extends Screen {
       "🃏 Rendering hand with cards:",
       this.playerHand.map((c) => `${c.name} (ID: ${c.id})`)
     );
+
     handContainer.innerHTML = "";
 
     this.playerHand.forEach((card, index) => {
@@ -643,38 +676,52 @@ class FightScreen extends Screen {
       cardElement.dataset.cardId = String(card.id);
 
       const isSelected = this.selectedCards.includes(String(card.id));
+      const isNewCard = newCards.some(
+        (newCard) => String(newCard.id) === String(card.id)
+      );
 
       // Use item image if available, otherwise use symbol
       let cardVisual = "";
       if (card.image && !card.isPebble) {
         cardVisual = `<img src="${card.image}" alt="${card.name}" class="card-image" />`;
       } else {
-        const cardSymbol = this.getCardSymbol(card);
-        cardVisual = `<div class="card-symbol">${cardSymbol}</div>`;
+        cardVisual = `<div class="card-symbol">${this.getCardSymbol(
+          card
+        )}</div>`;
       }
+
+      // Show stats based on usage
+      const hasBeenUsed = ITEMS_UTILS.hasItemBeenUsed(card.id) || card.isPebble;
+      const damageDisplay = hasBeenUsed ? `DMG: ${card.damage || 0}` : "DMG: ?";
+      const typeDisplay = hasBeenUsed ? `${card.type}` : "?";
 
       cardElement.innerHTML = `
         <div class="card-content ${isSelected ? "selected" : ""}">
           ${cardVisual}
           <div class="card-name">${card.name}</div>
           <div class="card-stats">
-            <div class="card-damage">DMG: ?</div>
+            <div class="card-damage">${damageDisplay}</div>
             <div class="card-restore">+${card.restore || 0}</div>
           </div>
+          <div class="card-type">${typeDisplay}</div>
         </div>
       `;
 
-      // Show actual stats if used before
-      if (this.firstTimeUse.has(card.id)) {
-        const damageElement = cardElement.querySelector(".card-damage");
-        damageElement.textContent = `DMG: ${card.damage || 0}`;
+      // Add animation for new cards
+      if (isNewCard) {
+        cardElement.classList.add("card-slide-in");
+        cardElement.style.transform = "translateY(200px)";
+        cardElement.style.opacity = "0";
+
+        setTimeout(() => {
+          cardElement.style.transform = "translateY(0)";
+          cardElement.style.opacity = "1";
+        }, index * 100);
       }
 
-      // Add click event listener to each card
       cardElement.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("🖱️ Card element clicked, calling handleCardClick");
         this.handleCardClick(cardElement);
       });
 
@@ -682,6 +729,20 @@ class FightScreen extends Screen {
     });
 
     console.log("🃏 Hand rendered with", this.playerHand.length, "cards");
+  }
+
+  renderHand() {
+    this.renderHandWithAnimations([]);
+  }
+
+  getCardSymbol(card) {
+    const typeSymbolMap = {
+      detection: "🔍",
+      weakness: "🪓",
+      emotional: "💔",
+      mental: "💭",
+    };
+    return typeSymbolMap[card.type] || card.symbol;
   }
 
   updateUI() {
@@ -717,11 +778,17 @@ class FightScreen extends Screen {
     const treeImmunityElement = document.getElementById("treeImmunity");
 
     if (treeWeaknessElement) {
-      treeWeaknessElement.textContent = this.treeWeakness;
+      const weaknessImg = treeWeaknessElement.querySelector(".symbol-image");
+      if (weaknessImg) {
+        weaknessImg.src = ITEMS_UTILS.getTreeSymbolImage(this.treeWeakness);
+      }
     }
 
     if (treeImmunityElement) {
-      treeImmunityElement.textContent = this.treeImmunity;
+      const immunityImg = treeImmunityElement.querySelector(".symbol-image");
+      if (immunityImg) {
+        immunityImg.src = ITEMS_UTILS.getTreeSymbolImage(this.treeImmunity);
+      }
     }
 
     // Update turn info
@@ -794,11 +861,21 @@ class FightScreen extends Screen {
       isPlayerTurn: this.isPlayerTurn,
       combatInProgress: this.combatInProgress,
       cardAnimationInProgress: this.cardAnimationInProgress,
+      messageQueueLength: this.messageQueue.length,
+      isProcessingMessages: this.isProcessingMessages,
     });
   }
 
   // Clean up when screen is destroyed
   destroy() {
+    // Clear message queue and timers
+    this.messageQueue = [];
+    this.isProcessingMessages = false;
+    if (this.messageTimer) {
+      clearTimeout(this.messageTimer);
+      this.messageTimer = null;
+    }
+
     // Stop combat music
     if (this.audioManager) {
       this.audioManager.stopSound("combat_music");
