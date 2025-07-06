@@ -267,6 +267,9 @@ class SearchScreen extends Screen {
     // Only allow clicking on revealed items
     if (!this.searchState.revealedItems.has(itemIndex)) return;
 
+    // Create sparkle particle effect
+    this.createSparkleEffect(event.target, event);
+
     // Create ripple effect
     this.createRippleEffect(event.target, event);
 
@@ -295,7 +298,7 @@ class SearchScreen extends Screen {
       `[data-item-index="${itemIndex}"]`
     );
     if (itemElement) {
-      // Start wiggle animation
+      // Start wiggle animation with scaling
       this.wiggleItem(itemElement, () => {
         // After wiggle, fly to collection
         this.flyToCollection(itemElement, item);
@@ -457,8 +460,14 @@ class SearchScreen extends Screen {
       "error"
     );
 
+    // Call the game's stamina depletion handler instead of just exiting
     setTimeout(() => {
-      this.onSearchExit();
+      if (window.game && window.game.gameOverSearchExhaustion) {
+        window.game.gameOverSearchExhaustion();
+      } else {
+        // Fallback to exit if game method not available
+        this.onSearchExit();
+      }
     }, 2000);
   }
 
@@ -506,7 +515,10 @@ class SearchScreen extends Screen {
     // Call game controller's completion handler
     if (window.game && window.game.onSearchComplete) {
       setTimeout(() => {
-        window.game.onSearchComplete(this.searchState.foundItems);
+        window.game.onSearchComplete(
+          this.searchState.foundItems,
+          this.searchState.stamina
+        );
       }, 3000);
     } else {
       // Default behavior - return to start screen
@@ -550,14 +562,37 @@ class SearchScreen extends Screen {
 
   // Animation methods
   wiggleItem(itemElement, callback) {
-    itemElement.classList.add("wiggle");
+    // Get the current scale from the item data
+    const itemIndex = parseInt(itemElement.dataset.itemIndex);
+    const item = this.searchState.items[itemIndex];
+    const currentScale = item.scale || 1.0;
 
-    const timeout = setTimeout(() => {
-      itemElement.classList.remove("wiggle");
-      if (callback) callback();
-    }, 500);
+    // Apply wiggle animation with scaling effect
+    let wigglePhase = 0;
+    const wiggleInterval = 50; // 50ms intervals
+    const wiggleDuration = 500; // 500ms total
+    const wiggleSteps = wiggleDuration / wiggleInterval;
 
-    this.timeouts.push(timeout);
+    const wiggleTimer = setInterval(() => {
+      wigglePhase++;
+
+      // Calculate rotation and scale
+      const rotation = Math.sin(wigglePhase * 0.8) * 15; // -15 to +15 degrees
+      const scaleMultiplier = 1 + Math.sin(wigglePhase * 0.6) * 0.3; // 0.7 to 1.3
+      const totalScale = currentScale * scaleMultiplier;
+
+      // Apply transform
+      itemElement.style.transform = `scale(${totalScale}) rotate(${rotation}deg)`;
+
+      if (wigglePhase >= wiggleSteps) {
+        clearInterval(wiggleTimer);
+        // Reset to original scale
+        itemElement.style.transform = `scale(${currentScale})`;
+        if (callback) callback();
+      }
+    }, wiggleInterval);
+
+    this.timeouts.push(wiggleTimer);
   }
 
   flyToCollection(itemElement, item) {
@@ -605,6 +640,71 @@ class SearchScreen extends Screen {
     }, 800);
 
     this.timeouts.push(timeout);
+  }
+
+  // Sparkle effect using sparkles2.png
+  createSparkleEffect(itemElement, event) {
+    const rect = itemElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Create 8-12 sparkles
+    const sparkleCount = 8 + Math.floor(Math.random() * 5);
+
+    for (let i = 0; i < sparkleCount; i++) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle-particle";
+      sparkle.style.position = "fixed";
+      sparkle.style.left = centerX + "px";
+      sparkle.style.top = centerY + "px";
+      sparkle.style.width = "16px";
+      sparkle.style.height = "16px";
+      sparkle.style.backgroundImage = 'url("images/sparkles2.png")';
+      sparkle.style.backgroundSize = "contain";
+      sparkle.style.backgroundRepeat = "no-repeat";
+      sparkle.style.backgroundPosition = "center";
+      sparkle.style.pointerEvents = "none";
+      sparkle.style.zIndex = "15";
+      sparkle.style.opacity = "1";
+
+      // Random direction and distance
+      const angle = (Math.PI * 2 * i) / sparkleCount + Math.random() * 0.5;
+      const distance = 30 + Math.random() * 40;
+      const endX = centerX + Math.cos(angle) * distance;
+      const endY = centerY + Math.sin(angle) * distance;
+
+      // Random scale
+      const scale = 0.5 + Math.random() * 0.8;
+      sparkle.style.transform = `scale(${scale})`;
+
+      document.body.appendChild(sparkle);
+
+      // Animate sparkle
+      const animation = sparkle.animate(
+        [
+          {
+            transform: `translate(0, 0) scale(${scale}) rotate(0deg)`,
+            opacity: 1,
+          },
+          {
+            transform: `translate(${endX - centerX}px, ${
+              endY - centerY
+            }px) scale(${scale * 1.5}) rotate(180deg)`,
+            opacity: 0,
+          },
+        ],
+        {
+          duration: 600 + Math.random() * 400,
+          easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        }
+      );
+
+      animation.onfinish = () => {
+        if (sparkle.parentNode) {
+          sparkle.parentNode.removeChild(sparkle);
+        }
+      };
+    }
   }
 
   // Override init to start search automatically and skip animations

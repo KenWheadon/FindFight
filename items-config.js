@@ -24,7 +24,7 @@ const ITEMS_CONFIG = {
       image: "images/item_2.png",
       symbol: "🥤",
       damage: 3,
-      restore: -1,
+      restore: 0,
       type: "detection",
       text: [
         "Cold, sweet cream. Found in the box’s endless twists and turns.",
@@ -40,7 +40,7 @@ const ITEMS_CONFIG = {
       image: "images/item_3.png",
       symbol: "🧢",
       damage: 4,
-      restore: -1,
+      restore: 0,
       type: "detection",
       text: [
         "Worn cap, smells of old cases. It fits too well.",
@@ -55,8 +55,8 @@ const ITEMS_CONFIG = {
       name: "Map",
       image: "images/item_4.png",
       symbol: "🗺️",
-      damage: 10,
-      restore: 6,
+      damage: 4,
+      restore: 0,
       type: "detection",
       text: [
         "A crumpled map, marked with a direction to follow.",
@@ -88,7 +88,7 @@ const ITEMS_CONFIG = {
       image: "images/item_6.png",
       symbol: "🪖",
       damage: 5,
-      restore: 5,
+      restore: 0,
       type: "weakness",
       text: [
         "Iron horseshoe, warm to the touch. It defies the box.",
@@ -136,7 +136,7 @@ const ITEMS_CONFIG = {
       image: "images/item_9.png",
       symbol: "💧",
       damage: 4,
-      restore: -1,
+      restore: 0,
       type: "emotional",
       text: [
         "Clear water, too pure for this cursed place.",
@@ -152,7 +152,7 @@ const ITEMS_CONFIG = {
       image: "images/item_10.png",
       symbol: "🌸",
       damage: 4,
-      restore: -2,
+      restore: 0,
       type: "emotional",
       text: [
         "A frail flower, blooming in the box’s gloom.",
@@ -168,7 +168,7 @@ const ITEMS_CONFIG = {
       image: "images/item_11.png",
       symbol: "🍂",
       damage: 5,
-      restore: 5,
+      restore: 0,
       type: "emotional",
       text: [
         "A dry leaf, whispering of forgotten autumns.",
@@ -184,7 +184,7 @@ const ITEMS_CONFIG = {
       image: "images/item_12.png",
       symbol: "🔒",
       damage: 3,
-      restore: -2,
+      restore: 0,
       type: "emotional",
       text: [
         "A cold lock, keyless. It guards something precious.",
@@ -248,7 +248,7 @@ const ITEMS_CONFIG = {
       image: "images/item_16.png",
       symbol: "🌃",
       damage: 3,
-      restore: -1,
+      restore: 0,
       type: "mental",
       text: [
         "A flickering lamp, casting light in the box’s void.",
@@ -312,7 +312,7 @@ const ITEMS_CONFIG = {
       image: "images/item_20.png",
       symbol: "🎒",
       damage: 3,
-      restore: -3,
+      restore: 0,
       type: "emotional",
       text: [
         "A worn backpack, stuffed with my old cases.",
