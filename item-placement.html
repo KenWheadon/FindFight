@@ -167,6 +167,7 @@
         height: 100%;
       }
 
+      /* FIXED: Match search screen positioning exactly */
       .positioning-item {
         position: absolute;
         cursor: move;
@@ -177,12 +178,13 @@
         background-position: center;
         background-repeat: no-repeat;
         user-select: none;
-        min-width: 20px;
-        min-height: 20px;
+        /* FIXED: Use same transform-origin as search screen */
         transform-origin: center center;
         display: flex;
         align-items: center;
         justify-content: center;
+        /* FIXED: Ensure consistent box-sizing */
+        box-sizing: border-box;
       }
 
       .positioning-item:hover {
@@ -797,35 +799,42 @@
         });
       }
 
+      // FIXED: Match search screen positioning exactly
       function createItemElement(item, position, index) {
         const itemElement = document.createElement("div");
         itemElement.className = "positioning-item";
         itemElement.dataset.itemId = item.id;
         itemElement.dataset.positionIndex = index;
 
-        // Convert viewport percentages to pixels for positioning
-        const containerRect = document
-          .getElementById("items-container")
-          .getBoundingClientRect();
-        const x = (position.x / 100) * containerRect.width;
-        const y = (position.y / 100) * containerRect.height;
+        // FIXED: Use percentage positioning exactly like search screen
+        itemElement.style.left = `${position.x}%`;
+        itemElement.style.top = `${position.y}%`;
 
-        itemElement.style.left = `${x}px`;
-        itemElement.style.top = `${y}px`;
-        itemElement.style.transform = `scale(${position.scale})`;
-
-        // Calculate size based on scale
+        // FIXED: Set base size first (matching search screen exactly)
         const baseSize = 40;
-        const size = baseSize * position.scale;
-        itemElement.style.width = `${size}px`;
-        itemElement.style.height = `${size}px`;
+        itemElement.style.width = `${baseSize}px`;
+        itemElement.style.height = `${baseSize}px`;
+
+        // FIXED: Apply scale via transform only (no double scaling)
+        const scale = position.scale || 1.0;
+        itemElement.style.transform = `scale(${scale})`;
+
+        // FIXED: Ensure transform-origin is center (matches search screen)
+        itemElement.style.transformOrigin = "center center";
 
         // Set content
         if (item.image) {
           itemElement.style.backgroundImage = `url('${item.image}')`;
+          itemElement.innerHTML = ""; // Clear any text content
+        } else if (item.symbol) {
+          itemElement.innerHTML = item.symbol;
+          // FIXED: Font size based on base size, not scaled size
+          itemElement.style.fontSize = `${baseSize * 0.6}px`;
+          itemElement.style.lineHeight = `${baseSize}px`;
         } else {
-          itemElement.innerHTML = item.symbol || "?";
-          itemElement.style.fontSize = `${size * 0.6}px`;
+          itemElement.innerHTML = "?";
+          itemElement.style.fontSize = `${baseSize * 0.6}px`;
+          itemElement.style.lineHeight = `${baseSize}px`;
         }
 
         // Add label
@@ -932,13 +941,14 @@
         selectItem(item);
       }
 
+      // FIXED: Use percentage-based positioning like search screen
       function updateDrag(clientX, clientY) {
         if (!selectedItem) return;
 
         const container = document.getElementById("items-container");
         const containerRect = container.getBoundingClientRect();
 
-        // Calculate new position
+        // Calculate new position in pixels
         const newX = clientX - dragOffset.x - containerRect.left;
         const newY = clientY - dragOffset.y - containerRect.top;
 
@@ -950,9 +960,9 @@
         const clampedX = Math.max(0, Math.min(95, xPercent));
         const clampedY = Math.max(0, Math.min(95, yPercent));
 
-        // Update visual position
-        selectedItem.style.left = `${(clampedX / 100) * containerRect.width}px`;
-        selectedItem.style.top = `${(clampedY / 100) * containerRect.height}px`;
+        // FIXED: Update visual position using percentages (like search screen)
+        selectedItem.style.left = `${clampedX}%`;
+        selectedItem.style.top = `${clampedY}%`;
 
         // Update data
         updateItemPosition(selectedItem, clampedX, clampedY);
@@ -995,17 +1005,12 @@
         let newScale = resizeStartData.startScale + scaleChange;
 
         // Clamp scale to reasonable bounds
-        newScale = Math.max(0.2, Math.min(3.0, newScale));
+        newScale = Math.max(0.2, Math.min(10.0, newScale));
 
-        // Apply scale
+        // FIXED: Apply scale via transform only (no size change)
         selectedItem.style.transform = `scale(${newScale})`;
 
-        // Update size
-        const baseSize = 40;
-        const size = baseSize * newScale;
-        selectedItem.style.width = `${size}px`;
-        selectedItem.style.height = `${size}px`;
-
+        // Update data
         updateItemScale(selectedItem, newScale);
         updateSelectedItemInfo();
       }

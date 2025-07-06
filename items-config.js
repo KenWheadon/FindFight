@@ -260,7 +260,7 @@ const ITEMS_CONFIG = {
       staminaDrainRate: 0.5,
       revealDuration: 60, // 60 seconds for items to fade in
       itemPositions: [
-        { itemId: 1, x: 16.9, y: 75.3, scale: 3.0, initiallyVisible: true },
+        { itemId: 1, x: 18.7, y: 76.5, scale: 4.37, initiallyVisible: true },
         { itemId: 2, x: 26.9, y: 86.2, scale: 1.49, initiallyVisible: true },
         { itemId: 3, x: 1.1, y: 87.0, scale: 1.69, initiallyVisible: true },
         { itemId: 4, x: 63.7, y: 75.4, scale: 1.53, initiallyVisible: true },
@@ -274,13 +274,13 @@ const ITEMS_CONFIG = {
         { itemId: 12, x: 1.2, y: 61.4, scale: 1.12, initiallyVisible: false },
         { itemId: 13, x: 42.2, y: 78.9, scale: 1.18, initiallyVisible: false },
         { itemId: 14, x: 0.4, y: 1.8, scale: 1.01, initiallyVisible: false },
-        { itemId: 15, x: 41.2, y: 54.1, scale: 1.0, initiallyVisible: false },
-        { itemId: 16, x: 31.7, y: 46.7, scale: 3.0, initiallyVisible: false },
-        { itemId: 17, x: 50.5, y: 57.3, scale: 1.15, initiallyVisible: false },
+        { itemId: 15, x: 39.7, y: 52.5, scale: 1.0, initiallyVisible: false },
+        { itemId: 16, x: 31.4, y: 50.5, scale: 5.92, initiallyVisible: false },
+        { itemId: 17, x: 50.2, y: 56.8, scale: 1.15, initiallyVisible: false },
         { itemId: 18, x: 95.0, y: 60.6, scale: 1.46, initiallyVisible: false },
-        { itemId: 19, x: 31.2, y: 70.1, scale: 1.5, initiallyVisible: false },
+        { itemId: 19, x: 31.2, y: 70.1, scale: 1.87, initiallyVisible: false },
         { itemId: 20, x: 4.2, y: 76.2, scale: 1.83, initiallyVisible: false },
-        { itemId: 21, x: 66.1, y: 16.2, scale: 1.74, initiallyVisible: false },
+        { itemId: 21, x: 65.4, y: 11.7, scale: 2.76, initiallyVisible: false },
       ],
     },
     forestClearing: {

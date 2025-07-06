@@ -99,9 +99,18 @@
 }
 
 .search-stamina-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: bold;
   color: #28a745;
   font-size: 16px;
+}
+
+.drain-rate {
+  font-size: 12px;
+  color: #dc3545;
+  font-weight: normal;
 }
 
 .search-stamina-bar {
@@ -269,7 +278,7 @@
   z-index: 5;
 }
 
-/* Search Items - Matching Item Placement Tool */
+/* Search Items - Matching Item Placement Tool exactly */
 .search-item {
   position: absolute;
   cursor: pointer;
@@ -285,6 +294,8 @@
   justify-content: center;
   border: 2px solid transparent;
   border-radius: 8px;
+  /* Ensure consistent box-sizing */
+  box-sizing: border-box;
 }
 
 /* Items that are not initially visible start transparent */
@@ -302,10 +313,6 @@
 /* Items blend into scene naturally - no special effects until found */
 .search-item:not(.found) {
   background-color: transparent;
-}
-
-.search-item:hover {
-  border-color: rgba(212, 175, 55, 0.7);
 }
 
 /* Only show effects when item is found */

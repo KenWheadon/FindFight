@@ -71,6 +71,7 @@ class SearchScreen extends Screen {
                 <div class="search-stamina-panel">
                   <div class="search-stamina-label">
                     <span>Stamina: <span id="search-stamina-value">100</span></span>
+                    <span class="drain-rate">Drain: ${this.searchState.staminaDrainRate}/sec</span>
                   </div>
                   <div class="search-stamina-bar">
                     <div class="search-stamina-fill" id="search-stamina-fill"></div>
@@ -85,12 +86,8 @@ class SearchScreen extends Screen {
                 <div class="location-name">${location.name}</div>
                 <div class="location-details">
                   <div class="location-stat">
-                    <span class="stat-label">Total Items:</span>
-                    <span class="stat-value">${this.searchState.items.length}</span>
-                  </div>
-                  <div class="location-stat">
-                    <span class="stat-label">Drain Rate:</span>
-                    <span class="stat-value">${this.searchState.staminaDrainRate}/sec</span>
+                    <span class="stat-label">Status:</span>
+                    <span class="stat-value">Searching...</span>
                   </div>
                 </div>
               </div>
@@ -176,20 +173,23 @@ class SearchScreen extends Screen {
       const itemElement = document.createElement("div");
       itemElement.className = "search-item";
 
-      // Use percentage-based positioning like the tool does
-      // Convert the x,y percentages to CSS percentage values
+      // Use percentage-based positioning exactly like the tool does
+      // Apply positioning with proper precision
       itemElement.style.left = `${item.x}%`;
       itemElement.style.top = `${item.y}%`;
 
-      // Apply scale from item data
-      const scale = item.scale || 1.0;
-      itemElement.style.transform = `scale(${scale})`;
-
-      // Set base size (matching the tool's base size of 40px)
+      // Set base size first (matching the tool's base size of 40px exactly)
       const baseSize = 40;
-      const size = baseSize * scale;
       itemElement.style.width = `${baseSize}px`;
       itemElement.style.height = `${baseSize}px`;
+
+      // Apply scale from item data - this should match the tool exactly
+      const scale = item.scale || 1.0;
+      // Use the same transform as the tool
+      itemElement.style.transform = `scale(${scale})`;
+
+      // Calculate actual size for font sizing (used when no image)
+      const actualSize = baseSize * scale;
 
       itemElement.dataset.itemIndex = index;
 
@@ -199,10 +199,14 @@ class SearchScreen extends Screen {
         itemElement.innerHTML = ""; // Clear any text content
       } else if (item.symbol) {
         itemElement.innerHTML = item.symbol;
-        itemElement.style.fontSize = `${size * 0.6}px`;
+        // Font size based on actual scaled size
+        itemElement.style.fontSize = `${actualSize * 0.6}px`;
+        // Center text properly
+        itemElement.style.lineHeight = `${baseSize}px`;
       } else {
         itemElement.innerHTML = "?";
-        itemElement.style.fontSize = `${size * 0.6}px`;
+        itemElement.style.fontSize = `${actualSize * 0.6}px`;
+        itemElement.style.lineHeight = `${baseSize}px`;
       }
 
       // Set initial visibility
