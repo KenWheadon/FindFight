@@ -307,6 +307,10 @@
   overflow: hidden;
 }
 
+.victory-content .story-text {
+  opacity: 0;
+}
+
 .story-text {
   font-family: "Courier New", monospace;
   font-size: 1em;
@@ -316,6 +320,7 @@
   max-height: 0;
   overflow: hidden;
   transition: all 0.5s ease;
+  display: none;
 }
 
 .story-segment.revealed .story-text {

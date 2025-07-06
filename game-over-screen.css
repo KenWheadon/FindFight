@@ -164,6 +164,10 @@
   color: #8b0000;
 }
 
+.game-over-content .story-text {
+  opacity: 0;
+}
+
 .story-text {
   font-family: "Courier New", monospace;
   font-size: 1em;
